@@ -1,0 +1,419 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:65vw; max-width: 1000px" >
+        <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="movimiento_title" class="modal-title">Formulario de Ingreso</h3>
+                    <h4 id="movimiento_enable" class=""></h4>
+                </div>
+
+                <div class="modal-body">
+                <div id="movimiento_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">ID</label>
+                        </div>
+                    </div>
+                    <div class="bordesdiv">
+
+                        <div class="modal-header header-own">
+                            <h4  class="modal-title">Invitacion</h4>
+                            <input type="hidden" id="fkinvitacion" value="">
+                            <input type="hidden"  id="idperfil" value="{{ idperfil }}">
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                            <div class="col-sm-4">
+{#                                 <label  class="form-label">Codigo Qr</label>#}
+                                    <div class="form-line" >
+                                        <input id="codigoautorizacion" type="password" class="form-control">
+                                    </div>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <button id="validar_invitacion" type="button" class="btn bg-indigo waves-effect" title="Agregar">Validar Codigo
+                                    <i class="material-icons"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                        <div class="col-sm-10">
+                             <div class="row m-b-10">
+                                <div class="text-center">
+                                 <img id='imagen_mensaje' src='' width='200px' >
+                                    </br>
+                                </br>
+                                </div>
+                             </div>
+                        </div>
+
+                    </div>
+                        </br>
+                    </div>
+                    </br>
+
+                    <div class="bordesdiv">
+
+                        <div class="modal-header header-own">
+                            <h4  class="modal-title">Datos del Ingreso</h4>
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Domicilios</label>
+                                 <select id="fkdomicilio" class="form-control">
+                                    {% for domi in domicilios %}
+                                        <option value="{{domi.id}}">{{domi.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                               <label>Areas Sociales</label>
+                                 <select id="fkareasocial" class="form-control">
+                                    {% for area in areasociales %}
+                                        <option value="{{area.id}}">{{area.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Tipo de Pase</label>
+                                 <select id="fktipopase" class="form-control" required>
+                                    {% for tipopase in tipopases %}
+                                        <option value="{{tipopase.id}}">{{tipopase.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Autorizado por</label>
+                                 <select id="fkautorizacion" class="form-control" required>
+                                    {% for autor in autorizaciones %}
+                                        <option value="{{autor.id}}">{{autor.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                               <label class="form-label">Observacion</label>
+                                    <div class="form-line">
+                                        <input id="observacion" type="text" class="form-control text" >
+
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Nro. de Pases</label>
+                                 <select id="nropase" class="form-control" required>
+                                    {% for nro in nropases %}
+                                        <option value="{{nro.id}}">{{nro.numero}} - {{nro.tipo}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        </br>
+                    </div>
+                    </br>
+                    <div class="bordesdiv">
+
+                        <div class="modal-header header-own">
+                            <h4  class="modal-title">Datos Invitado</h4>
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Tipo de Documento</label>
+                                 <select id="fktipodocumento" class="form-control">
+                                    {% for tipodoc in tipodocumento %}
+                                        <option value="{{tipodoc.id}}">{{tipodoc.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                               <label>Buscar Persona</label>
+                                 <select id="fkinvitado" class="form-control">
+                                     <option value="0">Nueva Persona</option>
+                                    {% for invi in invitados %}
+                                        <option value="{{invi.id}}">{{invi.ci}} - {{invi.fullname}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-2">
+                                 <label  class="form-label">Nombre</label>
+                                    <div class="form-line">
+                                        <input id="nombre" name="Nombre" type="text" class="form-control text" required>
+
+                                    </div>
+                            </div>
+                            <div class="col-sm-2">
+                                 <label class="form-label">Apellido paterno</label>
+                                    <div class="form-line">
+                                        <input id="apellidop" name="Apellido Paterno" type="text" class="form-control text" required>
+
+                                    </div>
+                            </div>
+                            <div class="col-sm-2">
+                                 <label class="form-label">Apellido materno</label>
+                                    <div class="form-line">
+                                        <input id="apellidom" name="Apellido Materno" type="text" class="form-control text">
+
+                                    </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="ci" class="form-label">Ci</label>
+                                    <div class="form-line">
+                                        <input id="ci" name="Ci"  type="text" class="form-control text" required>
+
+                                    </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Expedido</label>
+                                 <select id="expendido"  class="form-control" required>
+                                    <option value="BN">BN</option>
+                                    <option value="CH">CH</option>
+                                     <option value="CB">CB</option>
+                                     <option value="LP">LP</option>
+                                     <option value="OR">OR</option>
+                                     <option value="PD">PD</option>
+                                     <option value="PT">PT</option>
+                                     <option value="SC">SC</option>
+                                     <option value="TJ">TJ</option>
+
+                                 </select>
+                            </div>
+                        </div>
+                        </br>
+
+                        <div class="row clearfix">
+                            <div class="col-sm-3">
+                                <div class="switch p-l-own">
+                                    <div class="modal-header header-own">
+                                        <h6 class="modal-title">Vehiculo</h6>
+                                    </div>
+
+                                   <label>
+                                       Propio
+                                       <input id="switch" type="checkbox">
+                                       <span class="lever"></span>
+                                       Taxi
+                                   </label>
+                                </div>
+                                     </br>
+                            </div>
+                        </div>
+
+                        <div id="div_conductor" hidden>
+
+                            <div class="modal-header header-own">
+                                <h4  class="modal-title">Datos Conductor del Taxi</h4>
+                            </div>
+                            </br>
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                   <label>Tipo de Documento</label>
+                                     <select id="fktipodocumento_conductor" class="form-control">
+                                        {% for tipodoc in tipodocumento %}
+                                            <option value="{{tipodoc.id}}">{{tipodoc.nombre}}</option>
+                                        {% end %}
+                                     </select>
+                                    </br>
+                                    </br>
+                                </div>
+                                <div class="col-sm-6">
+                                   <label>Buscar Persona</label>
+                                     <select id="fkconductor" class="form-control">
+                                         <option value="0">Nueva Persona</option>
+                                        {% for invi in invitados %}
+                                            <option value="{{invi.id}}">{{invi.ci}} - {{invi.fullname}}</option>
+                                        {% end %}
+                                     </select>
+                                    </br>
+                                    </br>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-2">
+                                     <label  class="form-label">Nombre</label>
+                                        <div class="form-line">
+                                            <input id="nombre_conductor" name="Nombre del conductor" type="text" class="form-control text">
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                     <label class="form-label">Apellido paterno</label>
+                                        <div class="form-line">
+                                            <input id="apellidop_conductor" name="Apellido Paterno del conductor" type="text" class="form-control text">
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                     <label class="form-label">Apellido materno</label>
+                                        <div class="form-line">
+                                            <input id="apellidom_conductor" name="Apellido Materno del conductor" type="text" class="form-control text">
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="ci" class="form-label">Ci</label>
+                                        <div class="form-line">
+                                            <input id="ci_conductor" name="Ci del conductor"  type="text" class="form-control text">
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label>Expedido</label>
+                                     <select id="expendido_conductor"  class="form-control">
+                                        <option value="BN">BN</option>
+                                        <option value="CH">CH</option>
+                                         <option value="CB">CB</option>
+                                         <option value="LP">LP</option>
+                                         <option value="OR">OR</option>
+                                         <option value="PD">PD</option>
+                                         <option value="PT">PT</option>
+                                         <option value="SC">SC</option>
+                                         <option value="TJ">TJ</option>
+
+                                     </select>
+                                </div>
+                            </div>
+                            </br>
+                        </div>
+                    </div>
+                    </br>
+
+                    <div class="bordesdiv">
+
+                        <div class="modal-header header-own">
+                            <h4  class="modal-title">Datos Vehiculo</h4>
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Buscar</label>
+                                 <select id="fkvehiculo" class="form-control">
+                                     <option value="0">Nuevo Vehiculo</option>
+                                    {% for vehi in vehiculos %}
+                                        <option value="{{vehi.id}}">{{vehi.placa}} {{vehi.tipo}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                               <label for="color" class="form-label" >Cant. de Pasajeros</label>
+                                    <div class="form-line">
+                                        <input id="cantpasajeros" name="Cantidad de pasajeros" type="number" class="form-control text" required>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                                    <label for="placa" class="form-label">Placa</label>
+                                    <div class="form-line">
+                                        <input id="placa" type="text" class="form-control text" required>
+
+                                    </div>
+
+                            </div>
+                            <div class="col-sm-6">
+                                 <label>Tipo de Vehiculo</label>
+                                 <select id="tipo" class="form-control" required>
+                                     <option value="Auto">Auto</option>
+                                     <option value="Camioneta">Camioneta</option>
+                                     <option value="Vagoneta">Vagoneta</option>
+                                     <option value="Jeep">Jeep</option>
+                                     <option value="Camion">Camion</option>
+                                     <option value="Motocicleta">Motocicleta</option>
+                                     <option value="Moto">Moto</option>
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                                    <label for="color" class="form-label">Color</label>
+                                    <div class="form-line">
+                                        <input id="color" type="text" class="form-control text" required >
+
+                                    </div>
+
+                            </div>
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                             <div class="col-sm-6">
+                            <label>Marca</label>
+                             <select id="fkmarca" class="form-control" required>
+                                    <option value="0">Nueva Marca</option>
+                                {% for mar in marcas %}
+                                    <option value="{{mar.id}}">{{mar.nombre}}</option>
+                                {% end %}
+                             </select>
+                             </div>
+                            <div id="div_nombre_marca" class="col-sm-6" hidden>
+                                 <label  class="form-label">Nombre Marca</label>
+                                    <div class="form-line">
+                                        <input id="nombre_marca" name="Nombre Marca" type="text" class="form-control text">
+
+                                    </div>
+                            </div>
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                                <label>Modelo</label>
+                                 <select id="fkmodelo" class="form-control">
+                                    {% for mod in modelos %}
+                                        <option value="{{mod.id}}">{{mod.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                            </div>
+                            <div class="col-sm-6" hidden>
+                                 <label  class="form-label">Nombre Modelo</label>
+                                    <div class="form-line">
+                                        <input id="nombre_modelo" name="Nombre Modelo" type="text" class="form-control text">
+
+                                    </div>
+                            </div>
+
+                         </div>
+                        </br>
+                        </br>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                {% if 'movimiento_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'movimiento_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

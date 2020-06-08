@@ -1,0 +1,478 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:100vw; max-width: 1450px" >
+        <div class="modal-content">
+            <form id="form_submit" class="new" enctype="multipart/form-data" novalidate>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="residente_title" class="modal-title">Gestionar Residente</h3>
+                    <h4 id="residente_enable" class=""></h4>
+                </div>
+
+                <div class="modal-body">
+                    {% module xsrf_form_html() %}
+                    <ul class="nav nav-tabs tab-nav-right" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab-residente" data-toggle="tab" href="#body-residente" role="tab"
+                            aria-controls="profile" aria-selected="true">RESIDENTE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-vivienda" data-toggle="tab" href="#body-vivienda" role="tab"
+                                aria-controls="profile" aria-selected="false">DOMICILIOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-vehiculo" data-toggle="tab" href="#body-vehiculo" role="tab"
+                            aria-controls="profile" aria-selected="false">VEHICULOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-usuario" data-toggle="tab" href="#body-usuario" role="tab"
+                            aria-controls="profile" aria-selected="false">USUARIO</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade body" id="body-residente" role="tabpanel" aria-labelledby="tab-residente">
+                            <div id="residente_form_body" class="box-body">
+                                <div id="id_div" class="form-group">
+                                    <div class="form-line">
+                                        {% module xsrf_form_html() %}
+                                        <input id="id" type="text" class="form-control" disabled="disabled">
+                                        <label for="id" class="form-label">Residente ID</label>
+                                    </div>
+                                </div>
+                                <div  id="div_foto" class="row clearfix">
+                                    <div class="col-sm-4">
+
+                                    </div>
+                                    <div class="col-sm-4">
+                                         <div id="imagen_archivo" class="row m-b-20">
+                                            <div class="text-center">
+                                             <img id='imagen_show_img' src='' width='250px' >
+                                                </br>
+                                            </br>
+                                            </div>
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-4">
+
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+                                    <div class="col-sm-4">
+                                        <label>Codigo</label>
+                                            <div class="form-line">
+                                                <input id="codigo" name="Codigo" type="text" class="form-control txta-own" required >
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>Carnet de Identidad</label>
+                                            <div class="form-line">
+                                                <input id="ci" name="Carnet de Identidad" type="text" class="form-control txta-own" required>
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label>Expedido</label>
+                                         <select id="expendido" class="form-control" required>
+                                            <option value="BN">BN</option>
+                                            <option value="CH">CH</option>
+                                             <option value="CB">CB</option>
+                                             <option value="LP">LP</option>
+                                             <option value="OR">OR</option>
+                                             <option value="PD">PD</option>
+                                             <option value="PT">PT</option>
+                                             <option value="SC">SC</option>
+                                             <option value="TJ">TJ</option>
+                                         </select>
+                                    </div>
+                                </div>
+                                </br>
+                                </br>
+                                <div class="row clearfix">
+                                    <div class="col-sm-4">
+                                        <label>Nombre</label>
+                                            <div class="form-line">
+                                                <input id="nombre" name="Nombre" type="text" class="form-control txta-own" required >
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>Apellido Paterno</label>
+                                            <div class="form-line">
+                                                <input id="apellidop" name="Apellido Paterno" type="text" class="form-control txta-own" required >
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>Apellido Materno</label>
+                                            <div class="form-line">
+                                                <input id="apellidom" name="Apellido Materno" type="text" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                </div>
+                                </br>
+                                </br>
+
+                                <div class="row clearfix">
+                                     <div class="col-sm-3">
+                                        <label>Telefono</label>
+                                            <div class="form-line">
+                                                <input id="telefono" name="Telefono" type="number" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label>Fecha de Nacimiento</label>
+                                            <div class="form-line">
+                                                <input id="fechanacimiento" name="Fecha de Nacimiento" type="text" class="form-control date txta-own" required>
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label>Sexo</label>
+                                         <select id="sexo" class="form-control">
+                                            <option value="M">Masculino</option>
+                                            <option value="F">Femenino</option>
+                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row clearfix">
+                                    <div class="col-sm-3">
+                                        <label>Correo</label>
+                                            <div class="form-line">
+                                                <input id="correo" name="Correo" type="text" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                </div>
+                                </br>
+                                </br>
+                                <div class="row clearfix">
+                                     <div class="col-sm-4">
+                                        <label>Tipo de residente</label>
+                                         <select id="tipo" class="form-control" required>
+                                            <option value="Propietario">Propietario</option>
+                                            <option value="Inquilino">Inquilino</option>
+                                             <option value="Co-propietario">Co-propietario</option>
+                                         </select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Nueva fotografia: </label>
+                                        <input id="foto" name="archivo" type="file" class="file form-control" width='300px' />
+                                            </br>
+                                            </br>
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+                                    <div class="col-sm-3" hidden>
+                                        <label>Id</label>
+                                            <div class="form-line">
+                                                <input id="fknropase_peatonal" name="Nro pase peatonal" type="text" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label>Nro de tarjeta Peatonal</label>
+                                            <div class="form-line">
+                                                <input id="fknropase_tarjeta" name="tarjeta peatonal" type="text" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label>Buscar</label>
+                                         <select id="b_fknropase" class="form-control">
+                                             <option value="0">-----</option>
+                                            {% for nropase in nropases_residente %}
+                                                <option value="{{nropase.id}}">{{nropase.tarjeta}}</option>
+                                            {% end %}
+                                         </select>
+
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade body" id="body-vivienda" role="tabpanel" aria-labelledby="tab-vivienda">
+                            <div id="vivienda_form_body" class="box-body">
+                                <div class="row clearfix">
+                                    <div id="div_agregar_vivienda" class="col-sm-2">
+                                        <button id="agregar_vivienda" type="button" class="btn bg-indigo waves-effect waves-light"
+                                                title="Agregar Vivienda">Agregar <i class="material-icons">add</i></button>
+                                        </br>
+                                    </div>
+                                    <div id="div_cancelar_vivienda" class="col-sm-2" hidden>
+                                        <button id="cancelar_vivienda" type="button" class="btn bg-red waves-effect waves-light"
+                                                title="Cancelar">Cancelar <i class="material-icons">clear</i></button>
+                                        </br>
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+                                    <div id="div_buscar_vivienda" class="col-sm-4" hidden>
+                                         <label>Buscar domicilio</label>
+                                        <select id="viviendas" class="form-control">
+                                            {% for s in viviendas %}
+                                            <option value="{{ s.id }}">{{s.nombre}}</option>
+                                            {% end %}
+                                        </select>
+                                        </br>
+                                        </br>
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Codigo</label>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Ubicacion</label>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Vivienda</label>
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+
+                                   <div class="col-sm-9">
+                                         <div id="vivienda" class="box-body">
+                                            <div id="vivienda_div" class="clearfix">
+
+                                            </div>
+                                         </div>
+                                   </div>
+                               </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade body" id="body-vehiculo" role="tabpanel" aria-labelledby="tab-vehiculo">
+                            <div id="vehiculo_form_body" class="box-body">
+                                <div class="row clearfix">
+                                    <div id="div_agregar_vehiculo" class="col-sm-2">
+                                        <button id="agregar_vehiculo" type="button" class="btn bg-indigo waves-effect waves-light"
+                                                title="Agregar Vehiculo">Agregar <i class="material-icons">add</i></button>
+                                        </br>
+                                    </div>
+                                    <div id="div_cancelar_vehiculo" class="col-sm-2" hidden>
+                                        <button id="cancelar_vehiculo" type="button" class="btn bg-red waves-effect waves-light"
+                                                title="Cancelar">Cancelar <i class="material-icons">clear</i></button>
+                                        </br>
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+                                    <div id="div_buscar_vehiculo" class="col-sm-4" hidden>
+                                         <label>Buscar Vehiculo</label>
+                                         <select id="vehiculos" class="form-control">
+                                             <option value="0">Nuevo Vehiculo</option>
+                                            {% for vehi in vehiculos %}
+                                                <option value="{{vehi.id}}">{{vehi.placa}}</option>
+                                            {% end %}
+                                         </select>
+                                        </br>
+                                        </br>
+                                    </div>
+
+                                </div>
+                                <div id="div_nuevo_vehiculo">
+                                    <div class="row clearfix">
+                                         <div class="col-sm-2">
+                                             <div class="form-group form-float">
+                                                <div class="form-line">
+                                                    <input id="idvehiculo" name="Idvehiculo" type="text" class="form-control">
+                                                </div>
+                                             </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-2">
+                                            <label>Tipo</label>
+                                         <select id="tipovehiculo" class="form-control">
+                                                 <option value="Auto">Auto</option>
+                                                 <option value="Camioneta">Camioneta</option>
+                                                 <option value="Vagoneta">Vagoneta</option>
+                                                 <option value="Jeep">Jeep</option>
+                                                 <option value="Camion">Camion</option>
+                                                 <option value="Motocicleta">Motocicleta</option>
+                                                 <option value="Moto">Moto</option>
+                                             </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label>Placa</label>
+                                            <div class="form-group form-float">
+                                                <div class="form-line">
+                                                    <input id="placa" name="Placa" type="text" class="form-control">
+                                                </div>
+                                             </div>
+                                        </div>
+                                         <div class="col-sm-2">
+                                            <label>Color</label>
+                                             <div class="form-group form-float">
+                                                <div class="form-line">
+                                                    <input id="color" name="Color" type="text" class="form-control">
+                                                </div>
+                                             </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row clearfix">
+                                        <div class="col-sm-2">
+                                            <label>Marca</label>
+                                             <select id="fkmarca" class="form-control">
+                                                {% for mar in marcas %}
+                                                    <option value="{{mar.id}}">{{mar.nombre}}</option>
+                                                {% end %}
+                                             </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label>Modelo</label>
+                                             <select id="fkmodelo" class="form-control">
+
+                                             </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label>Nro de tarjeta</label>
+                                             <select id="fknropase" class="form-control">
+                                                {% for nropase in nropases_residente %}
+                                                    <option value="{{nropase.id}}">{{nropase.tarjeta}}</option>
+                                                {% end %}
+                                             </select>
+
+
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <button id="insertar_vehiculo" type="button" class="btn bg-indigo waves-effect agregar_vehiculo" title="Agregar">
+                                                <i class="material-icons">add</i>
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row clearfix">
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Placa</label>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Tipo</label>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Color</label>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Marca</label>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Modelo</label>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label class="form-label">Nro Tarjeta.</label>
+                                    </div>
+
+                                </div>
+                                <div class="row clearfix">
+
+                                   <div class="col-sm-18">
+                                         <div id="vehiculo" class="box-body">
+                                            <div id="vehiculo_div" class="clearfix">
+
+                                            </div>
+                                         </div>
+                                   </div>
+                               </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade body" id="body-usuario" role="tabpanel" aria-labelledby="tab-usuario">
+                            <div id="usuario_form_body" class="box-body">
+                                <div class="row clearfix">
+                                    <div class="col-sm-3">
+                                        <label class="form-label">Fecha Inicio</label>
+                                       <div class="form-group">
+                                            <div class="form-line success">
+                                                <input id="fechai" type="text" class="form-control date" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="form-label">Fecha Fin</label>
+                                            <div  class="form-line success">
+
+                                                <input id="fechaf" type="text" class="form-control date" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-sm-3">
+                                        <div class="switch p-l-own">
+                                           <h6>Estado</h6>
+                                           <label>
+                                               Desactivado
+                                               <input id="switch" type="checkbox">
+                                               <span class="lever"></span>
+                                               Activo
+                                           </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="div_username" class="row clearfix">
+                                    <div class="col-sm-3">
+                                        <label>Username</label>
+                                            <div class="form-line">
+                                                <input id="username" name="Username" type="text" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label>Contraseña</label>
+                                            <div class="form-line">
+                                                <input id="password" name="Contraseña" type="password" class="form-control txta-own" >
+                                                <button id="generar" type="button" class="btn bg-indigo waves-effect">Generar<i class="material-icons"></i></button>
+                                            </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                    {% if 'residente_insert' in privileges %}
+                        <button id="insert" type="submit" class="btn bg-indigo waves-effect">Guardar <i class="material-icons white-own">save</i></button>
+                    {% end %}
+                    {% if 'residente_update' in privileges %}
+                        <button id="update" type="submit" class="btn bg-indigo waves-effect">Modificar <i class="material-icons white-own">refresh</i></button>
+                    {% end %}
+                    <button id="siguiente1" type="button" class="btn bg-indigo waves-effect">Siguiente<i class="material-icons">arrow_forward</i></button>
+                    <button id="siguiente2" type="button" class="btn bg-indigo waves-effect">Siguiente<i class="material-icons">arrow_forward</i></button>
+                    <button id="siguiente3" type="button" class="btn bg-indigo waves-effect">Siguiente<i class="material-icons">arrow_forward</i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="form-importar" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:60vw; max-width: 500px" >
+        <div class="modal-content">
+              <form id="importar-form" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h3 id="importxls_title" class="modal-title">Importar</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div id="importxls_form_body" class="box-body">
+                        <label class="control-label">Excel o Texto</label>
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input id="archivo" name="archivo" type="file" class="form-control file xlsfl" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="insert-importar" type="submit" class="btn bg-indigo">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

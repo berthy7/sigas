@@ -1,0 +1,237 @@
+{% extends ../../../common/views/layout.html %}
+
+{% block style %}
+    {% set user = usuario %}
+    <link rel="stylesheet" href="condominios/residente/assets/residente.css">
+{% end %}
+
+{% block content %}
+    {% include form.html %}
+
+{#    <div class="header bg-page-own"><h2>Propietarios</h2></div>#}
+    <div class="header"><h2 class="title-rg-own">Residentes</h2></div>
+    <div class="body">
+        <div class="row clearfix">
+            <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                {% if 'residente_insert' in privileges %}
+                    <button id="new" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                {% end %}
+                    <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect">
+                    <i class="material-icons">picture_as_pdf</i><i class="material-icons">file_upload</i>
+                    </button>
+            </div>
+        </div>
+
+        {% if 'residente_query' in privileges %}
+        <div class="row">
+            <div class="body table-responsive">
+                <table id="data_table" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="order_by_th" data-name="names">Codigo</th>
+                            <th class="order_by_th" data-name="names">Ci</th>
+                            <th class="order_by_th" data-name="names">Nombre</th>
+                            <th class="order_by_th" data-name="names">Telefono</th>
+                            <th class="actions_header">Estado</th>
+                            <th class="actions_header">Editar</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+        {% end %}
+    </div>
+{% end %}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="condominios/residente/assets/residente.js"></script>
+    <script src="resources/js/dataTables.buttons.js"></script>
+    <script src="resources/js/pdfmake.js"></script>
+    <script src="resources/js/vfs_fonts.js"></script>
+    <script src="resources/js/buttons.bootstrap.js"></script>
+    <script src="resources/js/buttons.html5.js"></script>
+    <script src="resources/js/buttons.print.js"></script>
+    <script src="resources/js/buttons.colVis.js"></script>
+<script>
+        $(document).ready(function () {
+
+            var data = [];
+            {% set cont = 0 %}
+            {% for c in residentes %}
+                data.push( [
+                    '{{ c.codigo }}',
+                    '{{ c.ci }}',
+                    '{{ c.fullname }}',
+                    '{{ c.telefono}}',
+                    '<input id="{{ c.id }}" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo delete" {% if c.estado %} {{"checked"}} {% end %} disabled/><label for="{{c.id}}"></label>' + ' ' + '{% if c.estado %} Habilitado {% else %} Deshabilitado {% end %}',
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+
+                ]);
+            {% set cont = cont + 1 %}
+            {% end %}
+            cargar_tabla(data)
+        });
+
+        function append_input_vehiculos(id_in) {
+        if(id_in === ''){
+            id_gv++;
+            id_in = id_gv;
+        }
+
+        $('#vehiculo_div').append(
+        '<div class="row">\
+            <div class="col-sm-1 hidden">\
+                <div class="input-group">\
+                    <input  id="id'+id_in+'" class="form-control id vehiculo txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1 ">\
+                <div class="form-line">\
+                    <input id="placa'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo placa  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="tipo'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo tipo  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="color'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo color  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1 hidden">\
+                <div  class="form-line">\
+                    <input id="fkmarca'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fkmarca  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="marca'+id_in+'" data-id="'+id_in+'" class="form-control  marca  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1 hidden">\
+                <div  class="form-line">\
+                    <input id="fkmodelo'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fkmodelo  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="modelo'+id_in+'" data-id="'+id_in+'" class="form-control  modelo  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="fknropase'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fknropase  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="nropase'+id_in+'" data-id="'+id_in+'" class="form-control  nropase  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <button type="button" data-id="'+id_in+'" class="btn  waves-effect editar_vehiculo" title="Editar">\
+                    <i class="material-icons">create</i>\
+                </button>\
+            </div>\
+            <div class="col-sm-1">\
+                <button type="button" class="btn bg-red waves-effect clear_vehiculo" title="Eliminar">\
+                    <i class="material-icons">clear</i>\
+                </button>\
+            </div>\
+        </div>'
+    )
+
+        $('.editar_vehiculo').click(function () {
+
+            id_in = JSON.parse($(this).attr('data-id'))
+
+            console.log($('#nropase'+id_in).val())
+            $('#div_agregar_vehiculo').hide()
+            $('#div_buscar_vehiculo').show()
+            $('#div_cancelar_vehiculo').show()
+            $('#div_nuevo_vehiculo').show()
+
+            $('#idvehiculo').val($('#id'+id_in).val())
+            $('#placa').val($('#placa'+id_in).val())
+            $('#tipovehiculo').val($('#tipo'+id_in).val())
+            $('#tipovehiculo').selectpicker('refresh')
+            $('#color').val($('#color'+id_in).val())
+            $('#fkmarca').val($('#fkmarca'+id_in).val())
+            $('#fkmarca').selectpicker('refresh')
+            cargar_modelos ($('#fkmarca').val())
+
+
+            $('#fkmodelo').val($('#fkmodelo'+id_in).val())
+            $('#fkmodelo').selectpicker('refresh')
+            $('#fknropase').val($('#fknropase'+id_in).val())
+            $('#fknropase').selectpicker('refresh')
+
+        })
+
+
+        $('.clear_vehiculo').last().click(function () {
+            $(this).parent().parent().remove()
+        })
+
+        $('.id').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.placa').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.tipo').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.color').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.fkmarca').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.marca').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.fkmodelo').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.modelo').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.fknropase').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.nropase').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+    }
+
+
+</script>
+{% end %}

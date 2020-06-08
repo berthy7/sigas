@@ -1,0 +1,258 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:100vw; max-width: 1000px" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="dispositivo_tittle" class="modal-title">Ingreso de Dispositivo</h3>
+                <h4 id="dispositivo_enable" class=""></h4>
+            </div>
+
+            <div class="modal-body">
+                <div id="dispositivo_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">Dispositivo ID</label>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>ip</label>
+                                <div class="form-line">
+                                    <input id="ip" name="Ip" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Puerto</label>
+                                <div class="form-line">
+                                    <input id="puerto" name="Puerto" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>Modelo</label>
+                                <div class="form-line">
+                                    <input id="modelo" name="Modelo" type="text" class="form-control txta-own" >
+                                </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Descripcion</label>
+                                <div class="form-line">
+                                    <input id="descripcion" name="Descripcion" type="text" class="form-control txta-own" >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                             <label>Tipo de Dispositivo</label>
+                             <select id="fktipodispositivo" class="form-control" required>
+                                {% for tipo in tiposdispositivos %}
+                                    <option value="{{tipo.id}}">{{tipo.nombre}}</option>
+                                {% end %}
+                             </select>
+
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Condominio</label>
+                             <select id="fkcondominio" class="form-control" required>
+                                {% for con in condominios %}
+                                    <option value="{{con.id}}">{{con.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div id="div_cerradura" class="row clearfix" hidden>
+                        <div class="col-sm-12">
+                            <label>Cerraduras</label>
+                        </div>
+
+                    </div>
+                    </br>
+                    <div id="div_cerradura_titulo" class="row clearfix" hidden>
+                        <div class="col-sm-1">
+                            <label>Numero</label>
+                        </div>
+                         <div class="col-sm-4">
+                            <label>Nombre</label>
+                        </div>
+                        <div class="col-sm-4">
+                             <label>Tipos de Entrada</label>
+                        </div>
+                    </div>
+                    <div id="div_cerradura1"  class="row clearfix" hidden>
+                        <div class="col-sm-1" hidden>
+                                <div class="form-line">
+                                    <input id="id1" name="Id" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+                                <div class="form-line">
+                                    <input id="numero1" name="Numero" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                         <div class="col-sm-4">
+                                <div class="form-line">
+                                    <input id="nombre1" name="Nombre" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                             <select id="fkentrada1" class="form-control cerraduras">
+                                {% for ent in entradas %}
+                                    <option value="{{ent.id}}">{{ent.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+                         <div class="col-md-2" hidden>
+                            <input id="b_1" type="checkbox" class="regular-checkbox big-checkbox cerraduras" >
+                            <label for="b_1"></label>
+                         </div>
+                        <div id="div_abrir1" class="col-md-2" >
+                            <button id="abrir1" type="button" class="btn bg-indigo waves-effect waves-light"
+                                    title="Abrir Cerradura">Abrir <i class="material-icons">lock_open</i></button>
+                            </br>
+                        </div>
+
+
+                    </div>
+                    </br>
+                    <div id="div_cerradura2" class="row clearfix" hidden>
+                        <div class="col-sm-1" hidden>
+                                <div class="form-line">
+                                    <input id="id2" name="Id2" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+                                <div class="form-line">
+                                    <input id="numero2" name="Numero2" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                         <div class="col-sm-4">
+                                <div class="form-line">
+                                    <input id="nombre2" name="Nombre2" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                             <select id="fkentrada2" class="form-control cerraduras">
+                                {% for ent in entradas %}
+                                    <option value="{{ent.id}}">{{ent.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+                         <div class="col-md-2" hidden>
+                            <input id="b_2" type="checkbox" class="regular-checkbox big-checkbox cerraduras" >
+                            <label for="b_2"></label>
+                         </div>
+                        <div id="div_abrir2" class="col-md-2" >
+                            <button id="abrir2" type="button" class="btn bg-indigo waves-effect waves-light"
+                                    title="Abrir Cerradura">Abrir <i class="material-icons">lock_open</i></button>
+                            </br>
+                        </div>
+                    </div>
+                    </br>
+                    <div id="div_cerradura3" class="row clearfix" hidden>
+                        <div class="col-sm-1" hidden>
+                                <div class="form-line">
+                                    <input id="id3" name="Id3" type="text" class="form-control txta-own cerraduras"  >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+                                <div class="form-line">
+                                    <input id="numero3" name="Numero3" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                         <div class="col-sm-4">
+                                <div class="form-line">
+                                    <input id="nombre3" name="Nombre3" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                             <select id="fkentrada3" class="form-control cerraduras">
+                                {% for ent in entradas %}
+                                    <option value="{{ent.id}}">{{ent.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+                         <div class="col-md-2" hidden>
+                            <input id="b_3" type="checkbox" class="regular-checkbox big-checkbox cerraduras" >
+                            <label for="b_3"></label>
+                         </div>
+                        <div id="div_abrir3" class="col-md-2" >
+                            <button id="abrir3" type="button" class="btn bg-indigo waves-effect waves-light"
+                                    title="Abrir Cerradura">Abrir <i class="material-icons">lock_open</i></button>
+                            </br>
+                        </div>
+                    </div>
+                    </br>
+                    <div id="div_cerradura4" class="row clearfix" hidden>
+                        <div class="col-sm-1"hidden>
+                                <div class="form-line">
+                                    <input id="id4" name="Id4" type="text" class="form-control txta-own cerraduras"  >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+                                <div class="form-line">
+                                    <input id="numero4" name="Numero4" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                         <div class="col-sm-4">
+                                <div class="form-line">
+                                    <input id="nombre4" name="Nombre4" type="text" class="form-control txta-own cerraduras" >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                             <select id="fkentrada4" class="form-control cerraduras">
+                                {% for ent in entradas %}
+                                    <option value="{{ent.id}}">{{ent.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+                        <div class="col-md-2" hidden>
+                            <input id="b_4" type="checkbox" class="regular-checkbox big-checkbox cerraduras" >
+                            <label for="b_4"></label>
+                         </div>
+                        <div id="div_abrir4" class="col-md-2" >
+                            <button id="abrir4" type="button" class="btn bg-indigo waves-effect waves-light"
+                                    title="Abrir Cerradura">Abrir <i class="material-icons">lock_open</i></button>
+                            </br>
+                        </div>
+                    </div>
+                    </br>
+                   <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <label>Conexión Servidor Sdk</label>
+                            <div id="interpretes" class="box-body">
+                                <div id="interpretes_div" class="clearfix">
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                {% if 'dispositivo_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'dispositivo_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

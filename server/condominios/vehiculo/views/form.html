@@ -1,0 +1,95 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="vehiculo_tittle" class="modal-title">Ingreso de Modelo</h3>
+                <h4 id="vehiculo_enable" class=""></h4>
+            </div>
+
+            <div class="modal-body">
+                <div id="vehiculo_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">Marca ID</label>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>Placa</label>
+                                <div class="form-line">
+                                    <input id="placa" name="Placa" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>Color</label>
+                                <div class="form-line">
+                                    <input id="color" name="Color" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>Tipo</label>
+                             <select id="tipo" class="form-control" required>
+                                 <option value="AUTO">AUTO</option>
+                                 <option value="CAMIONETA">CAMIONETA</option>
+                                 <option value="VAGONETA">VAGONETA</option>
+                                 <option value="JEEP">JEEP</option>
+                                 <option value="CAMION">CAMION</option>
+                                 <option value="MOTOCICLETA">MOTOCICLETA</option>
+                                 <option value="MOTO">MOTO</option>
+                                 </select>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>Marca</label>
+                             <select id="fkmarca" class="form-control" required>
+                                {% for mar in marcas %}
+                                    <option value="{{mar.id}}">{{mar.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <label>Modelo</label>
+                             <select id="fkmodelo" class="form-control">
+
+                             </select>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                </div>
+
+                <div class="modal-footer">
+                {% if 'vehiculo_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'vehiculo_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
