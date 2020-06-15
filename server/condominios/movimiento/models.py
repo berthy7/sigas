@@ -9,7 +9,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Movimiento(Serializable, Base):
-    way = {'invitacion': {},'invitado': {},'conductor': {},'tipodocumento': {},'vehiculo': {'marca': {},'modelo': {}},'tipopase': {},'autorizacion': {},'domicilio': {},'areasocial': {},'nropase': {}}
+    way = {'invitacion': {},'invitado': {},'conductor': {},'tipodocumento': {},'tipodocumento_conductor': {},'vehiculo': {'marca': {},'modelo': {}},'tipopase': {},'autorizacion': {},'domicilio': {},'areasocial': {},'nropase': {}}
 
     __tablename__ = 'movimiento'
 
@@ -33,6 +33,7 @@ class Movimiento(Serializable, Base):
     tipo = Column(String(50), nullable=False) #tipo = Vehicular, Peatonal,
 
     cantpasajeros = Column(Integer, nullable=True)
+    fktipodocumento_conductor = Column(Integer, ForeignKey('tipo_documento.id'), nullable=True)
     fkconductor = Column(Integer, ForeignKey('invitado.id'), nullable=True)
 
     estado = Column(Boolean, default=True)
@@ -41,7 +42,8 @@ class Movimiento(Serializable, Base):
     invitado = relationship('Invitado', foreign_keys=[fkinvitado])
     conductor = relationship('Invitado', foreign_keys=[fkconductor])
 
-    tipodocumento = relationship('Tipodocumento')
+    tipodocumento_conductor = relationship('Tipodocumento', foreign_keys=[fktipodocumento_conductor])
+    tipodocumento = relationship('Tipodocumento', foreign_keys=[fktipodocumento])
     vehiculo = relationship('Vehiculo')
     tipopase = relationship('Tipopase')
     autorizacion = relationship('Autorizacion')

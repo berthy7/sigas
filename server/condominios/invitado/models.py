@@ -35,7 +35,23 @@ class Invitado(Serializable, Base):
         lista_vehiculos = list()
 
         for v in self.vehiculos:
-            lista_vehiculos.append(dict(id=v.id,placa=v.placa, tipo=v.tipo, color=v.color,fkmarca=v.fkmarca, nombremarca=v.marca.nombre,fkmodelo=v.fkmodelo,nombremodelo=v.modelo.nombre,controlacceso=v.controlacceso))
+            if v.fknropase:
+                fknropase = v.fknropase
+                nropase = v.nropase.tarjeta
+            else:
+                fknropase = None
+                nropase = ""
+
+            if v.fkmodelo:
+                fkmodelo = v.fkmodelo
+                nombremodelo = v.modelo.nombre
+            else:
+                fkmodelo = None
+                nombremodelo = ""
+
+                lista_vehiculos.append(dict(id=v.id, placa=v.placa, tipo=v.tipo, color=v.color, fkmarca=v.fkmarca,
+                                            nombremarca=v.marca.nombre, fkmodelo=fkmodelo, nombremodelo=nombremodelo,
+                                            fknropase=fknropase, nropase=nropase))
 
         for v in self.amistad:
             aux['fkresidente'] = v.fkresidente

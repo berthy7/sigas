@@ -75,6 +75,8 @@ class VehiculoManager(SuperManager):
         return a.id
 
     def registrar_vehiculo_invitado(self, diccionario,idinvitado):
+        if diccionario['fkmodelo'] == "":
+            diccionario['fkmodelo'] = None
 
         if diccionario['id'] !="":
             respuesta = VehiculoManager(self.db).consultar_vehiculo_invitado(diccionario['id'],idinvitado)

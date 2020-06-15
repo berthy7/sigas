@@ -77,7 +77,11 @@ class ApiCondominioController(ApiController):
         username = data['username']
         password = data['password']
         ip = data['ip']
+        print(username)
+        print(password)
+        print(ip)
         user = LoginManager().login(username, password)
+        print(user)
 
         if user:
             fecha = self.fecha_actual()
@@ -236,7 +240,11 @@ class ApiCondominioController(ApiController):
             arraT['objeto'] = VehiculoManager(self.db).listar_todo()
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
+                obj_dict['residente'] = None
+                obj_dict['nropase'] =  None
+
                 resp.append(obj_dict)
+
             self.db.close()
 
             self.respond(response=resp, success=True, message="Vehiculos recuperados correctamente.")
@@ -674,7 +682,6 @@ class ApiCondominioController(ApiController):
                 resp.append(obj_dict)
 
             self.db.close()
-            print("respuesta")
 
             self.respond(response=resp,success=True, message="nuevos accesos recuperados correctamente.")
         except Exception as e:
@@ -765,7 +772,6 @@ class ApiCondominioController(ApiController):
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
-
 
 
 

@@ -59,22 +59,26 @@ class MovimientoManager(SuperManager):
 
     def insert(self, diccionary):
 
+        diccionary['cantpasajeros'] = int(diccionary['cantpasajeros'])
+
+        diccionary['placa'] = diccionary['placa'].replace(" ", "")
+
         if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-            print("invitado == 0")
             invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
             diccionary['fkinvitado'] = invitado.id
         else:
-            print("invitado != 0")
             invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
 
-        if diccionary['fkconductor']:
-            if diccionary['fkconductor'] == "" or diccionary['fkconductor'] == "0":
+
+        if diccionary['fkconductor'] == "" or diccionary['fkconductor'] == "0":
+            if diccionary['nombre_conductor'] != "":
                 conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
                 diccionary['fkconductor'] = conductor.id
             else:
-                conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
+                diccionary['fkconductor'] = None
         else:
-            diccionary['fkconductor'] = None
+            conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
+
 
         if diccionary['fkvehiculo'] == "" or diccionary['fkvehiculo'] == "0":
             vehiculo = VehiculoManager(self.db).registrar_vehiculo(diccionary)
@@ -82,6 +86,12 @@ class MovimientoManager(SuperManager):
 
         if diccionary['fkinvitacion'] == "":
             diccionary['fkinvitacion'] = None
+
+        if diccionary['fkinvitacion'] == "":
+            diccionary['fkinvitacion'] = None
+
+        if diccionary['fktipodocumento_conductor'] == "":
+            diccionary['fktipodocumento_conductor'] = None
 
         if diccionary['fkdomicilio'] == "":
             diccionary['fkdomicilio'] = None
@@ -136,6 +146,8 @@ class MovimientoManager(SuperManager):
     def salida(self, id, user, ip):
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
         fecha = BitacoraManager(self.db).fecha_actual()
+        if x.fechai is None:
+            x.fechai = x.fechar
         x.fechaf = fecha
 
 

@@ -72,6 +72,9 @@ class Movimiento_pManager(SuperManager):
         if diccionary['fkareasocial'] == "":
             diccionary['fkareasocial'] = None
 
+        if diccionary['fknropase'] == "":
+            diccionary['fknropase'] = None
+
         fecha = BitacoraManager(self.db).fecha_actual()
 
         diccionary['tipo'] = "Peatonal"

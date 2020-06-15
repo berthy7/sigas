@@ -4,6 +4,7 @@ var refrescar = false;
 $(document).ready(function () {
 
     auxiliar_method()
+    verificar_qr()
 
 });
 
@@ -21,6 +22,66 @@ function auxiliar_method() {
         }
     }, 5000);
 }
+
+function verificar_qr() {
+    //main_method()
+    //setTimeout(auxiliar_method, 10000)
+    setInterval(function(){
+        if($('#codigoautorizacion').val() != ""){
+            obj = JSON.stringify({
+                'codigoautorizacion': $('#codigoautorizacion').val()
+            })
+            ruta = "evento_validar_invitacion";
+
+            $.ajax({
+                method: "POST",
+                url: ruta,
+                data: {_xsrf: getCookie("_xsrf"), object: obj},
+                async: false
+            }).done(function (response) {
+                response = JSON.parse(response)
+
+                if (response.success) {
+                    $('#fkinvitacion').val(response.response.id)
+                    $('#fkinvitado').selectpicker('refresh')
+                    $('#fkinvitado').val(response.response.fkinvitado)
+                    $('#fkinvitado').selectpicker('refresh')
+                    cargar_invitado(response.response.fkinvitado)
+
+                    $('#fkdomicilio').val(response.response.evento.fkdomicilio)
+                    $('#fkdomicilio').selectpicker('refresh')
+
+                    $('#fkareasocial').val(response.response.evento.fkareasocial)
+                    $('#fkareasocial').selectpicker('refresh')
+
+                    $('#fktipopase').val(response.response.fktipopase)
+                    $('#fktipopase').selectpicker('refresh')
+
+                    $('#fkautorizacion').val(1)
+                    $('#fkautorizacion').selectpicker('refresh')
+
+
+                    document.getElementById("imagen_mensaje").src = response.message;
+
+                } else {
+                    document.getElementById("imagen_mensaje").src = response.message;
+
+                    limpiar_formulario()
+
+                }
+
+            })
+            validationInputSelects("form")
+            $('#form').animate({scrollTop: 0}, 'slow');
+        }
+
+
+
+
+
+    }, 1000);
+}
+
 
 $(document).ajaxStart(function () { });
 
@@ -187,7 +248,7 @@ function cargar_tabla(data){
 
 
         },
-        "order": [[ 1, "desc" ]],
+        "order": [[ 0, "desc" ]],
         language : {
             'url': '/resources/js/spanish.json',
         },
@@ -344,6 +405,12 @@ function actualizar_tabla(response){
 
 
 }
+
+$('#codigoautorizacion').change(function () {
+    console.log("cambio input")
+
+
+});
 
 
 $('#fkinvitado').change(function () {
@@ -637,7 +704,7 @@ $('#new').click(function () {
     $('#placa').val('')
     $('#tipo').val('')
     $('#tipo').selectpicker("refresh")
-    $('#cantpasajeros').val('')
+    $('#cantpasajeros').val('1')
     $('#color').val('')
     $('#fkmarca').val('')
     $('#fkmarca').selectpicker("refresh")
@@ -674,7 +741,7 @@ $('#new').click(function () {
     $('#insert').show()
     $('#update').hide()
     $('#form').modal('show')
-    document.getElementById("codigoautorizacion").focus();
+
 })
 
 $('#insert').click(function () {
@@ -723,6 +790,7 @@ $('#insert').click(function () {
                     'observacion': $('#observacion').val(),
 
                     'fkconductor': $('#fkconductor').val(),
+                    'fktipodocumento_conductor': $('#fktipodocumento_conductor').val(),
                     'nombre_conductor': $('#nombre_conductor').val(),
                     'apellidop_conductor': $('#apellidop_conductor').val(),
                     'apellidom_conductor': $('#apellidom_conductor').val(),
@@ -792,6 +860,7 @@ $('#update').click(function () {
         objeto = JSON.stringify({
             'id': parseInt($('#id').val()),
             'fktipodocumento': $('#fktipodocumento').val(),
+            'fktipodocumento_conductor': $('#fktipodocumento_conductor').val(),
             'fkinvitado': $('#fkinvitado').val(),
             'nombrecompleto': $('#nombrecompleto').val(),
             'ci': $('#ci').val(),

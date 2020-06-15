@@ -26,6 +26,7 @@ class Condominio(Serializable, Base):
     estado = Column(Boolean, default=True)
     ip_publica = Column(String(100), nullable=True, default="")
     ip_privada = Column(String(100), nullable=True, default="")
+    puerto = Column(String(100), nullable=True, default="")
 
 
     nropase = relationship('CondominioPases')

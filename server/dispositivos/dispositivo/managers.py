@@ -33,7 +33,7 @@ class DispositivoManager(SuperManager):
 
     def listar_todo_cant_marcaciones(self,x):
         id_interprete = x['idinterprete']
-        print(str(id_interprete))
+        # print(str(id_interprete))
 
         dispositivos = self.db.query(Dispositivo).join(Dispositivointerprete)\
             .filter(Dispositivo.estado == True) \
