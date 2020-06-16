@@ -585,6 +585,39 @@ $('#fkvehiculo').change(function () {
     }
 });
 
+$('#fktipopase').change(function () {
+    
+    obj = JSON.stringify({
+        'tipopase': $( "#fktipopase option:selected" ).text(),
+        '_xsrf': getCookie("_xsrf")
+    })
+
+    ruta = "nropase_listar_tipo";
+    //data.append('object', obj)
+    //data.append('_xsrf',getCookie("_xsrf"))
+
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: false
+    }).done(function (response) {
+        response = JSON.parse(response)
+
+        $('#nropase').html('');
+        var select = document.getElementById("nropase")
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+            var option = document.createElement("OPTION");
+            option.innerHTML = response['response'][i]['numero'] +" - "+response['response'][i]['tipo'];
+            option.value = response['response'][i]['id'];
+            select.appendChild(option);
+        }
+        $('#nropase').selectpicker('refresh');
+
+    })
+        
+});
+
 $('#fkmarca').change(function () {
 
     if(parseInt(JSON.parse($('#fkmarca').val())) != 0){

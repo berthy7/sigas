@@ -35,6 +35,45 @@ class NropaseManager(SuperManager):
         x = self.db.query(self.entity).join(CondominioPases).filter(CondominioPases.fkcondominio == idcondominio).filter(self.entity.estado == True).all()
         return x
 
+
+    def listar_x_tipo(self, usuario,tipopase):
+
+
+        if usuario.sigas:
+
+            if tipopase == "Proveedor":
+                return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Visita")).filter(
+                    self.entity.situacion != "Ocupado").order_by(
+                    self.entity.numero.asc()).all()
+            else:
+                return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Proveedor")).filter(
+                    self.entity.situacion != "Ocupado").order_by(
+                    self.entity.numero.asc()).all()
+
+
+        if usuario.rol.nombre != "RESIDENTE":
+
+            if tipopase == "Proveedor":
+
+                return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(
+                    Condominio.id == usuario.fkcondominio).filter(
+                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Visita")).filter(Nropase.estado == True).filter(
+                    self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+            else:
+                return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(
+                    Condominio.id == usuario.fkcondominio).filter(self.entity.tipo != tipopase).filter(
+                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Proveedor")).filter(Nropase.estado == True).filter(
+                    self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+
+
+        else:
+            return None
+
+
+
+
     def listar_numero_pases(self,usuario):
 
         if usuario.sigas:

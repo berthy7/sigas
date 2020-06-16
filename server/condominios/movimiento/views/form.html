@@ -117,9 +117,7 @@
                             <div class="col-sm-6">
                                <label>Nro. de Pases</label>
                                  <select id="nropase" class="form-control" required>
-                                    {% for nro in nropases %}
-                                        <option value="{{nro.id}}">{{nro.numero}} - {{nro.tipo}}</option>
-                                    {% end %}
+
                                  </select>
                                 </br>
                                 </br>
@@ -320,7 +318,7 @@
                                 </br>
                             </div>
                             <div class="col-sm-6">
-                               <label for="color" class="form-label" >Cant. de Pasajeros</label>
+                               <label  class="form-label" >Cant. de Pasajeros</label>
                                     <div class="form-line">
                                         <input id="cantpasajeros" name="Cantidad de pasajeros" type="number" class="form-control text" required>
                                     </div>
@@ -358,11 +356,14 @@
                                      <option value="Amarillo">Amarillo</option>
                                      <option value="Azul">Azul</option>
                                      <option value="Blanco">Blanco</option>
+                                     <option value="Cafe">Cafe</option>
+                                     <option value="Celeste">Celeste</option>
                                      <option value="Cobre">Cobre</option>
                                      <option value="Naranja">Naranja</option>
                                      <option value="Negro">Negro</option>
                                      <option value="Plateado">Plateado</option>
                                      <option value="Rojo">Rojo</option>
+                                     <option value="Rosado">Rosado</option>
                                      <option value="Verde">Verde</option>
                                  </select>
 

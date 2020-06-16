@@ -22,6 +22,7 @@ class NropaseController(CrudController):
         '/nropase_importar': {'POST': 'importar'},
         '/nropase_sincronizacion': {'POST': 'sincronizacion'},
         '/nropase_listar_condominio': {'POST': 'listar_x_condominio'},
+        '/nropase_listar_tipo': {'POST': 'listar_x_tipo'},
     }
 
 
@@ -92,5 +93,16 @@ class NropaseController(CrudController):
         data = json.loads(self.get_argument("object"))
         arraT = self.manager(self.db).get_page(1, 10, None, None, True)
         arraT['objeto'] = NropaseManager(self.db).listar_x_condominio(data['idcondominio'])
+        self.respond([item.get_dict() for item in arraT['objeto']])
+        self.db.close()
+
+
+    def listar_x_tipo(self):
+        self.set_session()
+        us = self.get_user()
+
+        data = json.loads(self.get_argument("object"))
+        arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+        arraT['objeto'] = NropaseManager(self.db).listar_x_tipo(us,data['tipopase'])
         self.respond([item.get_dict() for item in arraT['objeto']])
         self.db.close()
