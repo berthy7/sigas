@@ -41,7 +41,7 @@ class NropaseManager(SuperManager):
 
         if usuario.sigas:
 
-            if tipopase == "Proveedor":
+            if tipopase == "Proveedor" or tipopase == "Taxi":
                 return self.db.query(self.entity).filter(self.entity.estado == True).filter(
                     and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Visita")).filter(
                     self.entity.situacion != "Ocupado").order_by(
