@@ -60,6 +60,8 @@ function verificar_qr() {
                     $('#fkautorizacion').val(1)
                     $('#fkautorizacion').selectpicker('refresh')
 
+                    cargar_nropase($( "#fktipopase option:selected" ).text())
+
 
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
@@ -377,6 +379,39 @@ $('#fktipopase').change(function () {
     })
 
 });
+
+function cargar_nropase(tipopase) {
+
+        obj = JSON.stringify({
+        'tipopase': tipopase,
+        '_xsrf': getCookie("_xsrf")
+    })
+
+    ruta = "nropase_listar_tipo";
+    //data.append('object', obj)
+    //data.append('_xsrf',getCookie("_xsrf"))
+
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: false
+    }).done(function (response) {
+        response = JSON.parse(response)
+
+        $('#nropase').html('');
+        var select = document.getElementById("nropase")
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+            var option = document.createElement("OPTION");
+            option.innerHTML = response['response'][i]['numero'] +" - "+response['response'][i]['tipo'];
+            option.value = response['response'][i]['id'];
+            select.appendChild(option);
+        }
+        $('#nropase').selectpicker('refresh');
+
+    })
+
+}
 
 $('#fkinvitado').change(function () {
     if (parseInt(JSON.parse($('#fkinvitado').val())) != 0){
