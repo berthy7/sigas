@@ -62,6 +62,7 @@ function verificar_qr() {
 
 
                     document.getElementById("imagen_mensaje").src = response.message;
+                    $('#codigoautorizacion').val('')
 
                 } else {
                     document.getElementById("imagen_mensaje").src = response.message;

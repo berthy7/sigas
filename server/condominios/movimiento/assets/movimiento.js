@@ -62,6 +62,7 @@ function verificar_qr() {
 
 
                     document.getElementById("imagen_mensaje").src = response.message;
+                    $('#codigoautorizacion').val('')
 
                 } else {
                     document.getElementById("imagen_mensaje").src = response.message;
@@ -174,6 +175,13 @@ $('#expendido_conductor').selectpicker({
 })
 
 $('#nropase').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+$('#color').selectpicker({
     size: 10,
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar',
@@ -431,6 +439,7 @@ $('#fkinvitado').change(function () {
         $('#tipo').val('')
         $('#tipo').selectpicker('refresh')
         $('#color').val('')
+        $('#color').selectpicker('refresh')
         $('#fkmarca').val('')
         $('#fkmarca').selectpicker('refresh')
         $('#fkmodelo').val('')
@@ -568,6 +577,7 @@ $('#fkvehiculo').change(function () {
         $('#tipo').val('')
         $('#tipo').selectpicker('refresh')
         $('#color').val('')
+        $('#color').selectpicker('refresh')
         $('#fkmarca').val('')
         $('#fkmarca').selectpicker('refresh')
         $('#fkmodelo').val('')
@@ -662,6 +672,7 @@ function limpiar_formulario() {
     $('#tipo').val('')
     $('#tipo').selectpicker("refresh")
     $('#color').val('')
+    $('#color').selectpicker("refresh")
     $('#fkmarca').val('')
     $('#fkmarca').selectpicker("refresh")
     $('#fkmodelo').val('')
@@ -706,6 +717,7 @@ $('#new').click(function () {
     $('#tipo').selectpicker("refresh")
     $('#cantpasajeros').val('1')
     $('#color').val('')
+    $('#color').selectpicker("refresh")
     $('#fkmarca').val('')
     $('#fkmarca').selectpicker("refresh")
     $('#fkmodelo').val('')
