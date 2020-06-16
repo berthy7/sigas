@@ -18,26 +18,26 @@ class BitacoraManager(SuperManager):
 
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        fecha_str = str(fechaHora)
-        fecha_ = fecha_str[0:19]
-        fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+        # fecha_str = str(fechaHora)
+        # fecha_ = fecha_str[0:19]
+        # fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+        #
+        # timezone = pytz.timezone('America/La_Paz')
+        # fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
 
-        timezone = pytz.timezone('America/La_Paz')
-        fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
-
-        return fecha_utc
+        return fechaHora
 
     def fecha(self):
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        fecha_str = str(fechaHora)
-        fecha_ = fecha_str[0:19]
-        fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+        # fecha_str = str(fechaHora)
+        # fecha_ = fecha_str[0:19]
+        # fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+        #
+        # timezone = pytz.timezone('America/La_Paz')
+        # fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
 
-        timezone = pytz.timezone('America/La_Paz')
-        fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
-
-        return fecha_utc
+        return fechaHora
 
     def obtener_dia(self,fecha):
 
