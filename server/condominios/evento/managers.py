@@ -352,8 +352,8 @@ class InvitacionManager(SuperManager):
         self.db.merge(x)
         self.db.commit()
 
-        diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
-        ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
+        # diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+        # ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         return mensaje
 
