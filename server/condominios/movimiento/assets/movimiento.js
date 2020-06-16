@@ -40,6 +40,7 @@ function verificar_qr() {
                 async: false
             }).done(function (response) {
                 response = JSON.parse(response)
+                console.log("tipopase:" + response.response.fktipopase)
 
                 if (response.success) {
                     $('#fkinvitacion').val(response.response.id)
