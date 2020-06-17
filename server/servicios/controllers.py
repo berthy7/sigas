@@ -532,6 +532,8 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
+            print("Objeto Ingreso Vehicular: "+ data)
+
             resp = MovimientoManager(self.db).insert(data)
             objeto = resp.get_dict()
             self.respond(response=objeto, success=True, message='Insertado correctamente.')
@@ -545,6 +547,7 @@ class ApiCondominioController(ApiController):
             try:
                 self.set_session()
                 data = json.loads(self.request.body.decode('utf-8'))
+                print("Objeto Ingreso Peatonal: " + data)
 
                 resp = Movimiento_pManager(self.db).insert(data)
                 objeto = resp.get_dict()
