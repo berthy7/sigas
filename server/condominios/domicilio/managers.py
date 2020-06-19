@@ -30,10 +30,10 @@ class DomicilioManager(SuperManager):
     def listar_domicilios(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.tipo.desc(),self.entity.ubicacion.asc()).all()
+            return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.ubicacion.asc(),self.entity.numero.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(self.entity).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.estado == True).order_by(self.entity.tipo.desc(),self.entity.ubicacion.asc()).all()
+            return self.db.query(self.entity).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.estado == True).order_by(self.entity.ubicacion.asc(),self.entity.numero.asc()).all()
 
         else:
             return None

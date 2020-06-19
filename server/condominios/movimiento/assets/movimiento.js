@@ -78,13 +78,8 @@ function verificar_qr() {
             $('#form').animate({scrollTop: 0}, 'slow');
         }
 
-
-
-
-
     }, 1000);
 }
-
 
 $(document).ajaxStart(function () { });
 
@@ -94,7 +89,6 @@ $(document).ajaxStop(function () {
 
 var fechahoy = new Date();
 var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
-
 
 document.getElementById("fechai").value=hoy
 document.getElementById("fechaf").value=hoy
@@ -222,7 +216,6 @@ $('#switch_refrescar').change(function() {
     }
 
 })
-
 
 function cargar_tabla(data){
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
@@ -421,7 +414,6 @@ $('#codigoautorizacion').change(function () {
 
 
 });
-
 
 $('#fkinvitado').change(function () {
     if (parseInt(JSON.parse($('#fkinvitado').val())) != 0){
@@ -1102,7 +1094,6 @@ $('#filtrar').click(function () {
         actualizar_tabla(response)
     })
 });
-
 
 validationKeyup("form")
 validationSelectChange("form")
