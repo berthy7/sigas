@@ -346,7 +346,6 @@ class ResidenteManager(SuperManager):
         c = 0
         for dataper in self.db.query(Residente).filter(Residente.estado == True).filter(Residente.id == id):
             #list[c] = dict(id=dataper.ValorParametro.id, nombre=dataper.ValorParametro.nombre, valor=dataper.ValorParametro.valor)
-            print(dataper)
             c = c + 1
         return list
 

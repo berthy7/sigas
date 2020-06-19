@@ -69,7 +69,6 @@ class SuperController(RequestHandler):
         """Retorna al cliente invocador un respuesta estándar serializada con json."""
         if not response and not success:
             response = traceback.format_exc()
-            print(response)
         self.write(json.dumps({"response": response, 'success': success, 'message': message}))
 
     def get(self):

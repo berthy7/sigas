@@ -101,7 +101,6 @@ class UsuarioManager(SuperManager):
         if u:
             ap_user = u.apellido
             result = nameprev.index(ap_user)
-            print(result)
             u.correo = emailnew
 
     def delete_user(self, id, enable, Usuariocr, ip):

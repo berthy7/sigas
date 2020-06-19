@@ -27,13 +27,10 @@ class EventoManager(SuperManager):
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
             Evento.fechaf >= fechahoy).filter(Evento.situacion != "Acceso").filter(Evento.situacion != "Denegado").all()
 
-        print(str(len(x)))
-
         for invi in x:
             respuesta = EventoManager(self.db).validar_invitacion(invi.codigoautorizacion)
 
             if respuesta:
-                print("entro")
                 diccionary = dict(codigo=invi.id, tarjeta=invi.codigoautorizacion, situacion="Acceso")
 
                 ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
@@ -127,6 +124,7 @@ class EventoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().insert(objeto)
+        print("registro evento: " + str(a.id))
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Evento.", fecha=fecha,tabla="evento", identificador=a.id)
         super().insert(b)
@@ -166,6 +164,7 @@ class EventoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().insert(objeto)
+        print("registro invitacion rapida: " + str(a.id))
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Invitacion rapida.", fecha=fecha, tabla="evento",
                      identificador=a.id)
@@ -330,6 +329,7 @@ class InvitacionManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().insert(objeto)
+        print("registro invitacion: " + str(a.id))
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Invitacion.", fecha=fecha,tabla="invitacion", identificador=a.id)
         super().insert(b)

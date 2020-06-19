@@ -119,6 +119,7 @@ class MovimientoManager(SuperManager):
         objeto = MovimientoManager(self.db).entity(**diccionary)
 
         a = super().insert(objeto)
+        print("registro ingreso Vehicular: " +str(a.id))
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento.", fecha=fecha,tabla="movimiento", identificador=a.id)
         super().insert(b)
 

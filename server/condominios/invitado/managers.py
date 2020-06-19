@@ -50,6 +50,7 @@ class InvitadoManager(SuperManager):
             objeto.vehiculos = []
 
             a = super().insert(objeto)
+            print("registro contacto: " + str(a.id))
             b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Invitado.", fecha=fecha,tabla="invitado", identificador=a.id)
             super().insert(b)
         else:
@@ -89,8 +90,6 @@ class InvitadoManager(SuperManager):
 
 
     def registrar_invitado(self, diccionario):
-        print("fkinvitado : "+ diccionario['fkinvitado'])
-        print("fkinvitado : "+ diccionario['ci'])
         usuario = UsuarioManager(self.db).get_by_pass(diccionario['user'])
         nombre = diccionario['nombre']
         apellidop = diccionario['apellidop']
@@ -143,7 +142,6 @@ class InvitadoManager(SuperManager):
         return a
 
     def actualizar_invitado(self, diccionario):
-        print("actualizar invitado")
 
         id = diccionario['fkinvitado']
         nombre = diccionario['nombre']
@@ -152,7 +150,6 @@ class InvitadoManager(SuperManager):
         ci = diccionario['ci']
         expendido = diccionario['expendido']
 
-        print(apellidop)
 
         invitado = InvitadoManager(self.db).obtener_x_id(id)
 
@@ -162,7 +159,6 @@ class InvitadoManager(SuperManager):
         invitado.ci = ci
         invitado.expendido = expendido
 
-        print(invitado.apellidop)
 
         super().update(invitado)
 
