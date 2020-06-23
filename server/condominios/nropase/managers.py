@@ -55,7 +55,7 @@ class NropaseManager(SuperManager):
 
         if usuario.rol.nombre != "RESIDENTE":
 
-            if tipopase == "Proveedor":
+            if tipopase == "Proveedor" or tipopase == "Taxi":
 
                 return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(
                     Condominio.id == usuario.fkcondominio).filter(
