@@ -67,11 +67,8 @@ class NropaseManager(SuperManager):
                     and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Proveedor")).filter(Nropase.estado == True).filter(
                     self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
-
         else:
             return None
-
-
 
 
     def listar_numero_pases(self,usuario):

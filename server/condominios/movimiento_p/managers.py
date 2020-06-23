@@ -32,7 +32,7 @@ class Movimiento_pManager(SuperManager):
 
     def listar_movimiento_dia(self, usuario):
 
-        fecha = fecha_zona
+        fecha = datetime.now(pytz.timezone('America/La_Paz'))
         fechahoy = str(fecha.day) + "/" + str(fecha.month) + "/" + str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
 

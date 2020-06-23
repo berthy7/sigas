@@ -64,7 +64,7 @@ class RegistrosManager(SuperManager):
 
     def listar_todo_diccionario(self):
 
-        fecha = fecha_zona
+        fecha = datetime.now(pytz.timezone('America/La_Paz'))
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
 
