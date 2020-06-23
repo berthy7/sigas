@@ -702,6 +702,8 @@ function cargar_vehiculo(id) {
     }).done(function (response) {
         response = JSON.parse(response)
 
+        console.log(response)
+
         // $('#cantpasajeros').val(response.response.cantpasajeros)
         $('#placa').val(response.response.placa)
         $('#tipo').val(response.response.tipo)
