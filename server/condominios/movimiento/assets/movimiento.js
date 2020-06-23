@@ -707,6 +707,7 @@ function cargar_vehiculo(id) {
         $('#tipo').val(response.response.tipo)
         $('#tipo').selectpicker('refresh')
         $('#color').val(response.response.color)
+        $('#tipo').selectpicker('refresh')
         $('#fkmarca').val(response.response.fkmarca)
         $('#fkmarca').selectpicker('refresh')
         $('#fkmodelo').val(response.response.fkmodelo)
