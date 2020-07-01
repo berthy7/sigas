@@ -7,14 +7,14 @@ from server.database.serializable import Serializable
 from sqlalchemy.ext.hybrid import hybrid_property
 
 class Vehiculo(Serializable, Base):
-    way = {'residente': {},'invitado': {},'marca': {},'modelo': {},'nropase': {}}
+    way = {'residente': {},'invitado': {},'tipo': {},'color': {},'marca': {},'modelo': {},'nropase': {}}
 
     __tablename__ = 'vehiculo'
 
     id = Column(Integer, primary_key=True)
     placa = Column(String(100), nullable=False)
-    tipo = Column(String(100), nullable=False)
-    color = Column(String(100), nullable=False)
+    fktipo = Column(Integer, ForeignKey('tipo_vehiculo.id'), nullable=True)
+    fkcolor = Column(Integer, ForeignKey('color.id'), nullable=True)
     fkmarca = Column(Integer, ForeignKey('marca.id'), nullable=True)
     fkmodelo = Column(Integer, ForeignKey('modelo.id'), nullable=True)
     fkresidente = Column(Integer, ForeignKey('residente.id'), nullable=True)
@@ -24,6 +24,8 @@ class Vehiculo(Serializable, Base):
 
     residente = relationship('Residente')
     invitado = relationship('Invitado')
+    tipo = relationship('Tipovehiculo')
+    color = relationship('Color')
     marca = relationship('Marca')
     modelo = relationship('Modelo')
     nropase = relationship('Nropase')
@@ -33,6 +35,26 @@ class Vehiculo(Serializable, Base):
 
         return aux
 
+
+class Tipovehiculo(Serializable, Base):
+    way = {}
+
+    __tablename__ = 'tipo_vehiculo'
+
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), nullable=False)
+
+    estado = Column(Boolean, default=True)
+
+class Color(Serializable, Base):
+    way = {}
+
+    __tablename__ = 'color'
+
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(100), nullable=False)
+
+    estado = Column(Boolean, default=True)
 
 
 

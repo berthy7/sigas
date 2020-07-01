@@ -63,7 +63,7 @@ class Usuario(Serializable, Base):
 
 
 Acceso = Table('acceso', Base.metadata,
-               Column('id', Integer, Sequence('id'), primary_key=True),
+               Column('id', Integer, primary_key=True),
                Column('fkrol', Integer, ForeignKey('rol.id')),
                Column('fkmodulo', Integer, ForeignKey('modulo.id')))
 
@@ -90,7 +90,7 @@ class ServidorCorreo(Serializable, Base):
 
     __tablename__ = 'servidorCorreo'
 
-    id = Column(Integer, Sequence('id'), primary_key=True)
+    id = Column(Integer, primary_key=True)
     servidor = Column(String(200), nullable=False)
     puerto = Column(String(100), nullable=False)
     correo = Column(String(200), nullable=False)

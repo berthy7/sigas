@@ -158,12 +158,12 @@ class NropaseManager(SuperManager):
 
     def situacion(self, id,situacion):
         x = self.db.query(Nropase).filter(Nropase.id == id).first()
-        if x:
-            x.situacion = situacion
+        if x.tipo != "Excepcion":
+            if x:
+                x.situacion = situacion
 
-
-            self.db.merge(x)
-            self.db.commit()
+                self.db.merge(x)
+                self.db.commit()
 
         return x
 

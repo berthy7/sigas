@@ -1,10 +1,12 @@
 main_route = '/movimiento_p'
 var refrescar = false;
+var sw_visita = false;
 
 $(document).ready(function () {
 
     auxiliar_method()
     verificar_qr()
+    verificar_qr_residente()
 
 });
 
@@ -65,6 +67,70 @@ function verificar_qr() {
 
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
+
+                } else {
+                    document.getElementById("imagen_mensaje").src = response.message;
+
+                    limpiar_formulario()
+
+                }
+
+            })
+            validationInputSelects("form")
+            $('#form').animate({scrollTop: 0}, 'slow');
+        }
+
+    }, 1000);
+}
+
+function verificar_qr_residente() {
+    //main_method()
+    //setTimeout(auxiliar_method, 10000)
+    setInterval(function(){
+        if($('#codigoautorizacion_residente').val() != ""){
+            obj = JSON.stringify({
+                'codigoautorizacion': $('#codigoautorizacion_residente').val()
+            })
+            ruta = "residente_validar_codigo";
+
+            $.ajax({
+                method: "POST",
+                url: ruta,
+                data: {_xsrf: getCookie("_xsrf"), object: obj},
+                async: false
+            }).done(function (response) {
+                response = JSON.parse(response)
+                console.log(response);
+
+                if (response.success) {
+                    $('#show_img').attr('src', response.response.fotoresidente);
+                    $('#show_img').parent().parent().show();
+                    // $('#fkinvitacion').val(response.response.id)
+                    // $('#fkinvitado').selectpicker('refresh')
+                    // $('#fkinvitado').val(response.response.fkinvitado)
+                    // $('#fkinvitado').selectpicker('refresh')
+                    // cargar_invitado(response.response.fkinvitado)
+                    $('#fkautorizacion').val(1)
+                    $('#fkautorizacion').selectpicker('refresh')
+
+                    $('#fkdomicilio').val(response.response.iddomicilio)
+                    $('#fkdomicilio').selectpicker('refresh')
+
+                    cargar_residente(response.response.iddomicilio)
+                    //
+                    $('#fkresidente').val(response.response.idresidente)
+                    $('#fkresidente').selectpicker('refresh')
+                    //
+                    // // $('#fktipopase').val(response.response.fktipopase)
+                    // // $('#fktipopase').selectpicker('refresh')
+                    //
+
+                    //
+                    // cargar_nropase($( "#fktipopase option:selected" ).text())
+
+
+                    document.getElementById("imagen_mensaje").src = response.message;
+                    $('#codigoautorizacion_residente').val('')
 
                 } else {
                     document.getElementById("imagen_mensaje").src = response.message;
@@ -179,6 +245,42 @@ $('#nropase').selectpicker({
     title: 'Seleccione'
 })
 
+$('#switch_visita').change(function() {
+   sw_visita = $(this).prop('checked')
+
+    if(sw_visita){
+
+        $('#div_residente').hide()
+        $('#div_invitacion').show()
+        $('#div_datos_visita').show()
+        $('#nombre').prop("required", true);
+        $('#apellidop').prop("required", true);
+        $('#ci').prop("required", true);
+        $('#fkresidente').removeAttr("required");
+        eraseError('fkresidente')
+        $('#show_img').attr('src', '');
+        $('#show_img').parent().parent().show();
+        
+        
+    }else{
+        $('#div_residente').show()
+        $('#div_invitacion').hide()
+        $('#div_datos_visita').hide()
+        $('#nombre').removeAttr("required");
+        eraseError('nombre')
+        $('#apellidop').removeAttr("required");
+        eraseError('apellidop')
+        $('#ci').removeAttr("required");
+        eraseError('ci')
+
+
+        $('#fkresidente').prop("required", true);
+
+
+    }
+
+})
+
 $('#switch_refrescar').change(function() {
    var sw_refrescar = $(this).prop('checked')
 
@@ -192,9 +294,6 @@ $('#switch_refrescar').change(function() {
     }
 
 })
-
-
-
 
 function cargar_tabla(data){
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
@@ -251,6 +350,8 @@ function actualizar_tabla(response){
     var id
     var fechai
     var fechaf
+    var ci;
+    var nombre;
 
     var destino
     var nropase
@@ -262,7 +363,8 @@ function actualizar_tabla(response){
         if(response['response'][i].fechai){
             fechai= response['response'][i].fechai
         }else{
-            fechai =response['response'][i].fechar
+            // fechai =response['response'][i].fechar
+            fechai = '-----'
         }
 
         if(response['response'][i].fechaf){
@@ -272,6 +374,15 @@ function actualizar_tabla(response){
             fechaf = '-----'
             salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
 
+        }
+
+        if(response['response'][i].fkinvitado != "None"){
+            ci = response['response'][i].invitado.ci,
+            nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
+
+        }else{
+            ci ='Residente'
+            nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
         }
         
         if(response['response'][i].fkdomicilio != "None"){
@@ -293,8 +404,8 @@ function actualizar_tabla(response){
             fechai,
             fechaf,
             response['response'][i].tipodocumento.nombre,
-            response['response'][i].invitado.ci,
-            response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom,
+            ci,
+            nombre,
             destino,
             response['response'][i].autorizacion.nombre,
             nropase,
@@ -431,13 +542,51 @@ $('#fkinvitado').change(function () {
 
 
 $('#fkdomicilio').change(function () {
+    
+    cargar_residente($('#fkdomicilio').val())
 
     $('#fkareasocial').val('')
     $('#fkareasocial').selectpicker('refresh')
 
 });
 
+function cargar_residente(fkdomicilio) {
+
+    obj = JSON.stringify({
+        'fkdomicilio': fkdomicilio,
+        '_xsrf': getCookie("_xsrf")
+    })
+
+    ruta = "domicilio_listar_residente";
+    //data.append('object', obj)
+    //data.append('_xsrf',getCookie("_xsrf"))
+
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: false
+    }).done(function (response) {
+        response = JSON.parse(response)
+        console.log(response)
+
+        $('#fkresidente').html('');
+        var select = document.getElementById("fkresidente")
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+            var option = document.createElement("OPTION");
+            option.innerHTML = response['response'][i]['fullname'];
+            option.value = response['response'][i]['id'];
+            select.appendChild(option);
+        }
+        $('#fkresidente').selectpicker('refresh');
+
+    })
+
+}
+
 $('#fkareasocial').change(function () {
+    
+        cargar_residente('0')
 
         $('#fkdomicilio').val('')
         $('#fkdomicilio').selectpicker('refresh')
@@ -544,6 +693,9 @@ $('#new').click(function () {
 
 
     document.getElementById("imagen_mensaje").src = "";
+    
+    document.getElementById('switch_visita').checked=true
+    $('#switch_visita').change()
 
     verif_inputs('')
     validationInputSelects("form")
@@ -580,8 +732,10 @@ $('#insert').click(function () {
                 'fkareasocial': $('#fkareasocial').val(),
                 'fktipopase': $('#fktipopase').val(),
                 'fkautorizacion': $('#fkautorizacion').val(),
+                'fkresidente': $('#fkresidente').val(),
                 'fknropase': $('#nropase').val(),
                 'observacion': $('#observacion').val(),
+                'visita': sw_visita,
 
             })
             ajax_call('movimiento_p_insert', {

@@ -20,6 +20,7 @@ class Invitado(Serializable, Base):
     ci = Column(String(50), nullable=True)
     expendido = Column(String(20), nullable=True)
     telefono = Column(String(100), nullable=True)
+    foto = Column(Text, nullable=True)
     descripcion = Column(Text, nullable=True)
     permanente = Column(Boolean, default=False)
     fknropase = Column(Integer, ForeignKey('nropase.id'), nullable=True)

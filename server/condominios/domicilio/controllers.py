@@ -22,7 +22,8 @@ class DomicilioController(CrudController):
         '/domicilio_obtener_casas': {'POST': 'obtener_casas'},
         '/domicilio_obtener_departamentos': {'POST': 'obtener_departamentos'},
         '/domicilio_filtrar': {'POST': 'filtrar'},
-        '/domicilio_importar': {'POST': 'importar'}
+        '/domicilio_importar': {'POST': 'importar'},
+        '/domicilio_listar_residente': {'POST': 'listar_x_residente'}
     }
 
     def importar(self):
@@ -136,5 +137,15 @@ class DomicilioController(CrudController):
         arraT = ins_manager.get_page(1, 10, None, None, True)
         arraT['datos'] = ins_manager.filtrar(idcondominio,domicilio)
         self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
+        self.db.close()
+
+    def listar_x_residente(self):
+        self.set_session()
+        us = self.get_user()
+
+        data = json.loads(self.get_argument("object"))
+        arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+        arraT['objeto'] = DomicilioManager(self.db).listar_x_residente(us,data['fkdomicilio'])
+        self.respond([item.get_dict() for item in arraT['objeto']])
         self.db.close()
 

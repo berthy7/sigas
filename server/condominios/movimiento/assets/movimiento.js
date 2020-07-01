@@ -1,10 +1,12 @@
 main_route = '/movimiento'
 var refrescar = false;
+var sw_visita = false;
 
 $(document).ready(function () {
 
     auxiliar_method()
     verificar_qr()
+    verificar_qr_residente()
 
 });
 
@@ -81,6 +83,70 @@ function verificar_qr() {
     }, 1000);
 }
 
+function verificar_qr_residente() {
+    //main_method()
+    //setTimeout(auxiliar_method, 10000)
+    setInterval(function(){
+        if($('#codigoautorizacion_residente').val() != ""){
+            obj = JSON.stringify({
+                'codigoautorizacion': $('#codigoautorizacion_residente').val()
+            })
+            ruta = "residente_validar_codigo";
+
+            $.ajax({
+                method: "POST",
+                url: ruta,
+                data: {_xsrf: getCookie("_xsrf"), object: obj},
+                async: false
+            }).done(function (response) {
+                response = JSON.parse(response)
+                console.log(response);
+
+                if (response.success) {
+                    $('#show_img').attr('src', response.response.fotoresidente);
+                    $('#show_img').parent().parent().show();
+                    // $('#fkinvitacion').val(response.response.id)
+                    // $('#fkinvitado').selectpicker('refresh')
+                    // $('#fkinvitado').val(response.response.fkinvitado)
+                    // $('#fkinvitado').selectpicker('refresh')
+                    // cargar_invitado(response.response.fkinvitado)
+                    $('#fkautorizacion').val(1)
+                    $('#fkautorizacion').selectpicker('refresh')
+
+                    $('#fkdomicilio').val(response.response.iddomicilio)
+                    $('#fkdomicilio').selectpicker('refresh')
+
+                    cargar_residente(response.response.iddomicilio)
+                    //
+                    $('#fkresidente').val(response.response.idresidente)
+                    $('#fkresidente').selectpicker('refresh')
+                    //
+                    $('#fktipodocumento').val(response.response.tipodocumento)
+                    $('#fktipodocumento').selectpicker('refresh')
+                    //
+
+                    //
+                    // cargar_nropase($( "#fktipopase option:selected" ).text())
+
+
+                    document.getElementById("imagen_mensaje").src = response.message;
+                    $('#codigoautorizacion_residente').val('')
+
+                } else {
+                    document.getElementById("imagen_mensaje").src = response.message;
+
+                    limpiar_formulario()
+
+                }
+
+            })
+            validationInputSelects("form")
+            $('#form').animate({scrollTop: 0}, 'slow');
+        }
+
+    }, 1000);
+}
+
 $(document).ajaxStart(function () { });
 
 $(document).ajaxStop(function () {
@@ -98,6 +164,13 @@ $('#fkinvitado').selectpicker({
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar Personas',
     title: 'Seleccione Personas'
+})
+
+$('#fkresidente').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar Residente',
+    title: 'Seleccione Residente'
 })
 
 $('#fkconductor').selectpicker({
@@ -177,7 +250,7 @@ $('#nropase').selectpicker({
     title: 'Seleccione'
 })
 
-$('#color').selectpicker({
+$('#fkcolor').selectpicker({
     size: 10,
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar',
@@ -203,16 +276,50 @@ $('#switch').change(function() {
 
 })
 
+$('#switch_visita').change(function() {
+   sw_visita = $(this).prop('checked')
+
+    if(sw_visita){
+
+        $('#div_residente').hide()
+        $('#div_invitacion').show()
+        $('#div_datos_visita').show()
+        $('#nombre').prop("required", true);
+        $('#apellidop').prop("required", true);
+        $('#ci').prop("required", true);
+        $('#fkresidente').removeAttr("required");
+        eraseError('fkresidente')
+        $('#show_img').attr('src', '');
+        $('#show_img').parent().parent().show();
+        
+        
+    }else{
+        $('#div_residente').show()
+        $('#div_invitacion').hide()
+        $('#div_datos_visita').hide()
+        $('#nombre').removeAttr("required");
+        eraseError('nombre')
+        $('#apellidop').removeAttr("required");
+        eraseError('apellidop')
+        $('#ci').removeAttr("required");
+        eraseError('ci')
+
+
+        $('#fkresidente').prop("required", true);
+
+
+    }
+
+})
+
 $('#switch_refrescar').change(function() {
    var sw_refrescar = $(this).prop('checked')
 
     if(sw_refrescar){
        refrescar = true;
-       console.log(refrescar)
 
     }else{
         refrescar = false;
-        console.log(refrescar)
     }
 
 })
@@ -233,7 +340,7 @@ function cargar_tabla(data){
         buttons: [
             {  extend : 'excelHtml5',
                exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10,11,12,13,14,15,16]},
-                sheetName: 'Reporte Control y Registro Vehicular',
+                sheetName: 'Reporte Registro Vehicular',
                title: 'Control y Registro Vehicular'  },
             {  extend : 'pdfHtml5',
                 orientation: 'landscape',
@@ -268,10 +375,13 @@ function cargar_tabla(data){
 }
 
 function actualizar_tabla(response){
+
     var data = [];
     var id;
     var fechai;
     var fechaf;
+    var ci;
+    var nombre;
     var conductor;
     var placa;
     var tipo;
@@ -288,7 +398,7 @@ function actualizar_tabla(response){
             if(response['response'][i].fechai){
                 fechai= response['response'][i].fechai
             }else{
-                fechai =response['response'][i].fechar
+                fechai = '-----'
             }
 
             if(response['response'][i].fechaf){
@@ -300,6 +410,16 @@ function actualizar_tabla(response){
 
             }
 
+            if(response['response'][i].fkinvitado != "None"){
+                ci = response['response'][i].invitado.ci,
+                nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
+
+            }else{
+                ci ='Residente'
+                nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
+            }
+
+
             if(response['response'][i].fkconductor != "None"){
                 conductor= response['response'][i].conductor.nombre +" "+response['response'][i].conductor.apellidop+" "+response['response'][i].conductor.apellidom
             }else{
@@ -307,7 +427,7 @@ function actualizar_tabla(response){
             }
 
             placa= response['response'][i].vehiculo.placa
-            tipo = response['response'][i].vehiculo.tipo
+            tipo = response['response'][i].vehiculo.tipo.nombre
 
             if(response['response'][i].vehiculo.fkmarca != "None"){
                 marca = response['response'][i].vehiculo.marca.nombre
@@ -320,7 +440,7 @@ function actualizar_tabla(response){
                 modelo ='-----'
             }
 
-            color = response['response'][i].vehiculo.color
+            color = response['response'][i].vehiculo.color.nombre
 
 
             if(response['response'][i].fkdomicilio != "None"){
@@ -332,7 +452,7 @@ function actualizar_tabla(response){
             }
 
             if(response['response'][i].fknropase != "None"){
-                nropase = response['response'][i].nropase.numero
+                nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
             }else{
                 nropase = '-----'
             }
@@ -342,8 +462,8 @@ function actualizar_tabla(response){
                 fechai,
                 fechaf,
                 response['response'][i].tipodocumento.nombre,
-                response['response'][i].invitado.ci,
-                response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom,
+                ci,
+                nombre,
                 conductor,
                 response['response'][i].cantpasajeros,
                 placa,
@@ -475,13 +595,53 @@ $('#tipo_reporte').change(function () {
 });
 
 $('#fkdomicilio').change(function () {
+    
+    cargar_residente($('#fkdomicilio').val())
 
     $('#fkareasocial').val('')
     $('#fkareasocial').selectpicker('refresh')
 
+    
+
 });
 
+function cargar_residente(fkdomicilio) {
+
+    obj = JSON.stringify({
+        'fkdomicilio': fkdomicilio,
+        '_xsrf': getCookie("_xsrf")
+    })
+
+    ruta = "domicilio_listar_residente";
+    //data.append('object', obj)
+    //data.append('_xsrf',getCookie("_xsrf"))
+
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: false
+    }).done(function (response) {
+        response = JSON.parse(response)
+        console.log(response)
+
+        $('#fkresidente').html('');
+        var select = document.getElementById("fkresidente")
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+            var option = document.createElement("OPTION");
+            option.innerHTML = response['response'][i]['fullname'];
+            option.value = response['response'][i]['id'];
+            select.appendChild(option);
+        }
+        $('#fkresidente').selectpicker('refresh');
+
+    })
+
+}
+
 $('#fkareasocial').change(function () {
+
+        cargar_residente('0')
 
         $('#fkdomicilio').val('')
         $('#fkdomicilio').selectpicker('refresh')
@@ -566,7 +726,7 @@ $('#fkvehiculo').change(function () {
     if (parseInt(JSON.parse($('#fkvehiculo').val())) != 0){
         cargar_vehiculo(parseInt(JSON.parse($('#fkvehiculo').val())))
     }else{
-        $('#cantpasajeros').val('')
+        // $('#cantpasajeros').val('0')
         $('#placa').val('')
         $('#tipo').val('')
         $('#tipo').selectpicker('refresh')
@@ -581,7 +741,7 @@ $('#fkvehiculo').change(function () {
 
 function cargar_nropase(tipopase) {
 
-        obj = JSON.stringify({
+    obj = JSON.stringify({
         'tipopase': tipopase,
         '_xsrf': getCookie("_xsrf")
     })
@@ -701,13 +861,14 @@ function cargar_vehiculo(id) {
         async: false
     }).done(function (response) {
         response = JSON.parse(response)
+        console.log(response)
 
         // $('#cantpasajeros').val(response.response.cantpasajeros)
         $('#placa').val(response.response.placa)
-        $('#tipo').val(response.response.tipo)
-        $('#tipo').selectpicker('refresh')
-        $('#color').val(response.response.color)
-        $('#color').selectpicker('refresh')
+        $('#fktipo').val(response.response.fktipo)
+        $('#fktipo').selectpicker('refresh')
+        $('#fkcolor').val(response.response.fkcolor)
+        $('#fkcolor').selectpicker('refresh')
         $('#fkmarca').val(response.response.fkmarca)
         $('#fkmarca').selectpicker('refresh')
         $('#fkmodelo').val(response.response.fkmodelo)
@@ -774,11 +935,11 @@ $('#new').click(function () {
     $('#expendido').val('')
     $('#expendido').selectpicker("refresh")
     $('#placa').val('')
-    $('#tipo').val('')
-    $('#tipo').selectpicker("refresh")
-    $('#cantpasajeros').val('1')
-    $('#color').val('')
-    $('#color').selectpicker("refresh")
+    $('#fktipo').val('')
+    $('#fktipo').selectpicker("refresh")
+    $('#cantpasajeros').val('0')
+    $('#fkcolor').val('')
+    $('#fkcolor').selectpicker("refresh")
     $('#fkmarca').val('')
     $('#fkmarca').selectpicker("refresh")
     $('#fkmodelo').val('')
@@ -791,6 +952,8 @@ $('#new').click(function () {
     $('#fktipopase').selectpicker("refresh")
     $('#fkautorizacion').val('')
     $('#fkautorizacion').selectpicker("refresh")
+    $('#fkresidente').val('')
+    $('#fkresidente').selectpicker("refresh")
     $('#codigoautorizacion').val('')
     $('#nropase').val('')
     $('#nropase').selectpicker("refresh")
@@ -805,8 +968,13 @@ $('#new').click(function () {
     $('#ci_conductor').val('')
     $('#expendido_conductor').val('')
     $('#expendido_conductor').selectpicker("refresh")
+    $('#show_img').attr('src', '');
+    $('#show_img').parent().parent().show();
 
     document.getElementById("imagen_mensaje").src = "";
+
+    document.getElementById('switch_visita').checked=true
+    $('#switch_visita').change()
 
     verif_inputs('')
     validationInputSelects("form")
@@ -850,8 +1018,8 @@ $('#insert').click(function () {
                     'fkvehiculo': $('#fkvehiculo').val(),
                     'cantpasajeros': $('#cantpasajeros').val(),
                     'placa': $('#placa').val(),
-                    'tipo': $('#tipo').val(),
-                    'color': $('#color').val(),
+                    'fktipo': $('#fktipo').val(),
+                    'fkcolor': $('#fkcolor').val(),
                     'fkmarca': $('#fkmarca').val(),
                     'nombre_marca': $('#nombre_marca').val(),
                     'fkmodelo': $('#fkmodelo').val(),
@@ -859,8 +1027,10 @@ $('#insert').click(function () {
                     'fkareasocial': $('#fkareasocial').val(),
                     'fktipopase': $('#fktipopase').val(),
                     'fkautorizacion': $('#fkautorizacion').val(),
+                    'fkresidente': $('#fkresidente').val(),
                     'fknropase': $('#nropase').val(),
                     'observacion': $('#observacion').val(),
+                    'visita': sw_visita,
 
                     'fkconductor': $('#fkconductor').val(),
                     'fktipodocumento_conductor': $('#fktipodocumento_conductor').val(),

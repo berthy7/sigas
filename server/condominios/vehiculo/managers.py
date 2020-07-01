@@ -40,15 +40,15 @@ class VehiculoManager(SuperManager):
 
     def registrar_vehiculo(self, diccionario):
         placa = diccionario['placa']
-        tipo = diccionario['tipo']
+        fktipo = diccionario['fktipo']
         fkmarca = diccionario['fkmarca']
         fkmodelo = diccionario['fkmodelo']
-        color = diccionario['color']
+        fkcolor = diccionario['fkcolor']
         idinvitado = diccionario['fkinvitado']
 
         if fkmarca == "":
             fkmarca = None
-        elif fkmarca == "0":
+        elif int(fkmarca) == 0:
             marc = Marca(nombre=diccionario['nombre_marca'])
             obj_marca = super().insert(marc)
             fkmarca = obj_marca.id
@@ -64,7 +64,7 @@ class VehiculoManager(SuperManager):
                 return None
             else:
                 # dict_vehiculo = dict(placa=placa, tipo=tipo,marca=marca,color=color,fkpropietarioinvitado=idinvitado)
-                dict_vehiculo = dict(placa=placa, tipo=tipo, fkmarca=fkmarca, fkmodelo=fkmodelo, color=color)
+                dict_vehiculo = dict(placa=placa, fktipo=fktipo, fkmarca=fkmarca, fkmodelo=fkmodelo, fkcolor=fkcolor)
                 objeto = VehiculoManager(self.db).entity(**dict_vehiculo)
                 fecha = BitacoraManager(self.db).fecha_actual()
                 a = super().insert(objeto)
@@ -91,6 +91,8 @@ class VehiculoManager(SuperManager):
             super().insert(objeto)
 
     def registrar_vehiculo_residente(self, diccionario,idresidente):
+        if diccionario['fkmodelo'] == "":
+            diccionario['fkmodelo'] = None
 
         if diccionario['id'] !="":
             respuesta = VehiculoManager(self.db).consultar_vehiculo(diccionario['id'],idresidente)
@@ -165,9 +167,25 @@ class VehiculoManager(SuperManager):
 
         if query_vehiculo:
 
-            return  dict(id=query_vehiculo.id,placa="",color="",tipo="",fkmarca="",fkmodelo="", fknropase=idtarjeta)
+            return  dict(id=query_vehiculo.id,placa="",fkcolor="",fktipo="",fkmarca="",fkmodelo="", fknropase=idtarjeta)
         else:
             if placa:
+
+                query_tipo = self.db.query(Tipovehiculo).filter(Tipovehiculo.nombre == str(tipovehiculo)).first()
+                if query_tipo:
+                    idtipo = query_tipo.id
+                else:
+                    tip = Tipovehiculo(nombre=tipovehiculo)
+                    obj_tipo = super().insert(tip)
+                    idtipo = obj_tipo.id
+
+                query_color = self.db.query(Color).filter(Color.nombre == str(color)).first()
+                if query_color:
+                    idcolor = query_color.id
+                else:
+                    col = Color(nombre=color)
+                    obj_color = super().insert(col)
+                    idcolor = obj_color.id
 
                 query_marca = self.db.query(Marca).filter(Marca.nombre == str(marca)).first()
                 if query_marca:
@@ -190,6 +208,21 @@ class VehiculoManager(SuperManager):
                 else:
                     idmodelo = modelo
 
-                return  dict(id="", placa=placa, color=color, tipo=tipovehiculo, fkmarca=idmarca, fkmodelo=idmodelo, fknropase=idtarjeta)
+                return  dict(id="", placa=placa, fkcolor=idcolor, fktipo=idtipo, fkmarca=idmarca, fkmodelo=idmodelo, fknropase=idtarjeta)
             else:
                 return ""
+
+class TipovehiculoManager(SuperManager):
+    def __init__(self, db):
+        super().__init__(Tipovehiculo, db)
+
+    def listar_todo(self):
+        return self.db.query(self.entity).filter(self.entity.estado == True).all()
+
+
+class ColorManager(SuperManager):
+    def __init__(self, db):
+        super().__init__(Color, db)
+
+    def listar_todo(self):
+        return self.db.query(self.entity).filter(self.entity.estado == True).all()

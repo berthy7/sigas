@@ -23,6 +23,7 @@ class Residente(Serializable, Base):
     fechanacimiento = Column(Date, nullable=True)
     telefono = Column(String(100), nullable=True)
     foto = Column(Text,nullable=True)
+    codigoqr = Column(Text, nullable=True)
     tipo = Column(String(20), nullable=True) #tipo = Propietario, Inquilino, Co-propietario,provper
     correo = Column(String(255), nullable=True)
     fknropase = Column(Integer, ForeignKey('nropase.id'), nullable=True)
@@ -94,7 +95,9 @@ class Residente(Serializable, Base):
 
 
 
-            lista_vehiculos.append(dict(id=v.id,placa=v.placa, tipo=v.tipo, color=v.color,fkmarca=v.fkmarca, nombremarca=v.marca.nombre,fkmodelo=fkmodelo,nombremodelo=nombremodelo,fknropase=fknropase,nropase=nropase))
+            lista_vehiculos.append(dict(id=v.id,placa=v.placa, fktipo=v.fktipo, nombretipo=v.tipo.nombre, fkcolor=v.fkcolor,nombrecolor=v.color.nombre,
+                                        fkmarca=v.fkmarca, nombremarca=v.marca.nombre,fkmodelo=fkmodelo,nombremodelo=nombremodelo,
+                                        fknropase=fknropase,nropase=nropase))
 
         for acce in self.acceso:
             aux['idacceso'] = acce.id

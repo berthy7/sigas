@@ -665,8 +665,8 @@ document.getElementById("tab-residente").click();
                 return {
                     'id':h0,
                     'placa': h1,
-                    'tipo': h2,
-                    'color': h3,
+                    'fktipo': h2,
+                    'fkcolor': h3,
                     'fkmarca': h4,
                     'fkmodelo': h5,
                     'fknropase':h6
@@ -1172,12 +1172,15 @@ function editar(elemento){
             }
 
             $('#vehiculo_div').empty()
-
+            console.log(self.vehiculos)
             for (vehi in self.vehiculos) {
+                
                 idve = self.vehiculos[vehi]['id']
                 placa= self.vehiculos[vehi]['placa']
-                tipo = self.vehiculos[vehi]['tipo']
-                color = self.vehiculos[vehi]['color']
+                fktipo = self.vehiculos[vehi]['fktipo']
+                nombretipo = self.vehiculos[vehi]['nombretipo']
+                fkcolor = self.vehiculos[vehi]['fkcolor']
+                nombrecolor = self.vehiculos[vehi]['nombrecolor']
                 fkmarca = self.vehiculos[vehi]['fkmarca']
                 nombremarca = self.vehiculos[vehi]['nombremarca']
                 fkmodelo = self.vehiculos[vehi]['fkmodelo']
@@ -1188,8 +1191,10 @@ function editar(elemento){
                 append_input_vehiculos(idve)
                 $('#id' + idve).val(idve)
                 $('#placa' + idve).val(placa)
-                $('#tipo' + idve).val(tipo)
-                $('#color' + idve).val(color)
+                $('#fktipo' + idve).val(fktipo)
+                $('#tipo' + idve).val(nombretipo)
+                $('#fkcolor' + idve).val(fkcolor)
+                $('#color' + idve).val(nombrecolor)
                 $('#fkmarca' + idve).val(fkmarca)
                 $('#marca' + idve).val(nombremarca)
                 $('#fkmodelo' + idve).val(fkmodelo)

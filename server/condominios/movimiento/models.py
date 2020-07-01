@@ -9,7 +9,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Movimiento(Serializable, Base):
-    way = {'invitacion': {},'invitado': {},'conductor': {},'tipodocumento': {},'tipodocumento_conductor': {},'vehiculo': {'marca': {},'modelo': {}},'tipopase': {},'autorizacion': {},'domicilio': {},'areasocial': {},'nropase': {}}
+    way = {'invitacion': {},'invitado': {},'residente': {},'conductor': {},'tipodocumento': {},'tipodocumento_conductor': {},'vehiculo': {'tipo': {},'color': {},'marca': {},'modelo': {}},'tipopase': {},'autorizacion': {},'domicilio': {},'areasocial': {},'nropase': {}}
 
     __tablename__ = 'movimiento'
 
@@ -21,7 +21,7 @@ class Movimiento(Serializable, Base):
     fechai = Column(DateTime, nullable=True)
     fechaf = Column(DateTime, nullable=True)
     fechar = Column(DateTime, nullable=True)
-
+    fkresidente = Column(Integer, ForeignKey('residente.id'), nullable=True)
     fkautorizacion = Column(Integer, ForeignKey('autorizacion.id'), nullable=True)
 
     fkdomicilio = Column(Integer, ForeignKey('domicilio.id'), nullable=True)
@@ -35,6 +35,7 @@ class Movimiento(Serializable, Base):
     cantpasajeros = Column(Integer, nullable=True)
     fktipodocumento_conductor = Column(Integer, ForeignKey('tipo_documento.id'), nullable=True)
     fkconductor = Column(Integer, ForeignKey('invitado.id'), nullable=True)
+    visita = Column(Boolean, default=True)
 
     estado = Column(Boolean, default=True)
 
@@ -50,6 +51,7 @@ class Movimiento(Serializable, Base):
     domicilio = relationship('Domicilio')
     areasocial = relationship('Areasocial')
     nropase = relationship('Nropase')
+    residente = relationship('Residente')
 
     def get_dict(self, way=None):
         aux = super().get_dict(way)

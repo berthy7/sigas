@@ -41,6 +41,7 @@ class Movimiento_pController(CrudController):
         aux['tipodocumento'] = TipodocumentoManager(self.db).listar_todo()
         aux['invitados'] = InvitadoManager(self.db).listar_todo()
         aux['vehiculos'] = VehiculoManager(self.db).listar_todo()
+        aux['residentes'] = ResidenteManager(self.db).listar_residentes(us)
 
         aux['areasociales'] = AreasocialManager(self.db).listar_todo(us)
         aux['tipopases'] = TipopaseManager(self.db).listar_todo()

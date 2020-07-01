@@ -16,7 +16,8 @@ class CondominioController(CrudController):
         '/condominio_update': {'PUT': 'edit', 'POST': 'update'},
         '/condominio_delete': {'POST': 'delete'},
         '/condominio_obtener': {'POST': 'obtener_x_id'},
-        '/condominio_entrada': {'POST': 'entrada'}
+        '/condominio_entrada': {'POST': 'entrada'},
+        '/condominio_listar_residente': {'POST': 'listar_x_residente'}
     }
 
     def get_extra_data(self):
@@ -73,4 +74,16 @@ class CondominioController(CrudController):
         arraT['datos'] = ins_manager.obtener_entradas()
         self.respond([objeto.get_dict() for objeto in arraT['datos']])
         self.db.close()
+
+
+    def listar_x_residente(self):
+        self.set_session()
+        us = self.get_user()
+
+        data = json.loads(self.get_argument("object"))
+        arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+        arraT['objeto'] = CondominioManager(self.db).obtener_residentes(data['fkdomicilio'])
+        self.respond([item.get_dict() for item in arraT['objeto']])
+        self.db.close()
+
 

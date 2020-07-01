@@ -57,11 +57,14 @@ class Movimiento_pManager(SuperManager):
 
     def insert(self, diccionary):
 
-        if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-            invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
-            diccionary['fkinvitado'] = invitado.id
+        if diccionary['visita']:
+            if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
+                invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
+                diccionary['fkinvitado'] = invitado.id
+            else:
+                invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
         else:
-            invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
+            diccionary['fkinvitado'] = None
 
         if diccionary['fkinvitacion'] == "":
             diccionary['fkinvitacion'] = None

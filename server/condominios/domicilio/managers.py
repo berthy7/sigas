@@ -71,9 +71,34 @@ class DomicilioManager(SuperManager):
             return self.db.query(self.entity).filter(self.entity.estado == True).filter(
                 self.entity.tipo == "Departamento").all()
 
-    def listar_x_sucursal(self, idsurcusal):
-        return self.db.query(self.entity).filter(self.entity.fksucursal == idsurcusal).filter(
-            self.entity.estado == True)
+    def listar_x_residente(self, usuario,fkdomicilio):
+
+        if int(fkdomicilio) != 0:
+
+
+            x = self.db.query(Residente).join(ResidenteDomicilio).filter(Residente.estado == True).filter(
+                ResidenteDomicilio.fkdomicilio == fkdomicilio).order_by(
+                Residente.nombre.asc()).all()
+
+        else:
+
+            if usuario.sigas:
+                x = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(
+                    Residente.estado == True).filter(ResidenteDomicilio.vivienda == True).order_by(
+                    Residente.nombre.asc()).all()
+
+            elif usuario.rol.nombre == "RESIDENTE":
+                x = self.db.query(Residente).filter(Residente.id == usuario.fkresidente).order_by(
+                    Residente.nombre.asc()).all()
+
+            else:
+                x = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(
+                    Residente.estado == True) \
+                    .filter(ResidenteDomicilio.vivienda == True).filter(Condominio.id == usuario.fkcondominio).order_by(
+                    Residente.nombre.asc()).all()
+
+        return x
+
 
     def insert(self, objeto):
         fecha = BitacoraManager(self.db).fecha_actual()
@@ -101,7 +126,6 @@ class DomicilioManager(SuperManager):
         self.db.commit()
 
         return x
-
 
 
     def filtrar(self, idcondominio,domicilio):

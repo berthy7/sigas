@@ -129,8 +129,14 @@
 
                     '{{ c.tipodocumento.nombre}}',
 
-                    '{{ c.invitado.ci }}',
-                    '{{ c.invitado.fullname }}',
+                    {% if c.fkinvitado %}
+                        '{{ c.invitado.ci }}',
+                        '{{ c.invitado.fullname }}',
+                    {% else %}
+                        'Residente',
+                        '{{ c.residente.fullname }}',
+                    {% end %}
+
                     {% if c.fkconductor %}
                         '{{ c.conductor.fullname }}',
                     {% else %}
@@ -141,7 +147,7 @@
 
                     {% if c.fkvehiculo %}
                             '{{ c.vehiculo.placa }}',
-                            '{{ c.vehiculo.tipo }}',
+                            '{{ c.vehiculo.tipo.nombre }}',
                                 {% if c.vehiculo.fkmarca %}
                                     '{{ c.vehiculo.marca.nombre }}',
                                 {% else %}
@@ -153,7 +159,7 @@
                                     '-----',
                                 {% end %}
 
-                            '{{ c.vehiculo.color }}',
+                            '{{ c.vehiculo.color.nombre }}',
 
                     {% else %}
                         '-----',
@@ -172,7 +178,7 @@
 
                     '{{ c.autorizacion.nombre }}',
                     {% if c.fknropase %}
-                        '{{ c.nropase.numero }}',
+                        '{{ c.nropase.numero }} {{ c.nropase.tipo }}',
                     {% else %}
                         '-----',
                     {% end %}

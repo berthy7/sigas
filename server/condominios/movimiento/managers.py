@@ -62,12 +62,14 @@ class MovimientoManager(SuperManager):
         diccionary['cantpasajeros'] = int(diccionary['cantpasajeros'])
 
         diccionary['placa'] = diccionary['placa'].replace(" ", "")
-
-        if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-            invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
-            diccionary['fkinvitado'] = invitado.id
+        if diccionary['visita']:
+            if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
+                invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
+                diccionary['fkinvitado'] = invitado.id
+            else:
+                invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
         else:
-            invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
+            diccionary['fkinvitado'] = None
 
 
         if diccionary['fkconductor'] == "" or diccionary['fkconductor'] == "0":
@@ -109,6 +111,16 @@ class MovimientoManager(SuperManager):
 
         if diccionary['cantpasajeros'] == "":
             diccionary['cantpasajeros'] = None
+
+        try:
+            if diccionary['fkresidente'] == "":
+                diccionary['fkresidente'] = None
+
+        except Exception as e:
+            print("no se envio fkresidente")
+
+            diccionary['fkresidente'] = None
+
 
         fecha = BitacoraManager(self.db).fecha_actual()
 
@@ -199,6 +211,9 @@ class MovimientoManager(SuperManager):
             if not mov.fechai:
                 mov.fechai = marcacion.time
 
+                if mov.nropase.tipo == "Excepcion":
+                    mov.fechaf = marcacion.time
+
                 self.db.merge(mov)
                 self.db.commit()
             elif not mov.fechaf:
@@ -236,4 +251,4 @@ class AutorizacionManager(SuperManager):
         super().__init__(Autorizacion, db)
 
     def listar_todo(self):
-        return self.db.query(self.entity).filter(self.entity.estado == True).all()
+        return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.id.asc()).all()

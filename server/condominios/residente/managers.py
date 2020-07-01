@@ -5,7 +5,7 @@ from ...operaciones.bitacora.managers import *
 from ..domicilio.managers import *
 from ..condominio.models import *
 from ..vehiculo.managers import *
-from ..nropase.models import *
+from ..nropase.managers import *
 
 
 from openpyxl import load_workbook
@@ -48,6 +48,8 @@ class ResidenteManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
         objeto.vehiculos = []
         objeto.estado = estado
+
+        objeto.codigoqr = str(objeto.codigo) + str(objeto.ci)
 
 
         a = super().insert(objeto)
@@ -188,8 +190,6 @@ class ResidenteManager(SuperManager):
                         domicilio = domicilio.replace(" ", "")
 
                         query_domicilio = self.db.query(Domicilio).filter(Domicilio.ubicacion == str(domicilio)).filter(Domicilio.numero == str(numero)).first()
-
-
 
                         if query_domicilio:
                             if not query:
@@ -360,12 +360,49 @@ class ResidenteManager(SuperManager):
     def listar_residentes(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(ResidenteDomicilio.vivienda == True).all()
+            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(Residente.estado == True).filter(ResidenteDomicilio.vivienda == True).order_by(Residente.nombre.asc()).all()
+
         elif usuario.rol.nombre == "RESIDENTE":
-            return self.db.query(Residente).filter(Residente.id == usuario.fkresidente).all()
+            return self.db.query(Residente).filter(Residente.id == usuario.fkresidente).order_by(Residente.nombre.asc()).all()
+
         else:
-            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio) \
-                .filter(ResidenteDomicilio.vivienda == True).filter(Condominio.id == usuario.fkcondominio).all()
+            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(Residente.estado == True) \
+                .filter(ResidenteDomicilio.vivienda == True).filter(Condominio.id == usuario.fkcondominio).order_by(Residente.nombre.asc()).all()
+
+
+    def validar_codigo(self, codigoautorizacion):
+        domicilio = ""
+
+        x = self.db.query(Residente).filter(Residente.estado == True).filter(Residente.codigoqr == codigoautorizacion).first()
+        if x:
+            for domi in x.domicilios:
+                if domi.vivienda:
+                    domicilio = domi.fkdomicilio
+                    break
+
+            residente = dict(idresidente= x.id,iddomicilio=domicilio,fotoresidente=x.foto,tipodocumento=4)
+        else:
+            residente = None
+        return residente
+
+
+    def actualizar_foto(self, data):
+        try:
+            print("servicio foto")
+            x = self.db.query(Usuario).filter(Usuario.id == data['user']).first()
+            persona = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
+            persona.foto = data['foto']
+            fecha = BitacoraManager(self.db).fecha_actual()
+            b = Bitacora(fkusuario=data['user'], ip=data['ip'], accion="Actualizo Foto", fecha=fecha,
+                         tabla="residente", identificador=persona.id)
+            super().insert(b)
+            self.db.merge(persona)
+            self.db.commit()
+            self.db.close()
+            return dict(response=None, success=True, message="Actualizado correctamente")
+
+        except Exception as e:
+            return dict(response=str(e), success=False, message="Error al actualizar")
 
 
 

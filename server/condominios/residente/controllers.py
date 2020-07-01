@@ -24,7 +24,8 @@ class ResidenteController(CrudController):
         '/residente_importar': {'POST': 'importar'},
         '/vehiculo_obtener': {'POST': 'obtener_vehiculo'},
         '/residente_reporte_xls': {'POST': 'imprimirxls'},
-        '/residente_obtener_domicilios': {'POST': 'obtener_domicilios'}
+        '/residente_obtener_domicilios': {'POST': 'obtener_domicilios'},
+        '/residente_validar_codigo': {'POST': 'validar_codigo'},
 
     }
 
@@ -137,3 +138,15 @@ class ResidenteController(CrudController):
         indicted_object = ins_manager.obtener_domicilios(id)
         self.respond(indicted_object.get_dict(), message='Operacion exitosa!')
         self.db.close()
+
+
+    def validar_codigo(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        indicted_object = ResidenteManager(self.db).validar_codigo(diccionary['codigoautorizacion'])
+        if indicted_object:
+            self.respond(indicted_object, success=True, message='/resources/images/aceptado.png')
+            self.db.close()
+        else:
+            self.respond(success=False, message='/resources/images/rechazado.png')
+            self.db.close()

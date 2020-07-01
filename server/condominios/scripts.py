@@ -1176,10 +1176,15 @@ def insertions():
         guardia_role.modulos.append(insert_movimiento_p)
         guardia_role.modulos.append(update_movimiento_p)
 
+        guardia_role.modulos.append(query_registros_c)
+        guardia_role.modulos.append(imprimir_registros_c)
+
+
         session.add(Tipodocumento(id=1,nombre='Carnet de Identidad'))
         session.add(Tipodocumento(id=2,nombre='licencia Conducir'))
         session.add(Tipodocumento(id=3,nombre='Pasaporte'))
-        session.add(Tipodocumento(id=4,nombre='Otros'))
+        session.add(Tipodocumento(id=4, nombre='Codigo QR'))
+        session.add(Tipodocumento(id=5,nombre='Otros'))
 
         session.add(TipoEvento(id=1,nombre='Visita'))
         session.add(TipoEvento(id=2,nombre='Reunion'))
@@ -1193,7 +1198,7 @@ def insertions():
         session.add(Tipopase(id=3,nombre='Taxi'))
         session.add(Tipopase(id=4,nombre='Otros'))
 
-        session.add(Autorizacion(id=1,nombre='Propietario'))
+        session.add(Autorizacion(id=1,nombre='Residente'))
         session.add(Autorizacion(id=2,nombre='Administracion'))
         session.add(Autorizacion(id=3,nombre='Emergencia'))
         session.add(Autorizacion(id=4,nombre='Negativa de Ingreso'))
@@ -1207,6 +1212,31 @@ def insertions():
         session.add(Entrada(id=6,nombre='Salida vehicular Visitas'))
         session.add(Entrada(id=7,nombre='Salida peatonal Residentes'))
         session.add(Entrada(id=8,nombre='Salida vehicular Residentes'))
+
+        session.add(Tipovehiculo(nombre='AUTO'))
+        session.add(Tipovehiculo(nombre='CAMIONETA'))
+        session.add(Tipovehiculo(nombre='VAGONETA'))
+        session.add(Tipovehiculo(nombre='JEEP'))
+        session.add(Tipovehiculo(nombre='CAMION'))
+        session.add(Tipovehiculo( nombre='MOTOCICLETA'))
+        session.add(Tipovehiculo(nombre='MOTO'))
+        session.add(Tipovehiculo(nombre='MICRO'))
+        session.add(Tipovehiculo(nombre='BICICLETA'))
+
+        session.add(Color(nombre='AMARILLO'))
+        session.add(Color(nombre='AZUL'))
+        session.add(Color(nombre='BLANCO'))
+        session.add(Color(nombre='CAFE'))
+        session.add(Color(nombre='CELESTE'))
+        session.add(Color(nombre='COBRE'))
+        session.add(Color(nombre='GRIS'))
+        session.add(Color(nombre='NARANJA'))
+        session.add(Color(nombre='NEGRO'))
+        session.add(Color(nombre='PLATEADO'))
+        session.add(Color(nombre='PLOMO'))
+        session.add(Color(nombre='ROJO'))
+        session.add(Color(nombre='ROSADO'))
+        session.add(Color(nombre='VERDE'))
 
         session.commit()
 

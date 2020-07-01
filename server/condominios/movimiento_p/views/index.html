@@ -121,8 +121,14 @@
 
                     '{{ c.tipodocumento.nombre}}',
 
-                    '{{ c.invitado.ci }}',
-                    '{{ c.invitado.fullname }}',
+                    {% if c.fkinvitado %}
+                        '{{ c.invitado.ci }}',
+                        '{{ c.invitado.fullname }}',
+                    {% else %}
+                        'Residente',
+                        '{{ c.residente.fullname }}',
+                    {% end %}
+
                     {% if c.fkdomicilio %}
                         '{{ c.domicilio.nombre }}',
                     {% elif c.fkareasocial %}

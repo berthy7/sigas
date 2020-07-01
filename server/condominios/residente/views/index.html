@@ -95,14 +95,24 @@
                     <input id="placa'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo placa  txta-own">\
                 </div>\
             </div>\
-            <div class="col-sm-1">\
+            <div class="col-sm-1 hidden">\
                 <div  class="form-line">\
-                    <input id="tipo'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo tipo  txta-own">\
+                    <input id="fktipo'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fktipo  txta-own">\
                 </div>\
             </div>\
             <div class="col-sm-1">\
                 <div  class="form-line">\
-                    <input id="color'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo color  txta-own">\
+                    <input id="tipo'+id_in+'" data-id="'+id_in+'" class="form-control tipo  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1 hidden">\
+                <div  class="form-line">\
+                    <input id="fkcolor'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fkcolor  txta-own">\
+                </div>\
+            </div>\
+            <div class="col-sm-1">\
+                <div  class="form-line">\
+                    <input id="color'+id_in+'" data-id="'+id_in+'" class="form-control color  txta-own">\
                 </div>\
             </div>\
             <div class="col-sm-1 hidden">\
@@ -160,9 +170,11 @@
 
             $('#idvehiculo').val($('#id'+id_in).val())
             $('#placa').val($('#placa'+id_in).val())
-            $('#tipovehiculo').val($('#tipo'+id_in).val())
+            $('#tipovehiculo').val($('#fktipo'+id_in).val())
             $('#tipovehiculo').selectpicker('refresh')
-            $('#color').val($('#color'+id_in).val())
+
+            $('#fkcolor').val($('#fkcolor'+id_in).val())
+            $('#fkcolor').selectpicker('refresh')
             $('#fkmarca').val($('#fkmarca'+id_in).val())
             $('#fkmarca').selectpicker('refresh')
             cargar_modelos ($('#fkmarca').val())
@@ -190,7 +202,17 @@
             current_input = $(this).prop('id');
         })
 
+        $('.fktipo').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
         $('.tipo').focus(function () {
+            $(this).parent().addClass('focused');
+            current_input = $(this).prop('id');
+        })
+
+        $('.fkcolor').focus(function () {
             $(this).parent().addClass('focused');
             current_input = $(this).prop('id');
         })
