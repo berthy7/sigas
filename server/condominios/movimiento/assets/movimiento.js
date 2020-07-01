@@ -908,6 +908,7 @@ function limpiar_formulario() {
     $('#fkautorizacion').val('')
     $('#fkautorizacion').selectpicker("refresh")
     $('#codigoautorizacion').val('')
+    $('#codigoautorizacion_residente').val('')
     $('#nropase').val('')
     $('#nropase').selectpicker("refresh")
 
