@@ -485,7 +485,7 @@ class ApiCondominioController(ApiController):
             resp = []
 
             # arraT['objeto'] = CondominioManager(self.db).obtener_movimientos(usuario.fkcondominio)
-            arraT['objeto'] = MovimientoManager(self.db).filtrar(fechai, fechaf, user)
+            arraT['objeto'] = MovimientoManager(self.db).filtrar_movil(fechai, fechaf, user)
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
                 resp.append(obj_dict)

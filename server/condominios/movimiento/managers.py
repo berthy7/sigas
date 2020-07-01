@@ -202,6 +202,29 @@ class MovimientoManager(SuperManager):
             return domicilio
 
 
+    def filtrar_movil(self, fechainicio, fechafin,usuario):
+        usuario = UsuarioManager(self.db).get_by_pass(usuario)
+
+        list = {}
+        c = 0
+
+        fecha = fecha_zona
+        fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
+        fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+
+
+        if usuario.sigas:
+            return self.db.query(self.entity).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
+        else:
+            domicilio = self.db.query(self.entity).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
+
+            areasocial = self.db.query(self.entity).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
+
+            for area in areasocial:
+                domicilio.append(area)
+
+            return domicilio
+
 
     def actualizar_movimiento(self, marcacion):
 
