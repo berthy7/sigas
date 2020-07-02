@@ -58,6 +58,7 @@ class MovimientoManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
     def insert(self, diccionary):
+        print("datos: " + str(diccionary))
 
         diccionary['cantpasajeros'] = int(diccionary['cantpasajeros'])
 
