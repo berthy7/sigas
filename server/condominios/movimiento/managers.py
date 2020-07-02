@@ -64,8 +64,12 @@ class MovimientoManager(SuperManager):
         diccionary['placa'] = diccionary['placa'].replace(" ", "")
         if diccionary['visita']:
             if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-                invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
-                diccionary['fkinvitado'] = invitado.id
+                if diccionary['ci'] != "":
+                    invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
+                    diccionary['fkinvitado'] = invitado.id
+                else:
+                    diccionary['fkinvitado'] = None
+
             else:
                 invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
         else:

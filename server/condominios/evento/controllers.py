@@ -22,7 +22,8 @@ class EventoController(CrudController):
         '/evento_delete': {'POST': 'delete'},
         '/evento_validar_invitacion': {'POST': 'validar_invitacion'},
         '/evento_importar': {'POST': 'importar'},
-        '/evento_reporte_xls': {'POST': 'imprimirxls'}
+        '/evento_reporte_xls': {'POST': 'imprimirxls'},
+        '/evento_filtrar': {'POST': 'filtrar'}
     }
 
     def get_extra_data(self):
@@ -36,7 +37,7 @@ class EventoController(CrudController):
         aux['tipoeventos'] = TipoEventoManager(self.db).listar_todo()
         aux['areasociales'] = AreasocialManager(self.db).listar_todo(us)
         aux['tipopases'] = TipopaseManager(self.db).listar_todo()
-        aux['eventos'] = EventoManager(self.db).listar_eventos(us)
+        aux['eventos'] = EventoManager(self.db).listar_eventos_dia(us)
 
         return aux
 
@@ -78,4 +79,19 @@ class EventoController(CrudController):
         else:
             self.respond(success=False, message='/resources/images/rechazado.png')
             self.db.close()
+
+
+    def filtrar(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+
+        ins_manager = self.manager(self.db)
+        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
+        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
+        user = self.get_user_id()
+        arraT = EventoManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] = ins_manager.filtrar(fechainicio, fechafin, user)
+
+        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+                     message='actualizado correctamente.')
 

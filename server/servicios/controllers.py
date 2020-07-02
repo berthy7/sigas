@@ -409,12 +409,15 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user= data['user']
+            fechai = data['fechai']
+            fechaf = data['fechaf']
             usuario = UsuarioManager(self.db).get_by_pass(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
 
-            arraT['objeto'] = EventoManager(self.db).listar_eventos(usuario)
+            # arraT['objeto'] = EventoManager(self.db).listar_eventos(usuario)
+            arraT['objeto'] = EventoManager(self.db).filtrar(fechai, fechaf, user)
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
                 resp.append(obj_dict)
@@ -573,7 +576,7 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-
+            print("ingreso Vehicular movil ci: " + str(data['ci']))
             resp = MovimientoManager(self.db).insert(data)
             objeto = resp.get_dict()
             self.respond(response=objeto, success=True, message='Insertado correctamente.')
@@ -587,7 +590,7 @@ class ApiCondominioController(ApiController):
             try:
                 self.set_session()
                 data = json.loads(self.request.body.decode('utf-8'))
-
+                print("ingreso Peatonal movil ci: " + str(data['ci']))
                 resp = Movimiento_pManager(self.db).insert(data)
                 objeto = resp.get_dict()
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')

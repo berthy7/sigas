@@ -18,6 +18,31 @@
                 {% end %}
             </div>
         </div>
+        <div class="row clearfix">
+            <div class="col-sm-2">
+                <label class="form-label">Fecha Inicio</label>
+               <div class="form-group">
+                    <div id="fechaDIVinicio" class="form-line success">
+
+                        <input id="ffechai" type="text" class="form-control date">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label class="form-label">Fecha Fin</label>
+                    <div id="fechaDIVfin" class="form-line success">
+
+                        <input id="ffechaf" type="text" class="form-control date">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                    <button id="filtrar" type="button" class="btn bg-indigo waves-effect">
+                    <i class="material-icons">youtube_searched_for</i>
+                    </button>
+            </div>
+        </div>
 
         {% if 'evento_query' in privileges %}
         <div class="row">

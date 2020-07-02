@@ -100,7 +100,6 @@ function verificar_qr_residente() {
                 async: false
             }).done(function (response) {
                 response = JSON.parse(response)
-                console.log(response);
 
                 if (response.success) {
                     $('#show_img').attr('src', response.response.fotoresidente);
@@ -124,6 +123,8 @@ function verificar_qr_residente() {
                     // // $('#fktipopase').val(response.response.fktipopase)
                     // // $('#fktipopase').selectpicker('refresh')
                     //
+                    $('#fktipodocumento').val(response.response.tipodocumento)
+                    $('#fktipodocumento').selectpicker('refresh')
 
                     //
                     // cargar_nropase($( "#fktipopase option:selected" ).text())
@@ -166,6 +167,13 @@ $('#fkinvitado').selectpicker({
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar Personas',
     title: 'Seleccione Personas'
+})
+
+$('#fkresidente').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar Residente',
+    title: 'Seleccione Residente'
 })
 
 $('#fkconductor').selectpicker({
@@ -394,7 +402,7 @@ function actualizar_tabla(response){
         }
 
         if(response['response'][i].fknropase != "None"){
-            nropase = response['response'][i].nropase.numero
+            nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
         }else{
             nropase = '-----'
         }
@@ -652,6 +660,7 @@ function limpiar_formulario() {
     $('#fkautorizacion').val('')
     $('#fkautorizacion').selectpicker("refresh")
     $('#codigoautorizacion').val('')
+    $('#codigoautorizacion_residente').val('')
     $('#nropase').val('')
     $('#nropase').selectpicker("refresh")
 

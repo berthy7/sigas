@@ -497,6 +497,7 @@ $('#new').click(function () {
     $('#cant_tarjetas').val('')
     $('#ip_publica').val('')
     $('#ip_privada').val('')
+    $('#puerto').val('')
     document.getElementById('singuardia').checked=false
     
     verif_inputs('')
@@ -601,6 +602,7 @@ $('#insert').click(function () {
             'cant_tarjetas': $('#cant_tarjetas').val(),
             'ip_publica': $('#ip_publica').val(),
             'ip_privada': $('#ip_privada').val(),
+            'puerto': $('#puerto').val(),
             'entradas': obtener_entradas(),
             'singuardia':document.getElementById('singuardia').checked
 
@@ -646,6 +648,7 @@ function attach_edit() {
             $('#cant_tarjetas').val(self.cant_tarjetas)
             $('#ip_publica').val(self.ip_publica)
             $('#ip_privada').val(self.ip_privada)
+            $('#puerto').val(self.puerto)
             document.getElementById('singuardia').checked=self.singuardia
             
             $('#entradas_div').empty()
@@ -690,6 +693,7 @@ $('#update').click(function () {
             'cant_tarjetas': $('#cant_tarjetas').val(),
             'ip_publica': $('#ip_publica').val(),
             'ip_privada': $('#ip_privada').val(),
+            'puerto': $('#puerto').val(),
             'entradas': obtener_entradas(),
             'singuardia':document.getElementById('singuardia').checked
         })

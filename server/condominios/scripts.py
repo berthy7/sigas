@@ -738,6 +738,7 @@ def insertions():
 
         guardia_role.modulos.append(movimiento_m)
         guardia_role.modulos.append(movimiento_p_m)
+        guardia_role.modulos.append(registros_c_m)
 
         superadmin_role.modulos.append(query_condominio)
         superadmin_role.modulos.append(insert_condominio)

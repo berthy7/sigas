@@ -314,6 +314,43 @@ class EventoManager(SuperManager):
                 Evento.estado == True).filter(ResidenteDomicilio.vivienda == True).filter(Condominio.id == usuario.fkcondominio).all()
 
 
+    def listar_eventos_dia(self, usuario):
+        fecha = datetime.now(pytz.timezone('America/La_Paz'))
+        fechahoy = str(fecha.day) + "/" + str(fecha.month) + "/" + str(fecha.year)
+        fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+
+        if usuario.sigas:
+            return self.db.query(Evento).filter(self.entity.estado == True).filter(
+                Evento.fechai.cast(Date) == fechahoy).all()
+        elif usuario.rol.nombre == "RESIDENTE":
+            return self.db.query(Evento).filter(Evento.fkresidente == usuario.fkresidente).filter(
+                Evento.fechai.cast(Date) == fechahoy).filter(
+                self.entity.estado == True).all()
+        else:
+            return self.db.query(Evento).join(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(
+                Evento.fechai.cast(Date) == fechahoy).filter(
+                Evento.estado == True).filter(ResidenteDomicilio.vivienda == True).filter(
+                Condominio.id == usuario.fkcondominio).all()
+
+
+    def filtrar(self, fechainicio, fechafin,usuario):
+        usuario = UsuarioManager(self.db).get_by_pass(usuario)
+
+        list = {}
+        c = 0
+
+
+        if usuario.sigas:
+            return self.db.query(Evento).filter(self.entity.estado == True).filter(func.date(Evento.fechai).between(fechainicio, fechafin)).all()
+        elif usuario.rol.nombre == "RESIDENTE":
+            return self.db.query(Evento).filter(Evento.fkresidente == usuario.fkresidente).filter(func.date(Evento.fechai).between(fechainicio, fechafin)).filter(
+                self.entity.estado == True).all()
+        else:
+            return self.db.query(Evento).join(Residente).join(ResidenteDomicilio).join(Domicilio).join(
+                Condominio).filter(func.date(Evento.fechai).between(fechainicio, fechafin)).filter(
+                Evento.estado == True).filter(ResidenteDomicilio.vivienda == True).filter(
+                Condominio.id == usuario.fkcondominio).all()
+
 
 class InvitacionManager(SuperManager):
     def __init__(self, db):

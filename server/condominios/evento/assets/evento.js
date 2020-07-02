@@ -14,6 +14,12 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
+var fechahoy = new Date();
+var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+console.log(hoy)
+document.getElementById("ffechai").value=hoy
+document.getElementById("ffechaf").value=hoy
+
 $('.date').bootstrapMaterialDatePicker({
     format: 'DD/MM/YYYY',
     clearButton: false,
@@ -61,6 +67,107 @@ $('#personas').selectpicker({
     title: 'Seleccione'
 })
 
+function actualizar_tabla(response){
+
+    var data = [];
+    var id;
+    var fechai;
+    var fechaf;
+    var destino;
+    var estado;
+    var editar;
+
+
+    for (var i = 0; i < Object.keys(response.response).length; i++) {
+            id = response['response'][i].id
+
+            if(response['response'][i].fechai){
+                fechai= response['response'][i].fechai
+            }else{
+                fechai = '-----'
+            }
+
+            if(response['response'][i].fechaf){
+                fechaf = response['response'][i].fechaf
+            }else{
+                fechaf = '-----'
+
+            }
+        
+
+
+            if(response['response'][i].fkdomicilio != "None"){
+                destino = response['response'][i].domicilio.ubicacion + " " + response['response'][i].domicilio.numero
+            }else if(response['response'][i].fkareasocial != "None"){
+                destino = response['response'][i].areasocial.nombre
+            }else{
+                destino = '-----'
+            }
+            estado ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
+            editar ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
+        
+
+            data.push( [
+                id,
+                response['response'][i].tipoevento.nombre,
+                response['response'][i].residente.fullname,
+                destino,
+                fechai,
+                fechaf,
+                estado,
+                editar
+            ]);
+        }
+
+
+    if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
+        var table = $('#data_table').DataTable();
+        table.destroy();
+    }
+
+    $('#data_table').DataTable({
+        data:           data,
+        deferRender:    true,
+        scrollCollapse: true,
+        scroller:       true,
+
+        dom: "Bfrtip" ,
+        buttons: [
+            {  extend : 'excelHtml5',
+               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7]},
+                sheetName: 'Reporte Eventos',
+               title: 'Eventos'  },
+            {  extend : 'pdfHtml5',
+                orientation: 'landscape',
+               customize: function(doc) {
+                    doc.styles.tableBodyEven.alignment = 'center';
+                    doc.styles.tableBodyOdd.alignment = 'center';
+               },
+               exportOptions : {
+                    columns : [0, 1, 2, 3, 4, 5 ,6 ,7]
+                },
+               title: 'Eventos'
+            }
+        ],
+        initComplete: function () {
+
+
+        },
+        "order": [[ 0, "desc" ]],
+        language : {
+            'url': '/resources/js/spanish.json',
+        },
+        "pageLength": 5,
+        fixedHeader: {
+            header: true,
+            headerOffset: $('.navbar-header').outerHeight()
+        },
+        paging: true,
+        select: true
+    });
+
+
+}
 
 function cargar_tabla(data){
 
@@ -182,8 +289,13 @@ $('#fkareasocial').change(function () {
     }
 
     $('#fkresidente').change(function () {
+        cargar_domicilio(parseInt(JSON.parse($('#fkresidente').val())))
+
+    });
+
+    function cargar_domicilio(idresidente) {
         obj = JSON.stringify({
-            'id': parseInt(JSON.parse($('#fkresidente').val())),
+            'id': idresidente,
             '_xsrf': getCookie("_xsrf")
         })
         ruta = "residente_obtener_domicilios";
@@ -211,7 +323,7 @@ $('#fkareasocial').change(function () {
         $('#fkdomicilio').val(iddomicilio)
         $('#fkdomicilio').selectpicker('refresh')
 
-    });
+    }
 
     $('#personas').change(function () {
         obj = JSON.stringify({
@@ -352,6 +464,7 @@ function editar(elemento){
             $('#fktipoevento').val(self.fktipoevento)
             $('#fktipoevento').selectpicker('refresh')
             $('#descripcion').val(self.descripcion)
+            cargar_domicilio(self.fkresidente)
             $('#fkdomicilio').val(self.fkdomicilio)
             $('#fkdomicilio').selectpicker('refresh')
             $('#fkareasocial').val(self.fkareasocial)
@@ -462,6 +575,27 @@ function eliminar(elemento){
         $('#form').modal('hide')
     })
 }
+
+$('#filtrar').click(function () {
+    $("#rgm-loader").show();
+    //document.getElementById("filtrar").disabled = true
+    obj = JSON.stringify({
+        'fechainicio': $('#ffechai').val(),
+        'fechafin': $('#ffechaf').val(),
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "evento_filtrar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true
+    }).done(function (response) {
+
+        response = JSON.parse(response)
+        actualizar_tabla(response)
+    })
+});
 
 validationKeyup("form")
 validationSelectChange("form")

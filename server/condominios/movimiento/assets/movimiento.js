@@ -42,7 +42,6 @@ function verificar_qr() {
                 async: false
             }).done(function (response) {
                 response = JSON.parse(response)
-                console.log("tipopase:" + response.response.fktipopase)
 
                 if (response.success) {
                     $('#fkinvitacion').val(response.response.id)
@@ -956,6 +955,7 @@ $('#new').click(function () {
     $('#fkresidente').val('')
     $('#fkresidente').selectpicker("refresh")
     $('#codigoautorizacion').val('')
+    $('#codigoautorizacion_residente').val('')
     $('#nropase').val('')
     $('#nropase').selectpicker("refresh")
     $('#observaciones').val('')
