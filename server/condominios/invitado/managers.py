@@ -252,15 +252,11 @@ class InvitadoManager(SuperManager):
 
                     if id is not None:
 
-                        query = self.db.query(Invitado).filter(Invitado.id == id).first()
+                        query = self.db.query(Invitado).filter(Invitado.ci == ci).first()
 
                         if not query:
 
-                            print(str(id) + " " +str(nombre) )
-
-
-
-                            invi = Invitado(id=id,nombre=nombre,apellidop=apellidop,apellidom=apellidom,
+                            invi = Invitado(nombre=nombre,apellidop=apellidop,apellidom=apellidom,
                                             sexo=sexo, ci=ci, expedido=expedido,telefono=telefono,
                                             descripcion=descripcion, permanente=permanente, fknropase=fknropase, estado=estado)
 

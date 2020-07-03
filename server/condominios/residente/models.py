@@ -51,8 +51,7 @@ class Residente(Serializable, Base):
 
         if self.apellidom is not None:
             aux += self.apellidom
-        else:
-            aux = " "
+
 
         return aux
 

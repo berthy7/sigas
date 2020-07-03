@@ -102,7 +102,7 @@ function cargar_tabla(data){
 
 
         },
-        "order": [[ 1, "desc" ]],
+        "order": [[ 2, "asc" ]],
         language : {
             'url': '/resources/js/spanish.json',
         },

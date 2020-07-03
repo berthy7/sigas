@@ -294,7 +294,7 @@ class VehiculoManager(SuperManager):
                             else:
                                 idtarjeta = None
 
-                            invi = Vehiculo(id=id, placa=placa, fktipo=fktipo, fkcolor=fkcolor,
+                            invi = Vehiculo(placa=placa, fktipo=fktipo, fkcolor=fkcolor,
                                             fkmarca=idmarca, fkmodelo=fkmodelo, fkresidente=fkresidente, fkinvitado=fkinvitado,
                                             fknropase=idtarjeta, estado=estado)
 

@@ -61,6 +61,7 @@ class Invitado(Serializable, Base):
 
 
         aux['vehiculos'] = lista_vehiculos
+        aux['fullname'] = str(self.nombre) + " " + str(self.apellidop) + " " + str(self.apellidom)
 
         return aux
 
@@ -79,8 +80,7 @@ class Invitado(Serializable, Base):
 
         if self.apellidom is not None:
             aux += self.apellidom
-        else:
-            aux = " "
+
 
         return aux
 
