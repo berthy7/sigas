@@ -256,6 +256,8 @@ class InvitadoManager(SuperManager):
 
                         if not query:
 
+                            print(str(id) + " " +str(nombre) )
+
 
 
                             invi = Invitado(id=id,nombre=nombre,apellidop=apellidop,apellidom=apellidom,
