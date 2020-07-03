@@ -9,6 +9,7 @@ from ..residente.managers import *
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import Font
+from openpyxl.styles import Border, Side
 
 
 
@@ -181,5 +182,104 @@ class InvitadoManager(SuperManager):
 
         super().update(invitado)
 
+
+    def invitado_excel(self,):
+        cname = "Invitados.xlsx"
+
+        invitados = self.db.query(self.entity).order_by(self.entity.id.asc()).all()
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'a'
+
+        indice = 1
+
+        ws['A' + str(indice)] = 'ID'
+        ws['B' + str(indice)] = 'NOMBRE'
+        ws['C' + str(indice)] = 'APELLIDOP'
+        ws['D' + str(indice)] = 'APELLIDOM'
+        ws['E' + str(indice)] = 'SEXO'
+        ws['F' + str(indice)] = 'CI'
+        ws['G' + str(indice)] = 'EXPEDIDO'
+        ws['H' + str(indice)] = 'TELEFONO'
+        ws['I' + str(indice)] = 'DESCRIPCION'
+        ws['J' + str(indice)] = 'PERMANENTE'
+        ws['K' + str(indice)] = 'FKNROPASE'
+        ws['L' + str(indice)] = 'ESTADO'
+
+        for i in invitados:
+
+            indice = indice + 1
+            ws['A' + str(indice)] = i.id
+            ws['B' + str(indice)] = i.nombre
+            ws['C' + str(indice)] = i.apellidop
+            ws['D' + str(indice)] = i.apellidom
+            ws['E' + str(indice)] = i.sexo
+            ws['F' + str(indice)] = i.ci
+            ws['G' + str(indice)] = i.expendido
+            ws['H' + str(indice)] = i.telefono
+            ws['I' + str(indice)] = i.descripcion
+            ws['J' + str(indice)] = i.permanente
+            ws['K' + str(indice)] = i.fknropase
+            ws['L' + str(indice)] = i.estado
+
+
+        wb.save("server/common/resources/downloads/" + cname)
+        return cname
+
+
+    def importar_excel(self, cname, user, ip):
+        try:
+            wb = load_workbook(filename="server/common/resources/uploads/" + cname)
+            ws = wb.active
+            colnames = ['ID','NOMBRE', 'APELLIDOP', 'APELLIDOM', 'SEXO','CI', 'EXPEDIDO', 'TELEFONO', 'DESCRIPCION', 'PERMANENTE', 'FKNROPASE', 'ESTADO']
+            indices = {cell[0].value: n - 1 for n, cell in enumerate(ws.iter_cols(min_row=1, max_row=1), start=1) if
+                       cell[0].value in colnames}
+            if len(indices) == len(colnames):
+                for row in ws.iter_rows(min_row=2):
+                    id = row[indices['ID']].value
+                    nombre = row[indices['NOMBRE']].value
+                    apellidop = row[indices['APELLIDOP']].value
+                    apellidom = row[indices['APELLIDOM']].value
+                    sexo = row[indices['SEXO']].value
+                    ci = row[indices['CI']].value
+                    expedido = row[indices['EXPEDIDO']].value
+                    telefono = row[indices['TELEFONO']].value
+                    descripcion = row[indices['DESCRIPCION']].value
+                    permanente = row[indices['PERMANENTE']].value
+                    fknropase = row[indices['FKNROPASE']].value
+                    estado = row[indices['ESTADO']].value
+
+                    if id is not None:
+
+                        query = self.db.query(Invitado).filter(Invitado.id == id).first()
+
+                        if not query:
+
+
+
+                            invi = Invitado(id=id,nombre=nombre,apellidop=apellidop,apellidom=apellidom,
+                                            sexo=sexo, ci=ci, expedido=expedido,telefono=telefono,
+                                            descripcion=descripcion, permanente=permanente, fknropase=fknropase, estado=estado)
+
+                            self.db.merge(invi)
+                            self.db.flush()
+
+                    else:
+
+                        self.db.rollback()
+                        return {'message': 'Hay Columnas vacias', 'success': False}
+
+                self.db.commit()
+                return {'message': 'Importado Todos Correctamente.', 'success': True}
+            else:
+                return {'message': 'Columnas Faltantes', 'success': False}
+        except IntegrityError as e:
+            self.db.rollback()
+            if 'UNIQUE constraint' in str(e):
+                return {'message': 'duplicado', 'success': False}
+            if 'UNIQUE constraint failed' in str(e):
+                return {'message': 'codigo duplicado', 'success': False}
+            return {'message': str(e), 'success': False}
 
 

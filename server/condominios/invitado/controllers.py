@@ -100,3 +100,28 @@ class InvitadoController(CrudController):
         indicted_object = InvitadoManager(self.db).obtener_x_id(diccionary['id'])
         self.respond(indicted_object.get_dict(), message='Operacion exitosa!')
         self.db.close()
+
+
+    def imprimirxls(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+
+        cname = InvitadoManager(self.db).invitado_excel()
+        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+        self.db.close()
+
+    def importar(self):
+        self.set_session()
+        fileinfo = self.request.files['archivo'][0]
+        fname = fileinfo['filename']
+        extn = os.path.splitext(fname)[1]
+        cname = str(uuid.uuid4()) + extn
+        fh = open("server/common/resources/uploads/" + cname, 'wb')
+        fh.write(fileinfo['body'])
+        fh.close()
+        if extn in ['.xlsx', '.xls']:
+            mee = self.manager(self.db).importar_excel(cname,self.get_user_id(),self.request.remote_ip)
+            self.respond(message=mee['message'], success=mee['success'])
+        else:
+            self.respond(message='Formato de Archivo no aceptado¡¡', success=False)
+        self.db.close()
