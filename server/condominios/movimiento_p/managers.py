@@ -86,6 +86,15 @@ class Movimiento_pManager(SuperManager):
         diccionary['tipo'] = "Peatonal"
         diccionary['fechar'] = fecha
 
+        try:
+            if diccionary['fkresidente'] == "":
+                diccionary['fkresidente'] = None
+
+        except Exception as e:
+            print("no se envio fkresidente")
+
+            diccionary['fkresidente'] = None
+
 
         # diccionary['fechai'] = fecha
 
