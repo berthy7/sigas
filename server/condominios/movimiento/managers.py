@@ -192,14 +192,14 @@ class MovimientoManager(SuperManager):
 
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
                 self.entity.tipo == "Vehicular").all()
         else:
             domicilio = self.db.query(self.entity).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
-                self.entity.tipo == "Vehicular").all()
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
 
             areasocial = self.db.query(self.entity).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
-                self.entity.tipo == "Vehicular").all()
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
 
             for area in areasocial:
                 domicilio.append(area)
@@ -219,11 +219,11 @@ class MovimientoManager(SuperManager):
 
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
         else:
-            domicilio = self.db.query(self.entity).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
+            domicilio = self.db.query(self.entity).filter(self.entity.estado == True).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
 
-            areasocial = self.db.query(self.entity).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
+            areasocial = self.db.query(self.entity).filter(self.entity.estado == True).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
 
             for area in areasocial:
                 domicilio.append(area)
