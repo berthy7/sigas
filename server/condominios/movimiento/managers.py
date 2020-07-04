@@ -141,9 +141,10 @@ class MovimientoManager(SuperManager):
         super().insert(b)
 
 
+        if a.fknropase:
 
-        # actualizar siuacion
-        NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
 
         # deshabilitar invitacion
         if a.fkinvitacion:

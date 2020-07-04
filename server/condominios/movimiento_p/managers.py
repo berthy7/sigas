@@ -96,8 +96,9 @@ class Movimiento_pManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento_p.", fecha=fecha,tabla="movimiento", identificador=a.id)
         super().insert(b)
 
-        # actualizar siuacion
-        NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
+        if a.fknropase:
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
 
         # deshabilitar invitacion
         if a.fkinvitacion:
@@ -127,8 +128,9 @@ class Movimiento_pManager(SuperManager):
         self.db.merge(x)
         self.db.commit()
 
-        # actualizar siuacion
-        NropaseManager(self.db).situacion(x.fknropase, "Libre")
+        if x.fknropase:
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(x.fknropase, "Libre")
 
         return x
 
