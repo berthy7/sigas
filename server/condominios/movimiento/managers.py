@@ -35,14 +35,14 @@ class MovimientoManager(SuperManager):
 
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
                 self.entity.tipo == "Vehicular").all()
         else:
 
-            domicilio = self.db.query(self.entity).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
+            domicilio = self.db.query(self.entity).filter(self.entity.estado == True).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
                 self.entity.tipo == "Vehicular").all()
 
-            areasocial = self.db.query(self.entity).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
+            areasocial = self.db.query(self.entity).filter(self.entity.estado == True).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
                 self.entity.tipo == "Vehicular").all()
 
             for area in areasocial:
