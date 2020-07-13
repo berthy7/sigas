@@ -628,7 +628,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             codigo = data['codigo']
-            resp = EventoManager(self.db).validar_invitacion(codigo)
+            resp = EventoManager(self.db).validar_invitacion_lector(codigo)
             if resp:
                 invitacion = resp.get_dict()
                 self.respond(response=invitacion, success=True, message='Codigo Aceptado.')

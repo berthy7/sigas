@@ -310,6 +310,42 @@ class EventoManager(SuperManager):
         else:
             return x
 
+    def validar_invitacion_lector(self,codigoautorizacion):
+
+        fechadate = datetime.now(pytz.timezone('America/La_Paz'))
+        fecha_hoy_str = fechadate.strftime('%Y-%m-%d %H:%M:%S')
+        fechahoy = fecha_hoy_str[0:10]
+        horahoy = fecha_hoy_str[11:19]
+
+        time_horahoy = datetime.strptime(horahoy, '%H:%M:%S').time()
+
+        x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
+            Evento.fechaf >= fechahoy).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
+
+        if x:
+            if x.evento.horai:
+                if time_horahoy >= x.evento.horai:
+                    if x.evento.horaf:
+                        if time_horahoy <= x.evento.horaf:
+                            return x
+                        else:
+                            return None
+                    else:
+                        return x
+                else:
+                    return None
+
+            elif x.evento.horaf:
+                if time_horahoy <= x.evento.horaf:
+                    return x
+                else:
+                    return None
+            else:
+
+                return x
+        else:
+            return x
+
     def listar_eventos(self,usuario):
 
         if usuario.sigas:
