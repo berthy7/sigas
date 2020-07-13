@@ -281,10 +281,12 @@ class EventoManager(SuperManager):
         fechahoy = fecha_hoy_str[0:10]
         horahoy = fecha_hoy_str[11:19]
 
+        fecha_date = datetime.strptime(fechahoy, '%d/%m/%Y')
+
         time_horahoy = datetime.strptime(horahoy, '%H:%M:%S').time()
 
-        x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
-            Evento.fechaf >= fechahoy).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
+        x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fecha_date).filter(
+            Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
 
         if x:
             if x.evento.horai:
@@ -313,14 +315,16 @@ class EventoManager(SuperManager):
     def validar_invitacion_lector(self,codigoautorizacion):
 
         fechadate = datetime.now(pytz.timezone('America/La_Paz'))
-        fecha_hoy_str = fechadate.strftime('%Y-%m-%d %H:%M:%S')
+        fecha_hoy_str = fechadate.strftime('%d/%m/%Y %H:%M:%S')
         fechahoy = fecha_hoy_str[0:10]
         horahoy = fecha_hoy_str[11:19]
 
+        fecha_date = datetime.strptime(fechahoy, '%d/%m/%Y')
+
         time_horahoy = datetime.strptime(horahoy, '%H:%M:%S').time()
 
-        x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
-            Evento.fechaf >= fechahoy).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
+        x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fecha_date).filter(
+            Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
 
         if x:
             if x.evento.horai:
