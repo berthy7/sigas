@@ -250,20 +250,26 @@ class EventoManager(SuperManager):
 
         objeto = super().update(objeto)
 
+        sin_guardia = False
+        if objeto.evento.fkdomicilio:
+            sin_guardia = objeto.evento.domicilio.condominio.singuardia
+        elif objeto.evento.fkareasocial:
+            sin_guardia = objeto.evento.areasocial.condominio.singuardia
+
+        if sin_guardia:
+
+            respuesta = EventoManager(self.db).validar_invitacion(objeto.codigoautorizacion)
+            if respuesta:
 
 
-        respuesta = EventoManager(self.db).validar_invitacion(objeto.codigoautorizacion)
-        if respuesta:
+                diccionary = dict(codigo=objeto.id, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
 
+                ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
 
-            diccionary = dict(codigo=objeto.id, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
+                event = self.db.query(Evento).filter(Evento.id == objeto.fkevento).first()
 
-            ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
-
-            event = self.db.query(Evento).filter(Evento.id == objeto.fkevento).first()
-
-            event.situacion = "Acceso"
-            super().update(event)
+                event.situacion = "Acceso"
+                super().update(event)
 
 
         return objeto
@@ -282,9 +288,9 @@ class EventoManager(SuperManager):
 
         if x:
             if x.evento.horai:
-                if time_horahoy >= x.evento.horai:
+                if time_horahoy >= x.evento.horai.time():
                     if x.evento.horaf:
-                        if time_horahoy <= x.evento.horaf:
+                        if time_horahoy <= x.evento.horaf.time():
                             return x
                         else:
                             return None
@@ -294,7 +300,7 @@ class EventoManager(SuperManager):
                     return None
 
             elif x.evento.horaf:
-                if time_horahoy <= x.evento.horaf:
+                if time_horahoy <= x.evento.horaf.time():
                     return x
                 else:
                     return None
