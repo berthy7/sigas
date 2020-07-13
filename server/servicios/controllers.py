@@ -592,10 +592,17 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            print("ingreso Vehicular movil ci: " + str(data['ci']))
-            resp = MovimientoManager(self.db).insert(data)
-            objeto = resp.get_dict()
-            self.respond(response=objeto, success=True, message='Insertado correctamente.')
+
+            if int(data['fkmarca']) == 0 and data['nombre_marca'] == "" :
+
+                self.respond(response=None, success=False, message='Error esta guardando nombre marca vacio')
+
+            else:
+                print("ingreso Vehicular movil ci: " + str(data['ci']))
+                resp = MovimientoManager(self.db).insert(data)
+                objeto = resp.get_dict()
+                self.respond(response=objeto, success=True, message='Insertado correctamente.')
+
 
         except Exception as e:
             print(e)

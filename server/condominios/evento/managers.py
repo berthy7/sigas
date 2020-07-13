@@ -250,6 +250,8 @@ class EventoManager(SuperManager):
 
         objeto = super().update(objeto)
 
+
+
         respuesta = EventoManager(self.db).validar_invitacion(objeto.codigoautorizacion)
         if respuesta:
 

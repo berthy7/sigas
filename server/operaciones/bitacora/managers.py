@@ -1,5 +1,5 @@
 from server.common.managers import SuperManager
-from server.usuarios.usuario.managers import *
+from server.usuarios.usuario.models import *
 from .models import *
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -19,9 +19,9 @@ class BitacoraManager(SuperManager):
 
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        principal =  UsuarioManager(self.db).obtener_principal()
+        principal = self.db.query(Principal).first()
 
-        if principal:
+        if principal.estado:
 
             fecha_str = str(fechaHora)
             fecha_ = fecha_str[0:19]
@@ -35,9 +35,9 @@ class BitacoraManager(SuperManager):
     def fecha(self):
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        principal = UsuarioManager(self.db).obtener_principal()
+        principal = self.db.query(Principal).first()
 
-        if principal:
+        if principal.estado:
             fecha_str = str(fechaHora)
             fecha_ = fecha_str[0:19]
             fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
