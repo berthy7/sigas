@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Sequence
+from sqlalchemy import Column, Integer, String, Boolean, Sequence,Text
 from sqlalchemy.sql.schema import ForeignKey, Table
 from sqlalchemy.orm import relationship
 
@@ -13,6 +13,7 @@ class Usuario(Serializable, Base):
     __tablename__ = 'usuario'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Text, nullable=True, default='')
     nombre = Column(String(100), nullable=True, default='')
     apellidop = Column(String(100), nullable=True, default='')
     apellidom = Column(String(100), nullable=True, default='')
@@ -96,3 +97,12 @@ class ServidorCorreo(Serializable, Base):
     correo = Column(String(200), nullable=False)
     password = Column(String(200), nullable=False)
     estado = Column(Boolean, default=True)
+
+
+class Principal(Serializable, Base):
+    way = {}
+
+    __tablename__ = 'principal'
+
+    id = Column(Integer, primary_key=True)
+    estado = Column(Boolean, default=False)

@@ -38,7 +38,7 @@ class InvitadoManager(SuperManager):
 
     def obtener_x_ci(self,ciinvitado):
 
-        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.ci == ciinvitado).first()
+        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.ci == str(ciinvitado)).first()
 
     def insert(self, diccionary):
         usuario = UsuarioManager(self.db).get_by_pass(diccionary['user'])

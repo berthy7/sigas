@@ -6,6 +6,7 @@ from ...common.managers import *
 from ...operaciones.bitacora.managers import *
 from ..dispositivo.models import *
 from ...condominios.movimiento.managers import *
+from ...condominios.portero_virtual.managers import *
 
 
 from openpyxl import load_workbook
@@ -112,6 +113,7 @@ class RegistrosManager(SuperManager):
             if not respuesta:
                 object = RegistrosControlador(tarjeta=marcacion[0],codigo=marcacion[1],verificado=marcacion[2],puerta=marcacion[3],evento=marcacion[4],estado=marcacion[5],time=marcacion[6],fkdispositivo=marcaciones['iddispositivo'])
                 MovimientoManager(self.db).actualizar_movimiento(object)
+                # PorterovirtualManager(self.db).actualizar_marcacion(object)
                 self.db.add(object)
 
         self.db.commit()

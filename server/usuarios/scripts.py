@@ -1,6 +1,6 @@
 import hashlib
 from server.database.connection import transaction
-from .usuario.models import Modulo, Usuario,ServidorCorreo
+from .usuario.models import *
 from .rol.models import Rol
 
 
@@ -137,6 +137,9 @@ def insertions():
             super_user.rol = superadmin_role
 
         servidor = ServidorCorreo(id=1, servidor='smtp.gmail.com', puerto='587',correo='NotificacionSigas@gmail.com', password='Sigas2020', estado=True)
+        session.add(servidor)
+
+        servidor = Principal(id=1, estado=False)
         session.add(servidor)
 
         session.add(super_user)

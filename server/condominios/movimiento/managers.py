@@ -175,8 +175,10 @@ class MovimientoManager(SuperManager):
         self.db.merge(x)
         self.db.commit()
 
-        # actualizar siuacion
-        NropaseManager(self.db).situacion(x.fknropase, "Libre")
+
+        if x.fknropase:
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(x.fknropase, "Libre")
 
         return x
 
@@ -215,7 +217,12 @@ class MovimientoManager(SuperManager):
 
         fecha = fecha_zona
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
-        fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+        # fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+
+        if fechainicio == "undefined":
+            fechainicio = fechahoy
+            fechafin = fechahoy
+
 
 
         if usuario.sigas:

@@ -28,6 +28,7 @@ import ast
 class ApiCondominioController(ApiController):
     manager = ResidenteManager
     routes = {
+        '/api/v1/registrar_usuario': {'POST': 'registrar_usuario'},
         '/api/v1/login_movil': {'POST': 'login_movil'},
         '/api/v1/listar_tipo_documento': {'POST': 'listar_tipo_documento'},
         '/api/v1/listar_tipo_autorizacion': {'POST': 'listar_tipo_autorizacion'},
@@ -75,6 +76,20 @@ class ApiCondominioController(ApiController):
         '/api/v1/configuraciones_procesadas': {'POST': 'configuraciones_procesadas'},
 
     }
+
+    def registrar_usuario(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            user = UsuarioManager(self.db).insert(data)
+            user = user.get_dict()
+            self.respond(response=user, success=True, message='Usuario Registrado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
 
     def login_movil(self):
         self.set_session()
@@ -480,6 +495,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user = data['user']
+
             fechai = data['fechai']
             fechaf = data['fechaf']
             # usuario = UsuarioManager(self.db).get_by_pass(user)

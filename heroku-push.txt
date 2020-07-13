@@ -1,5 +1,5 @@
 E:
-cd C:\Proyectos\proyecto_prueba
+cd C:\Proyectos\proyecto_prueba_git
 heroku login
 git init
 heroku git:remote -a sistemacondominio

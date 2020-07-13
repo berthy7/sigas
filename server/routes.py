@@ -22,6 +22,7 @@ from server.condominios.evento.controllers import *
 from server.condominios.invitado.controllers import *
 from server.condominios.movimiento.controllers import *
 from server.condominios.movimiento_p.controllers import *
+from server.condominios.portero_virtual.controllers import *
 from server.servicios.controllers import *
 
 from server.dispositivos.dispositivo.controllers import *
@@ -67,6 +68,7 @@ def get_handlers():
     handlers.extend(get_routes(InvitadoController))
     handlers.extend(get_routes(MovimientoController))
     handlers.extend(get_routes(Movimiento_pController))
+    handlers.extend(get_routes(PorterovirtualController))
     handlers.extend(get_routes(ReporteController))
     handlers.extend(get_routes(Registros_cController))
 

@@ -18,13 +18,24 @@ from email.mime.text import MIMEText
 from xhtml2pdf import pisa
 
 import string
+from random import *
 import random
+import requests
+import jwt
+import time
 import hashlib
+import json
+from configparser import ConfigParser
 
 class UsuarioManager(SuperManager):
 
     def __init__(self, db):
         super().__init__(Usuario, db)
+
+    def obtener_principal(self):
+        x = self.db.query(Principal).first()
+
+        return x.estado
 
     def obtener_administrador(self):
         return self.db.query(Usuario).filter(Usuario.nombre == "Administrador").one()
@@ -61,6 +72,8 @@ class UsuarioManager(SuperManager):
 
     def insert(self, diccionary):
 
+        diccionary['password']= hashlib.sha512(diccionary['password'].encode()).hexdigest()
+
         usuario = UsuarioManager(self.db).entity(**diccionary)
         user = self.db.query(Usuario).filter(Usuario.username == usuario.username).first()
 
@@ -68,13 +81,42 @@ class UsuarioManager(SuperManager):
             return dict(respuesta=False, Mensaje="Nombre de Usuario ya Existe")
 
         else:
-            usuario.password = hashlib.sha512(usuario.password.encode()).hexdigest()
-            codigo = self.get_random_string()
-            Usuario.codigo = codigo
+
             fecha = BitacoraManager(self.db).fecha_actual()
             b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
             super().insert(b)
             u = super().insert(usuario)
+            u.codigo = str(u.id)
+            diccionary['codigo'] = u.codigo
+            super().update(u)
+
+            user_sigas = self.db.query(Usuario).filter(Usuario.id == usuario.user_id).first()
+
+            # if user_sigas.sigas:
+            #     try:
+            #         if u.fkcondominio:
+            #
+            #             if u.condominio.ip_publica !="":
+            #                 url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/registrar_usuario"
+            #
+            #                 headers = {'Content-Type': 'application/json'}
+            #                 string = diccionary
+            #                 cadena = json.dumps(string)
+            #                 body = cadena
+            #                 resp = requests.post(url, data=body, headers=headers, verify=False)
+            #                 response = json.loads(resp.text)
+            #
+            #                 print(response)
+            #
+            #
+            #     except Exception as e:
+            #         # Other errors are possible, such as IOError.
+            #         print("Error de conexion: " + str(e))
+
+
+
+
+
             #UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
             return dict(respuesta=True, Mensaje="Insertado Correctamente")
 

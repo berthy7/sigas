@@ -127,6 +127,12 @@
                         '-----',
                     {% end %}
 
+                    {% if c.fktipodocumento %}
+                        '{{ c.tipodocumento.nombre}}',
+                    {% else %}
+                        '-----',
+                    {% end %}
+
                     '{{ c.tipodocumento.nombre}}',
 
                     {% if c.fkinvitado %}

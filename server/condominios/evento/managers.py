@@ -250,18 +250,18 @@ class EventoManager(SuperManager):
 
         objeto = super().update(objeto)
 
-        # respuesta = EventoManager(self.db).validar_invitacion(objeto.codigoautorizacion)
-        # if respuesta:
-        #
-        #
-        #     diccionary = dict(codigo=objeto.id, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
-        #
-        #     ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
-        #
-        #     event = self.db.query(Evento).filter(Evento.id == objeto.fkevento).first()
-        #
-        #     event.situacion = "Acceso"
-        #     super().update(event)
+        respuesta = EventoManager(self.db).validar_invitacion(objeto.codigoautorizacion)
+        if respuesta:
+
+
+            diccionary = dict(codigo=objeto.id, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
+
+            ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
+
+            event = self.db.query(Evento).filter(Evento.id == objeto.fkevento).first()
+
+            event.situacion = "Acceso"
+            super().update(event)
 
 
         return objeto

@@ -6,6 +6,7 @@ from ..domicilio.managers import *
 from ..condominio.models import *
 from ..vehiculo.managers import *
 from ..nropase.managers import *
+from ...dispositivos.dispositivo.managers import *
 
 
 from openpyxl import load_workbook
@@ -49,10 +50,11 @@ class ResidenteManager(SuperManager):
         objeto.vehiculos = []
         objeto.estado = estado
 
-        objeto.codigoqr = str(objeto.codigo) + str(objeto.ci)
+
 
 
         a = super().insert(objeto)
+
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)
 
@@ -72,6 +74,13 @@ class ResidenteManager(SuperManager):
 
         dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.ci,password="residente2020",fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,enabled=estado)
         UsuarioManager(self.db).insert(dict_usuario)
+
+
+        # diccionary = dict(codigo=a.codigoqr, tarjeta=a.codigoqr, situacion="Acceso")
+        # ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
+
+
+
 
         return a
 

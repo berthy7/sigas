@@ -80,6 +80,10 @@ def insertions():
         if movimiento_p_m is None:
             movimiento_p_m = Modulo(title='Control y Registro Peatonal', route='/movimiento_p', name='movimiento_p', icon='control_point')
 
+        portero_virtual_m = session.query(Modulo).filter(Modulo.name == 'portero_virtual').first()
+        if portero_virtual_m is None:
+            portero_virtual_m = Modulo(title='Portero Virtual', route='/portero_virtual', name='portero_virtual', icon='control_point')
+
         reporte_m = session.query(Modulo).filter(Modulo.name == 'reporte').first()
         if reporte_m is None:
             reporte_m = Modulo(title='Reportes', route='/reporte', name='reporte', icon='content_paste')
@@ -100,6 +104,7 @@ def insertions():
         condominios_m.children.append(invitado_m)
         condominios_m.children.append(movimiento_m)
         condominios_m.children.append(movimiento_p_m)
+        condominios_m.children.append(portero_virtual_m)
         condominios_m.children.append(reporte_m)
         condominios_m.children.append(registros_c_m)
 
@@ -604,6 +609,40 @@ def insertions():
         movimiento_p_m.children.append(delete_movimiento_p)
         movimiento_p_m.children.append(imprimir_movimiento_p)
 
+        query_portero_virtual = session.query(Modulo).filter(Modulo.name == 'portero_virtual_query').first()
+        if query_portero_virtual is None:
+            query_portero_virtual = Modulo(title='Consultar', route='',
+                                  name='portero_virtual_query',
+                                  menu=False)
+
+        insert_portero_virtual = session.query(Modulo).filter(Modulo.name == 'portero_virtual_insert').first()
+        if insert_portero_virtual is None:
+            insert_portero_virtual = Modulo(title='Adicionar', route='/portero_virtual_insert',
+                                   name='portero_virtual_insert',
+                                   menu=False)
+        update_portero_virtual = session.query(Modulo).filter(Modulo.name == 'portero_virtual_update').first()
+        if update_portero_virtual is None:
+            update_portero_virtual = Modulo(title='Actualizar', route='/portero_virtual_update',
+                                   name='portero_virtual_update',
+                                   menu=False)
+        delete_portero_virtual = session.query(Modulo).filter(Modulo.name == 'portero_virtual_delete').first()
+        if delete_portero_virtual is None:
+            delete_portero_virtual = Modulo(title='Dar de Baja', route='/portero_virtual_delete',
+                                   name='portero_virtual_delete',
+                                   menu=False)
+
+        imprimir_portero_virtual = session.query(Modulo).filter(Modulo.name == 'portero_virtual_imprimir').first()
+        if imprimir_portero_virtual is None:
+            imprimir_portero_virtual = Modulo(title='Reportes', route='/portero_virtual_imprimir',
+                                     name='portero_virtual_imprimir',
+                                     menu=False)
+
+        portero_virtual_m.children.append(query_portero_virtual)
+        portero_virtual_m.children.append(insert_portero_virtual)
+        portero_virtual_m.children.append(update_portero_virtual)
+        portero_virtual_m.children.append(delete_portero_virtual)
+        portero_virtual_m.children.append(imprimir_portero_virtual)
+
         query_reporte = session.query(Modulo).filter(Modulo.name == 'reporte_query').first()
         if query_reporte is None:
             query_reporte = Modulo(title='Consultar', route='',
@@ -662,6 +701,7 @@ def insertions():
         superadmin_role.modulos.append(invitado_m)
         superadmin_role.modulos.append(movimiento_m)
         superadmin_role.modulos.append(movimiento_p_m)
+        superadmin_role.modulos.append(portero_virtual_m)
         superadmin_role.modulos.append(reporte_m)
         superadmin_role.modulos.append(registros_c_m)
 
@@ -681,6 +721,7 @@ def insertions():
         admin_role.modulos.append(invitado_m)
         admin_role.modulos.append(movimiento_m)
         admin_role.modulos.append(movimiento_p_m)
+        admin_role.modulos.append(portero_virtual_m)
         admin_role.modulos.append(reporte_m)
         admin_role.modulos.append(registros_c_m)
 
@@ -700,6 +741,7 @@ def insertions():
         supervisor_role.modulos.append(invitado_m)
         supervisor_role.modulos.append(movimiento_m)
         supervisor_role.modulos.append(movimiento_p_m)
+        supervisor_role.modulos.append(portero_virtual_m)
         supervisor_role.modulos.append(reporte_m)
         supervisor_role.modulos.append(registros_c_m)
 
@@ -719,6 +761,7 @@ def insertions():
         operador_role.modulos.append(invitado_m)
         operador_role.modulos.append(movimiento_m)
         operador_role.modulos.append(movimiento_p_m)
+        operador_role.modulos.append(portero_virtual_m)
         operador_role.modulos.append(reporte_m)
         operador_role.modulos.append(registros_c_m)
 
@@ -826,6 +869,12 @@ def insertions():
         superadmin_role.modulos.append(delete_movimiento_p)
         superadmin_role.modulos.append(imprimir_movimiento_p)
 
+        superadmin_role.modulos.append(query_portero_virtual)
+        superadmin_role.modulos.append(insert_portero_virtual)
+        superadmin_role.modulos.append(update_portero_virtual)
+        superadmin_role.modulos.append(delete_portero_virtual)
+        superadmin_role.modulos.append(imprimir_portero_virtual)
+
         superadmin_role.modulos.append(query_reporte)
         superadmin_role.modulos.append(imprimir_reporte)
 
@@ -918,6 +967,12 @@ def insertions():
         admin_role.modulos.append(delete_movimiento_p)
         admin_role.modulos.append(imprimir_movimiento_p)
 
+        admin_role.modulos.append(query_portero_virtual)
+        admin_role.modulos.append(insert_portero_virtual)
+        admin_role.modulos.append(update_portero_virtual)
+        admin_role.modulos.append(delete_portero_virtual)
+        admin_role.modulos.append(imprimir_portero_virtual)
+
         admin_role.modulos.append(query_reporte)
         admin_role.modulos.append(imprimir_reporte)
 
@@ -1009,6 +1064,12 @@ def insertions():
         supervisor_role.modulos.append(delete_movimiento_p)
         supervisor_role.modulos.append(imprimir_movimiento_p)
 
+        supervisor_role.modulos.append(query_portero_virtual)
+        supervisor_role.modulos.append(insert_portero_virtual)
+        supervisor_role.modulos.append(update_portero_virtual)
+        supervisor_role.modulos.append(delete_portero_virtual)
+        supervisor_role.modulos.append(imprimir_portero_virtual)
+
         supervisor_role.modulos.append(query_reporte)
         supervisor_role.modulos.append(imprimir_reporte)
 
@@ -1099,6 +1160,12 @@ def insertions():
         operador_role.modulos.append(update_movimiento_p)
         operador_role.modulos.append(delete_movimiento_p)
         operador_role.modulos.append(imprimir_movimiento_p)
+
+        operador_role.modulos.append(query_portero_virtual)
+        operador_role.modulos.append(insert_portero_virtual)
+        operador_role.modulos.append(update_portero_virtual)
+        operador_role.modulos.append(delete_portero_virtual)
+        operador_role.modulos.append(imprimir_portero_virtual)
 
         operador_role.modulos.append(query_reporte)
         operador_role.modulos.append(imprimir_reporte)
@@ -1213,6 +1280,7 @@ def insertions():
         session.add(Entrada(id=6,nombre='Salida vehicular Visitas'))
         session.add(Entrada(id=7,nombre='Salida peatonal Residentes'))
         session.add(Entrada(id=8,nombre='Salida vehicular Residentes'))
+        session.add(Entrada(id=9, nombre='Entrada Porteria virtual'))
 
         session.add(Tipovehiculo(nombre='AUTO'))
         session.add(Tipovehiculo(nombre='CAMIONETA'))

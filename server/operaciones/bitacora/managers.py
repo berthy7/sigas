@@ -1,4 +1,5 @@
 from server.common.managers import SuperManager
+from server.usuarios.usuario.managers import *
 from .models import *
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -18,24 +19,31 @@ class BitacoraManager(SuperManager):
 
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        # fecha_str = str(fechaHora)
-        # fecha_ = fecha_str[0:19]
-        # fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
-        #
-        # timezone = pytz.timezone('America/La_Paz')
-        # fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+        principal =  UsuarioManager(self.db).obtener_principal()
+
+        if principal:
+
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
 
         return fechaHora
 
     def fecha(self):
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        # fecha_str = str(fechaHora)
-        # fecha_ = fecha_str[0:19]
-        # fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
-        #
-        # timezone = pytz.timezone('America/La_Paz')
-        # fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+        principal = UsuarioManager(self.db).obtener_principal()
+
+        if principal:
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
 
         return fechaHora
 

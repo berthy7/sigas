@@ -74,6 +74,14 @@ class DispositivoManager(SuperManager):
         else:
             return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fkcondominio == usuario.fkcondominio).all()
 
+    def listar_cerraduras_x_usuario(self, usuario):
+
+        if usuario.sigas:
+            return self.db.query(Cerraduras).filter(Cerraduras.estado == True).all()
+
+        else:
+            return self.db.query(Cerraduras).join(Dispositivo).filter(Cerraduras.estado == True).filter(Dispositivo.fkcondominio == usuario.fkcondominio).all()
+
 
     def listar_x_condominio(self, idcondominio):
         x = self.db.query(self.entity).filter(self.entity.fkcondominio == idcondominio).filter(self.entity.estado == True).all()
@@ -320,6 +328,16 @@ class ConfiguraciondispositivoManager(SuperManager):
         inicial_id = 500000
         codigo = inicial_id + int(diccionary['codigo'])
         diccionary['codigo'] = str(codigo)
+        dispositivos = DispositivoManager(self.db).listar_todo()
+
+        for dis in dispositivos:
+            diccionary['fkdispositivo'] = dis.id
+
+            objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
+            super().insert(objeto)
+
+    def insert_qr_residente(self, diccionary):
+        diccionary['codigo'] = str(diccionary['codigo'])
         dispositivos = DispositivoManager(self.db).listar_todo()
 
         for dis in dispositivos:

@@ -379,6 +379,7 @@ function actualizar_tabla(response){
     var id;
     var fechai;
     var fechaf;
+    var tipodocumento;
     var ci;
     var nombre;
     var conductor;
@@ -407,6 +408,12 @@ function actualizar_tabla(response){
                 fechaf = '-----'
                 salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
 
+            }
+        
+            if(response['response'][i].fktipodocumento){
+                tipodocumento= response['response'][i].tipodocumento.nombre
+            }else{
+                tipodocumento = '-----'
             }
 
             if(response['response'][i].fkinvitado != "None"){
@@ -460,7 +467,7 @@ function actualizar_tabla(response){
                 id,
                 fechai,
                 fechaf,
-                response['response'][i].tipodocumento.nombre,
+                tipodocumento,
                 ci,
                 nombre,
                 conductor,
