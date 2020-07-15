@@ -50,7 +50,7 @@ class Invitado(Serializable, Base):
                 fkmodelo = None
                 nombremodelo = ""
 
-                lista_vehiculos.append(dict(id=v.id, placa=v.placa, tipo=v.tipo, color=v.color, fkmarca=v.fkmarca,
+                lista_vehiculos.append(dict(id=v.id, placa=v.placa, fktipo=v.fktipo, fkcolor=v.fkcolor, fkmarca=v.fkmarca,
                                             nombremarca=v.marca.nombre, fkmodelo=fkmodelo, nombremodelo=nombremodelo,
                                             fknropase=fknropase, nropase=nropase))
 

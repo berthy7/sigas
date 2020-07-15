@@ -98,7 +98,10 @@ class InvitadoController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
         indicted_object = InvitadoManager(self.db).obtener_x_id(diccionary['id'])
-        self.respond(indicted_object.get_dict(), message='Operacion exitosa!')
+        respuesta = indicted_object.get_dict()
+        respuesta['vehiculos'] = None
+
+        self.respond(respuesta, message='Operacion exitosa!')
         self.db.close()
 
 

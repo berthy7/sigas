@@ -68,6 +68,9 @@ class VehiculoController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
         indicted_object = VehiculoManager(self.db).obtener_x_id(diccionary['id'])
+        respuesta = indicted_object.get_dict()
+        respuesta['invitado'] = None
+        respuesta['residente'] = None
         self.respond(indicted_object.get_dict(), message='Operacion exitosa!')
         self.db.close()
 
