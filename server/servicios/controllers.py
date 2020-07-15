@@ -295,6 +295,7 @@ class ApiCondominioController(ApiController):
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
                 obj_dict['residente'] = None
+                obj_dict['invitado'] = None
                 obj_dict['nropase'] =  None
 
                 resp.append(obj_dict)
@@ -318,6 +319,7 @@ class ApiCondominioController(ApiController):
             arraT['objeto'] = InvitadoManager(self.db).listar_todo()
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
+                obj_dict['vehiculos'] = None
                 resp.append(obj_dict)
             self.db.close()
 
@@ -340,6 +342,7 @@ class ApiCondominioController(ApiController):
             arraT['objeto'] = InvitadoManager(self.db).listar_x_residente(usuario)
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
+                obj_dict['vehiculos'] = None
                 resp.append(obj_dict)
             self.db.close()
 
