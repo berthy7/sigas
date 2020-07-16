@@ -75,18 +75,33 @@ class VehiculoManager(SuperManager):
         return a.id
 
     def registrar_vehiculo_invitado(self, diccionario,idinvitado):
-        if diccionario['fkmodelo'] == "":
-            diccionario['fkmodelo'] = None
+        placa = diccionario['placa']
+        fktipo = diccionario['fktipo']
+        fkmarca = diccionario['fkmarca']
+        fkmodelo = diccionario['fkmodelo']
+        fkcolor = diccionario['fkcolor']
+
+        if fkmarca == "":
+            fkmarca = None
+        elif int(fkmarca) == 0:
+            marc = Marca(nombre=diccionario['nombre_marca'])
+            obj_marca = super().insert(marc)
+            fkmarca = obj_marca.id
+        if fkmodelo == "":
+            fkmodelo = None
+
 
         if diccionario['id'] !="":
             respuesta = VehiculoManager(self.db).consultar_vehiculo_invitado(diccionario['id'],idinvitado)
             if respuesta is None:
-                objeto = VehiculoManager(self.db).entity(**diccionario)
+                dict_vehiculo = dict(placa=placa, fktipo=fktipo, fkmarca=fkmarca, fkmodelo=fkmodelo, fkcolor=fkcolor)
+                objeto = VehiculoManager(self.db).entity(**dict_vehiculo)
                 objeto.fkinvitado = idinvitado
                 super().update(objeto)
         else:
             diccionario['id'] = None
-            objeto = VehiculoManager(self.db).entity(**diccionario)
+            dict_vehiculo = dict(placa=placa, fktipo=fktipo, fkmarca=fkmarca, fkmodelo=fkmodelo, fkcolor=fkcolor)
+            objeto = VehiculoManager(self.db).entity(**dict_vehiculo)
             objeto.fkinvitado = idinvitado
             super().insert(objeto)
 

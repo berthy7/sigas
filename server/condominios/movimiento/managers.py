@@ -210,7 +210,6 @@ class MovimientoManager(SuperManager):
 
 
     def filtrar_movil(self, fechainicio, fechafin,usuario):
-        usuario = UsuarioManager(self.db).get_by_pass(usuario)
 
         list = {}
         c = 0

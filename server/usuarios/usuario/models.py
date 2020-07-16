@@ -13,7 +13,7 @@ class Usuario(Serializable, Base):
     __tablename__ = 'usuario'
 
     id = Column(Integer, primary_key=True)
-    codigo = Column(Text, nullable=True, default='')
+    codigo = Column(Integer, nullable=True)
     nombre = Column(String(100), nullable=True, default='')
     apellidop = Column(String(100), nullable=True, default='')
     apellidom = Column(String(100), nullable=True, default='')

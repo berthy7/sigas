@@ -82,9 +82,12 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-            user = UsuarioManager(self.db).insert(data)
-            user = user.get_dict()
-            self.respond(response=user, success=True, message='Usuario Registrado correctamente.')
+            print("servicio registrar usuario")
+            print(str(data))
+
+            # user = UsuarioManager(self.db).insert(data)
+            # user = user.get_dict()
+            self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
 
         except Exception as e:
             print(e)
@@ -334,7 +337,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user= data['user']
-            usuario = UsuarioManager(self.db).get_by_pass(user)
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -358,7 +361,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user= data['user']
-            usuario = UsuarioManager(self.db).get_by_pass(user)
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -381,7 +384,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user= data['user']
-            usuario = UsuarioManager(self.db).get_by_pass(user)
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -404,7 +407,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user= data['user']
-            usuario = UsuarioManager(self.db).get_by_pass(user)
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -429,7 +432,7 @@ class ApiCondominioController(ApiController):
             user= data['user']
             fechai = data['fechai']
             fechaf = data['fechaf']
-            usuario = UsuarioManager(self.db).get_by_pass(user)
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -475,7 +478,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user = data['user']
-            usuario = UsuarioManager(self.db).get_by_pass(user)
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -498,6 +501,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             user = data['user']
+            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
             fechai = data['fechai']
             fechaf = data['fechaf']
@@ -507,7 +511,7 @@ class ApiCondominioController(ApiController):
             resp = []
 
             # arraT['objeto'] = CondominioManager(self.db).obtener_movimientos(usuario.fkcondominio)
-            arraT['objeto'] = MovimientoManager(self.db).filtrar_movil(fechai, fechaf, user)
+            arraT['objeto'] = MovimientoManager(self.db).filtrar_movil(fechai, fechaf, usuario)
             for item in arraT['objeto']:
                 obj_dict = item.get_dict()
                 resp.append(obj_dict)
@@ -526,6 +530,9 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
+
             invi =InvitadoManager(self.db).insert(data)
             invita = invi.get_dict()
             self.respond(response=invita,success=True, message='Insertado correctamente.')
@@ -540,6 +547,8 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             data['id']= ""
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             VehiculoManager(self.db).registrar_vehiculo_invitado(data,data['fkinvitado'])
             self.respond(success=True, message='Insertado correctamente.')
@@ -553,6 +562,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             data['fkareasocial']  =""
 
             EventoManager(self.db).insert(data)
@@ -567,6 +578,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             resp = InvitacionManager(self.db).insert(data)
             invitacion = resp.get_dict()
@@ -581,6 +594,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             resp = EventoManager(self.db).insertar_invitacion_rapida(data)
             resp_dict = resp.get_dict()
@@ -595,6 +610,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             print("ingreso Vehicular movil ci: " + str(data['ci']))
             resp = MovimientoManager(self.db).insert(data)
             objeto = resp.get_dict()
@@ -610,6 +627,8 @@ class ApiCondominioController(ApiController):
             try:
                 self.set_session()
                 data = json.loads(self.request.body.decode('utf-8'))
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
                 print("ingreso Peatonal movil ci: " + str(data['ci']))
                 resp = Movimiento_pManager(self.db).insert(data)
                 objeto = resp.get_dict()
@@ -657,6 +676,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             resp = EventoManager(self.db).delete(data['idevento'],data['estado'], data['user'], data['ip'])
             self.respond(response=None, success=True, message='Evento Cancelado.')
 
@@ -669,6 +690,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             resp = InvitacionManager(self.db).delete(data['idinvitacion'], data['estado'], data['user'], data['ip'])
             self.respond(response=None, success=True, message='Invitacion Cancelada.')
 
@@ -681,6 +704,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             resp = InvitacionManager(self.db).delete_invitacion_rapida(data['idinvitacion'], data['estado'], data['user'], data['ip'])
             self.respond(response=None, success=True, message='Invitacion rapida Cancelada.')
 
@@ -693,6 +718,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             resp = UsuarioManager(self.db).actualizar_credenciales(data)
             self.respond(response=resp['response'], success=resp['success'], message=resp['message'])
@@ -706,6 +733,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             resp =ResidenteManager(self.db).actualizar_foto(data)
             self.respond(response=resp['response'], success=resp['success'], message=resp['message'])
@@ -719,6 +748,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             InvitadoManager(self.db).update(data)
             self.respond(success=True, message='Insertado correctamente.')
@@ -732,6 +763,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             data['id']= ""
 
             VehiculoManager(self.db).update(data)
@@ -746,6 +779,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
             idmovimiento = data['idmovimiento']
             user = data['user']
             ip = data['ip']
@@ -857,6 +892,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
 
             even = EventoManager(self.db).actualizar(data)
             evento = even.get_dict()
@@ -866,8 +903,6 @@ class ApiCondominioController(ApiController):
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
-
-
 
 
     # Funciones de Bitacora

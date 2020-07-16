@@ -86,32 +86,31 @@ class UsuarioManager(SuperManager):
             b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
             super().insert(b)
             u = super().insert(usuario)
-            u.codigo = str(u.id)
-            diccionary['codigo'] = u.codigo
+            u.codigo = u.id
             super().update(u)
 
             user_sigas = self.db.query(Usuario).filter(Usuario.id == usuario.user_id).first()
 
-            # if user_sigas.sigas:
-            #     try:
-            #         if u.fkcondominio:
-            #
-            #             if u.condominio.ip_publica !="":
-            #                 url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/registrar_usuario"
-            #
-            #                 headers = {'Content-Type': 'application/json'}
-            #                 string = diccionary
-            #                 cadena = json.dumps(string)
-            #                 body = cadena
-            #                 resp = requests.post(url, data=body, headers=headers, verify=False)
-            #                 response = json.loads(resp.text)
-            #
-            #                 print(response)
-            #
-            #
-            #     except Exception as e:
-            #         # Other errors are possible, such as IOError.
-            #         print("Error de conexion: " + str(e))
+            if user_sigas.sigas:
+                try:
+                    if u.fkcondominio:
+
+                        if u.condominio.ip_publica !="":
+                            url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/registrar_usuario"
+
+                            headers = {'Content-Type': 'application/json'}
+                            string = diccionary
+                            cadena = json.dumps(string)
+                            body = cadena
+                            resp = requests.post(url, data=body, headers=headers, verify=False)
+                            response = json.loads(resp.text)
+
+                            print(response)
+
+
+                except Exception as e:
+                    # Other errors are possible, such as IOError.
+                    print("Error de conexion: " + str(e))
 
 
 
@@ -247,6 +246,9 @@ class UsuarioManager(SuperManager):
 
     def get_by_pass(self, Usuario_id):
         return self.db.query(Usuario).filter(Usuario.id == Usuario_id).first()
+
+    def obtener_x_codigo(self, codigo):
+        return self.db.query(Usuario).filter(Usuario.codigo == codigo).first()
 
     def update_profile(self, Usuarioprf, ip):
         usuario = self.db.query(Usuario).filter_by(id=Usuarioprf.id).first()
