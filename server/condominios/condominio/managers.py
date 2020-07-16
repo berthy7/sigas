@@ -58,15 +58,36 @@ class CondominioManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.fksucursal == idsurcusal).filter(
             self.entity.estado == True)
 
-    def insert(self, objeto):
+    def insert(self, diccionary):
+
+        objeto = CondominioManager(self.db).entity(**diccionary)
+
         objeto.fechai = datetime.strptime(objeto.fechai, '%d/%m/%Y')
         objeto.fechaf = datetime.strptime(objeto.fechaf, '%d/%m/%Y')
         fecha = BitacoraManager(self.db).fecha_actual()
 
-        a = super().insert(objeto)
-        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Condominio.", fecha=fecha,tabla="condominio", identificador=a.id)
+        c = super().insert(objeto)
+
+        principal = self.db.query(Principal).first()
+
+        if principal.estado:
+
+            if c.ip_publica != "":
+                url = "http://" + c.ip_publica + ":" + c.puerto + "/api/v1/registrar_condominio"
+
+                headers = {'Content-Type': 'application/json'}
+                diccionary['id'] = c.id
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+
+        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Condominio.", fecha=fecha,tabla="condominio", identificador=c.id)
         super().insert(b)
-        return a
+        return c
 
     def update(self, objeto):
         objeto.fechai = datetime.strptime(objeto.fechai, '%d/%m/%Y')

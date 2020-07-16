@@ -32,8 +32,8 @@ class CondominioController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
         diccionary['user'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
-        objeto = self.manager(self.db).entity(**diccionary)
-        CondominioManager(self.db).insert(objeto)
+
+        CondominioManager(self.db).insert(diccionary)
         self.respond(success=True, message='Insertado correctamente.')
 
     def update(self):

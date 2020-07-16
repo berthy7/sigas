@@ -89,9 +89,9 @@ class UsuarioManager(SuperManager):
             u.codigo = u.id
             super().update(u)
 
-            user_sigas = self.db.query(Usuario).filter(Usuario.id == usuario.user_id).first()
+            principal = self.db.query(Principal).first()
 
-            if user_sigas.sigas:
+            if principal:
                 try:
                     if u.fkcondominio:
 

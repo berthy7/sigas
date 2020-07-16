@@ -28,6 +28,7 @@ import ast
 class ApiCondominioController(ApiController):
     manager = ResidenteManager
     routes = {
+        '/api/v1/registrar_condominio': {'POST': 'registrar_condominio'},
         '/api/v1/registrar_usuario': {'POST': 'registrar_usuario'},
         '/api/v1/login_movil': {'POST': 'login_movil'},
         '/api/v1/listar_tipo_documento': {'POST': 'listar_tipo_documento'},
@@ -77,6 +78,22 @@ class ApiCondominioController(ApiController):
 
     }
 
+    def registrar_condominio(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            print("servicio registrar condominio")
+            print(str(data))
+
+            CondominioManager(self.db).insert(data)
+            self.respond(response=None, success=True, message='Condominio registrado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
     def registrar_usuario(self):
         try:
             self.set_session()
@@ -93,6 +110,8 @@ class ApiCondominioController(ApiController):
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
+
+
 
     def login_movil(self):
         self.set_session()
