@@ -400,12 +400,28 @@ class UsuarioManager(SuperManager):
 
 
             fecha = BitacoraManager(self.db).fecha_actual()
-            self.db.merge(usuario)
+            us = self.db.merge(usuario)
             self.db.commit()
 
             b = Bitacora(fkusuario=diccionary['user'], ip=diccionary['ip'], accion="Modificó Credenciales", fecha=fecha,
                          tabla="usuario", identificador=usuario.id)
             super().insert(b)
+
+            principal = self.db.query(Principal).first()
+
+            if principal.estado == False:
+
+                url = "http://sistemacondominio.herokuapp.com//api/v1/registrar_condominio"
+
+                headers = {'Content-Type': 'application/json'}
+                diccionary['usrename'] = us.codigo
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
 
             return dict(response=None,success=True,message="Actualizado Correctamente")
         else:
