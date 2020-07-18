@@ -72,7 +72,7 @@ class EventoController(CrudController):
     def validar_invitacion(self):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
-        indicted_object = EventoManager(self.db).validar_invitacion(diccionary['codigoautorizacion'])
+        indicted_object = EventoManager(self.db).validar_invitacion_lector(diccionary['codigoautorizacion'])
         if indicted_object:
             self.respond(indicted_object.get_dict(),success=True, message='/resources/images/aceptado.png')
             self.db.close()
