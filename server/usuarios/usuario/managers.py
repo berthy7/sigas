@@ -411,7 +411,7 @@ class UsuarioManager(SuperManager):
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo
-
+                print(str(diccionary))
                 cadena = json.dumps(diccionary)
                 body = cadena
                 resp = requests.post(url, data=body, headers=headers, verify=False)
