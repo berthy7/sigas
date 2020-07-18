@@ -414,7 +414,7 @@ class UsuarioManager(SuperManager):
                 url = "http://sistemacondominio.herokuapp.com//api/v1/registrar_condominio"
 
                 headers = {'Content-Type': 'application/json'}
-                diccionary['usrename'] = us.codigo
+                diccionary['user'] = us.codigo
 
                 cadena = json.dumps(diccionary)
                 body = cadena
