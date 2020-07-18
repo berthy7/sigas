@@ -407,7 +407,7 @@ class UsuarioManager(SuperManager):
 
             if principal.estado == False:
 
-                url = "http://sistemacondominio.herokuapp.com//api/v1/actualizar_credenciales"
+                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_credenciales"
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo
