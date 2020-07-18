@@ -112,10 +112,6 @@ class UsuarioManager(SuperManager):
                     # Other errors are possible, such as IOError.
                     print("Error de conexion: " + str(e))
 
-
-
-
-
             #UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
             return dict(respuesta=True, Mensaje="Insertado Correctamente")
 
@@ -411,7 +407,7 @@ class UsuarioManager(SuperManager):
 
             if principal.estado == False:
 
-                url = "http://sistemacondominio.herokuapp.com//api/v1/registrar_condominio"
+                url = "http://sistemacondominio.herokuapp.com//api/v1/actualizar_credenciales"
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo
