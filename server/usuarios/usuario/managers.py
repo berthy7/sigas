@@ -411,13 +411,10 @@ class UsuarioManager(SuperManager):
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo
-                print(str(diccionary))
                 cadena = json.dumps(diccionary)
                 body = cadena
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
-
-                print(response)
 
             return dict(response=None,success=True,message="Actualizado Correctamente")
         else:
