@@ -76,6 +76,7 @@ class MovimientoManager(SuperManager):
 
 
         if diccionary['fkconductor'] == "" or diccionary['fkconductor'] == "0":
+            diccionary['nombre_conductor'] = diccionary['nombre_conductor'].replace(" ", "")
             if diccionary['nombre_conductor'] != "":
                 conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
                 diccionary['fkconductor'] = conductor.id
