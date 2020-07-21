@@ -42,7 +42,7 @@ function cargar_tabla(data){
         language : {
             'url': '/resources/js/spanish.json',
         },
-        "pageLength": 5,
+        "pageLength": 20,
         fixedHeader: {
             header: true,
             headerOffset: $('.navbar-header').outerHeight()
