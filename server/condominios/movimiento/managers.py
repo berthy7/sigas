@@ -58,8 +58,7 @@ class MovimientoManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
     def insert(self, diccionary):
-
-        diccionary['cantpasajeros'] = int(diccionary['cantpasajeros'])
+        diccionary['cantpasajeros'] = abs(int(diccionary['cantpasajeros']))
 
         diccionary['placa'] = diccionary['placa'].replace(" ", "")
         if diccionary['visita']:
