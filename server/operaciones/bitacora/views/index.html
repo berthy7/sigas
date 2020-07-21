@@ -18,6 +18,8 @@
                             <th class="order_by_th" data-name="phone">Usuario </th>
                             <th class="order_by_th" data-name="phone">Acción </th>
                             <th class="order_by_th" data-name="phone">Dirección IP </th>
+                            <th class="order_by_th" data-name="phone">Tabla </th>
+                            <th class="order_by_th" data-name="phone">Identificador </th>
                             <th class="order_by_th" data-name="phone">Fecha </th>
                         </tr>
                     </thead>
@@ -53,6 +55,8 @@
                     '{{ c.usuario.username}}',
                     '{{ c.accion }}',
                     '{{ c.ip }}',
+                    '{{ c.tabla }}',
+                    '{{ c.identificador }}',
                     '{{ c.fecha.strftime("%d/%m/%Y %H:%M:%S") }}',
 
                 ]);
