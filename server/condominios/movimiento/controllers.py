@@ -63,7 +63,7 @@ class MovimientoController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
         diccionary['user'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
-
+        print("ingreso Vehicular web ci: " + str(diccionary['ci']))
         MovimientoManager(self.db).insert(diccionary)
         self.respond(success=True, message='Insertado correctamente.')
 
