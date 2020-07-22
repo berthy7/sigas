@@ -372,8 +372,8 @@ function actualizar_tabla(response){
         if(response['response'][i].fechai){
             fechai= response['response'][i].fechai
         }else{
-            // fechai =response['response'][i].fechar
-            fechai = '-----'
+            fechai =response['response'][i].fechar
+            // fechai = '-----'
         }
 
         if(response['response'][i].fechaf){
