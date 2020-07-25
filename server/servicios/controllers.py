@@ -765,8 +765,8 @@ class ApiCondominioController(ApiController):
                 cadena = json.dumps(data)
                 body = cadena
                 resp = requests.post(url, data=body, headers=headers, verify=False)
-                response = json.loads(resp.text)
-            self.respond(response=resp['response'], success=resp['success'], message=resp['message'])
+                # response = json.loads(resp.text)
+            self.respond(response=None, success=resp['success'], message=resp['message'])
 
         except Exception as e:
             print(e)
