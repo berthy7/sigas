@@ -398,6 +398,7 @@ class ResidenteManager(SuperManager):
     def actualizar_foto(self, data):
         try:
             print("servicio foto")
+            print(str(data))
             x = self.db.query(Usuario).filter(Usuario.id == data['user']).first()
             persona = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
             persona.foto = data['foto']
