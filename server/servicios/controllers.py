@@ -753,19 +753,8 @@ class ApiCondominioController(ApiController):
             data['user'] = usuario.id
 
             resp =ResidenteManager(self.db).actualizar_foto(data)
-            principal = self.db.query(Principal).first()
 
-            if principal.estado == False:
-                print("principal false")
 
-                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_foto"
-
-                headers = {'Content-Type': 'application/json'}
-
-                cadena = json.dumps(data)
-                body = cadena
-                resp = requests.post(url, data=body, headers=headers, verify=False)
-                # response = json.loads(resp.text)
             self.respond(response=None, success=resp['success'], message=resp['message'])
 
         except Exception as e:

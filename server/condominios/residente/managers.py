@@ -409,6 +409,20 @@ class ResidenteManager(SuperManager):
             self.db.merge(persona)
             self.db.commit()
             self.db.close()
+
+            principal = self.db.query(Principal).first()
+            if principal.estado == False:
+                print("principal false")
+
+                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_foto"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(data)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                # response = json.loads(resp.text)
+
             return dict(response=None, success=True, message="Actualizado correctamente")
 
         except Exception as e:
