@@ -88,7 +88,6 @@ class UsuarioManager(SuperManager):
             u = super().insert(usuario)
             u.codigo = u.id
             super().update(u)
-            print(str(u))
 
             principal = self.db.query(Principal).first()
 
@@ -112,7 +111,7 @@ class UsuarioManager(SuperManager):
             #     except Exception as e:
             #         # Other errors are possible, such as IOError.
             #         print("Error de conexion: " + str(e))
-            print("return")
+
             #UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
             return dict(respuesta=True, Mensaje="Insertado Correctamente")
 
