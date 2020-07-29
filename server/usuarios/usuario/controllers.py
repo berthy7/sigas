@@ -53,6 +53,7 @@ class UsuarioController(CrudController):
         respuesta = UsuarioManager(self.db).insert(diccionary)
         arraT = UsuarioManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] = UsuarioManager(self.db).usuarios_sigas(us)
+        print("return controlador")
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='Insertado correctamente.')
 
