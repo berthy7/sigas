@@ -92,26 +92,26 @@ class UsuarioManager(SuperManager):
 
             principal = self.db.query(Principal).first()
 
-            if principal:
-                try:
-                    if u.fkcondominio:
-
-                        if u.condominio.ip_publica !="":
-                            url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/registrar_usuario"
-
-                            headers = {'Content-Type': 'application/json'}
-                            string = diccionary
-                            cadena = json.dumps(string)
-                            body = cadena
-                            resp = requests.post(url, data=body, headers=headers, verify=False)
-                            response = json.loads(resp.text)
-
-                            # print(response)
-
-
-                except Exception as e:
-                    # Other errors are possible, such as IOError.
-                    print("Error de conexion: " + str(e))
+            # if principal:
+            #     try:
+            #         if u.fkcondominio:
+            #
+            #             if u.condominio.ip_publica !="":
+            #                 url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/registrar_usuario"
+            #
+            #                 headers = {'Content-Type': 'application/json'}
+            #                 string = diccionary
+            #                 cadena = json.dumps(string)
+            #                 body = cadena
+            #                 resp = requests.post(url, data=body, headers=headers, verify=False)
+            #                 response = json.loads(resp.text)
+            #
+            #                 # print(response)
+            #
+            #
+            #     except Exception as e:
+            #         # Other errors are possible, such as IOError.
+            #         print("Error de conexion: " + str(e))
             print("return")
             #UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
             return dict(respuesta=True, Mensaje="Insertado Correctamente")
