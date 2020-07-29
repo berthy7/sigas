@@ -13,6 +13,7 @@ class Nropase(Serializable, Base):
     __tablename__ = 'nropase'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     numero = Column(Text, default=" ")
     tarjeta = Column(Text, nullable=True)
     tipo = Column(String(200), default="Visita") #tipo = Residente, Visita, Proveedores,provper,Excepcion

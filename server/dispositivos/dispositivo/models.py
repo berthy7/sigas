@@ -14,6 +14,7 @@ class Dispositivo(Serializable, Base):
     __tablename__ = 'dispositivo'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     ip = Column(String(100), nullable=False)
     puerto = Column(Integer, nullable=False)
     descripcion = Column(String(100), nullable=True, default="")

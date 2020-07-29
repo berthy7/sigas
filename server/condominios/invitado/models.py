@@ -13,6 +13,7 @@ class Invitado(Serializable, Base):
     __tablename__ = 'invitado'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     nombre = Column(String(100), nullable=True)
     apellidop = Column(String(100), nullable=True)
     apellidom = Column(String(100), nullable=True)

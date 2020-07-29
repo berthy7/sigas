@@ -14,6 +14,7 @@ class Areasocial(Serializable, Base):
     __tablename__ = 'areasocial'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     nombre = Column(String(100), nullable=True)
     ubicacion = Column(String(100), nullable=True)
     fkcondominio = Column(Integer, ForeignKey('condominio.id'), nullable=True)

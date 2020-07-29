@@ -12,6 +12,7 @@ class Vehiculo(Serializable, Base):
     __tablename__ = 'vehiculo'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     placa = Column(String(100), nullable=False)
     fktipo = Column(Integer, ForeignKey('tipo_vehiculo.id'), nullable=True)
     fkcolor = Column(Integer, ForeignKey('color.id'), nullable=True)

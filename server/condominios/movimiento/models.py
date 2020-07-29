@@ -14,6 +14,7 @@ class Movimiento(Serializable, Base):
     __tablename__ = 'movimiento'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     fkinvitacion = Column(Integer, ForeignKey('invitacion.id'), nullable=True)
     fktipodocumento = Column(Integer, ForeignKey('tipo_documento.id'), nullable=True)
     fkinvitado = Column(Integer, ForeignKey('invitado.id'), nullable=True)

@@ -105,7 +105,7 @@ class UsuarioManager(SuperManager):
                             resp = requests.post(url, data=body, headers=headers, verify=False)
                             response = json.loads(resp.text)
 
-                            print(response)
+                            # print(response)
 
 
                 except Exception as e:

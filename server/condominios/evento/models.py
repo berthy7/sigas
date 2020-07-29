@@ -13,6 +13,7 @@ class Evento(Serializable, Base):
     __tablename__ = 'evento'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     descripcion = Column(String(255), nullable=True, default="")
     fktipoevento = Column(Integer, ForeignKey('tipo_evento.id'), nullable=True)
     fkresidente = Column(Integer, ForeignKey('residente.id'), nullable=True)

@@ -13,7 +13,7 @@ class Residente(Serializable, Base):
     __tablename__ = 'residente'
 
     id = Column(Integer, primary_key=True)
-    codigo = Column(String(100), nullable=True)
+    codigo = Column(Integer, nullable=True)
     nombre = Column(String(100), nullable=False)
     apellidop = Column(String(100), nullable=False)
     apellidom = Column(String(100), nullable=True)

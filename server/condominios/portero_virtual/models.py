@@ -14,6 +14,7 @@ class Porterovirtual(Serializable, Base):
     __tablename__ = 'portero_virtual'
 
     id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=True)
     fkinvitacion = Column(Integer, ForeignKey('invitacion.id'), nullable=True)
 
     fkcerradura = Column(Integer, ForeignKey('cerraduras.id'), nullable=True)

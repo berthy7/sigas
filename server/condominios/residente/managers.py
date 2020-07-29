@@ -412,7 +412,6 @@ class ResidenteManager(SuperManager):
 
             principal = self.db.query(Principal).first()
             if principal.estado == False:
-                print("principal false")
 
                 url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_foto"
 
