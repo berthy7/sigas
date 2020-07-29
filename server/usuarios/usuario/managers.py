@@ -88,6 +88,7 @@ class UsuarioManager(SuperManager):
             u = super().insert(usuario)
             u.codigo = u.id
             super().update(u)
+            print(str(u))
 
             principal = self.db.query(Principal).first()
 
