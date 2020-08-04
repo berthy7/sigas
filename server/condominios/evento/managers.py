@@ -223,8 +223,11 @@ class EventoManager(SuperManager):
 
     def delete(self, id,state, user, ip):
         x = self.db.query(Evento).filter(Evento.id == id).one()
+        print("cancelar envento: " + str(id))
+
 
         for invitacion in x.invitaciones:
+            print("cancelar envento - invitaciones: " + str(invitacion.id))
             invitacion.estado = state
 
             diccionary = dict(codigo=invitacion.id, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
@@ -236,13 +239,13 @@ class EventoManager(SuperManager):
         else:
             mensaje = "Deshabilito Evento"
 
+        print("cancelar envento - insert: " + str(x))
+
         fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha, tabla="evento", identificador=id)
         super().insert(b)
         self.db.merge(x)
         self.db.commit()
-
-
 
         return mensaje
 
