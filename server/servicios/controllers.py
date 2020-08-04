@@ -81,7 +81,8 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_invitacion': {'POST': 'sincronizar_invitacion'},
         '/api/v1/sincronizar_invitacion_rapida': {'POST': 'sincronizar_invitacion_rapida'},
         '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
-        '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'}
+        '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
+        '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'}
 
     }
 
@@ -720,8 +721,6 @@ class ApiCondominioController(ApiController):
 
             principal = self.db.query(Principal).first()
             if principal.estado:
-
-                data['codigoqr'] = resp.codigoautorizacion
 
                 self.funcion_sincronizar(u,data,"sincronizar_cancelar_evento")
 

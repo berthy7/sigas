@@ -223,11 +223,8 @@ class EventoManager(SuperManager):
 
     def delete(self, id,state, user, ip):
         x = self.db.query(Evento).filter(Evento.id == id).one()
-        print("cancelar envento: " + str(id))
-
 
         for invitacion in x.invitaciones:
-            print("cancelar envento - invitaciones: " + str(invitacion.id))
             invitacion.estado = state
 
             diccionary = dict(codigo=invitacion.id, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
