@@ -1169,6 +1169,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            print("llego")
+            print(data)
 
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = u.id
