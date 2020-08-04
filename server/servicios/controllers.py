@@ -82,7 +82,8 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_invitacion_rapida': {'POST': 'sincronizar_invitacion_rapida'},
         '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
         '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
-        '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'}
+        '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'},
+        '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'}
 
     }
 
@@ -625,6 +626,7 @@ class ApiCondominioController(ApiController):
             principal = self.db.query(Principal).first()
             if principal.estado:
                 resp.codigo = resp.id
+                data['codigo'] = resp.id
                 self.db.merge(resp)
                 self.db.commit()
 
@@ -973,7 +975,6 @@ class ApiCondominioController(ApiController):
         #     self.respond(success=False, response="", message='El Usuario no se pudo Loguear.')
 
 
-
     # Funciones de Sincronizacion
 
     def funcion_sincronizar(self ,u,data, ws):
@@ -1159,6 +1160,25 @@ class ApiCondominioController(ApiController):
 
             self.respond(response=None, success=True, message='Invitacion Cancelada.')
 
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_actualizar_evento(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+            event = EventoManager(self.db).obtener_x_codigo(data['codigo'])
+            data['id'] = event.id
+
+
+            EventoManager(self.db).actualizar(data)
+            self.respond(response=None, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
