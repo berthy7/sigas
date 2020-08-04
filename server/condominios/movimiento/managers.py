@@ -141,7 +141,6 @@ class MovimientoManager(SuperManager):
 
 
         if a.fknropase:
-
             # actualizar siuacion
             NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
 

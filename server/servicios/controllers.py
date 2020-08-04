@@ -28,8 +28,6 @@ import ast
 class ApiCondominioController(ApiController):
     manager = ResidenteManager
     routes = {
-        '/api/v1/registrar_condominio': {'POST': 'registrar_condominio'},
-        '/api/v1/registrar_usuario': {'POST': 'registrar_usuario'},
         '/api/v1/login_movil': {'POST': 'login_movil'},
         '/api/v1/listar_tipo_documento': {'POST': 'listar_tipo_documento'},
         '/api/v1/listar_tipo_autorizacion': {'POST': 'listar_tipo_autorizacion'},
@@ -76,38 +74,16 @@ class ApiCondominioController(ApiController):
         '/api/v1/listar_nuevas_configuraciones': {'POST': 'listar_nuevas_configuraciones'},
         '/api/v1/configuraciones_procesadas': {'POST': 'configuraciones_procesadas'},
 
+        '/api/v1/sincronizar_condominio': {'POST': 'sincronizar_condominio'},
+        '/api/v1/sincronizar_usuario': {'POST': 'sincronizar_usuario'},
+        '/api/v1/sincronizar_invitado': {'POST': 'sincronizar_invitado'},
+        '/api/v1/sincronizar_evento': {'POST': 'sincronizar_evento'},
+        '/api/v1/sincronizar_invitacion': {'POST': 'sincronizar_invitacion'},
+        '/api/v1/sincronizar_invitacion_rapida': {'POST': 'sincronizar_invitacion_rapida'},
+        '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
+        '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'}
+
     }
-
-    def registrar_condominio(self):
-        try:
-            self.set_session()
-            data = json.loads(self.request.body.decode('utf-8'))
-
-            print("servicio registrar condominio")
-            print(str(data))
-
-            CondominioManager(self.db).insert(data)
-            self.respond(response=None, success=True, message='Condominio registrado correctamente.')
-
-        except Exception as e:
-            print(e)
-            self.respond(response=str(e), success=False, message=str(e))
-        self.db.close()
-
-    def registrar_usuario(self):
-        try:
-            self.set_session()
-            data = json.loads(self.request.body.decode('utf-8'))
-
-            # user = UsuarioManager(self.db).insert(data)
-            # user = user.get_dict()
-            self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
-
-        except Exception as e:
-            print(e)
-            self.respond(response=str(e), success=False, message=str(e))
-        self.db.close()
-
 
 
     def login_movil(self):
@@ -541,16 +517,23 @@ class ApiCondominioController(ApiController):
 
     # insercciones
 
+    # sincr
     def insertar_invitado(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
 
             invi =InvitadoManager(self.db).insert(data)
             invita = invi.get_dict()
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+                    self.funcion_sincronizar(u, data, "sincronizar_invitado")
+
+
             self.respond(response=invita,success=True, message='Insertado correctamente.')
 
         except Exception as e:
@@ -574,15 +557,25 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    # sincr
     def insertar_evento(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
             data['fkareasocial']  =""
 
-            EventoManager(self.db).insert(data)
+            event = EventoManager(self.db).insert(data)
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+                event.codigo = event.id
+                data['codigo'] = event.id
+                self.db.merge(event)
+                self.db.commit()
+                self.funcion_sincronizar(u,data,"sincronizar_evento")
+
             self.respond(success=True, message='Insertado correctamente.')
 
         except Exception as e:
@@ -590,14 +583,25 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    # sincr
     def insertar_invitacion(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
 
             resp = InvitacionManager(self.db).insert(data)
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+                data['codigoautorizacion'] = resp.codigoautorizacion
+
+                invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
+                data['ci'] = invi.ci
+
+                self.funcion_sincronizar(u,data,"sincronizar_invitacion")
+
             invitacion = resp.get_dict()
             self.respond(response=invitacion, success=True, message='Insertado correctamente.')
 
@@ -606,14 +610,30 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    # sincr
     def insertar_invitacion_rapida(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+            data['codigoautorizacion'] = ""
 
             resp = EventoManager(self.db).insertar_invitacion_rapida(data)
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+                resp.codigo = resp.id
+                self.db.merge(resp)
+                self.db.commit()
+
+                invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
+                data['ci'] = invi.ci
+
+                data['codigoautorizacion'] = resp.invitaciones[0].codigoautorizacion
+
+                self.funcion_sincronizar(u, data, "sincronizar_invitacion_rapida")
+
             resp_dict = resp.get_dict()
             self.respond(response=resp_dict,success=True, message='Insertado correctamente.')
 
@@ -688,13 +708,24 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    # sincr
     def cancelar_evento(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
             resp = EventoManager(self.db).delete(data['idevento'],data['estado'], data['user'], data['ip'])
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+
+                data['codigoqr'] = resp.codigoautorizacion
+
+                self.funcion_sincronizar(u,data,"sincronizar_cancelar_evento")
+
+
             self.respond(response=None, success=True, message='Evento Cancelado.')
 
         except Exception as e:
@@ -702,20 +733,29 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    # sincr
     def cancelar_invitacion(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
             resp = InvitacionManager(self.db).delete(data['idinvitacion'], data['estado'], data['user'], data['ip'])
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+
+                data['codigoqr'] = resp.codigoautorizacion
+
+                self.funcion_sincronizar(u,data,"sincronizar_cancelar_invitacion")
+
             self.respond(response=None, success=True, message='Invitacion Cancelada.')
 
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
-
+    # sincr
     def cancelar_invitacion_rapida(self):
         try:
             self.set_session()
@@ -723,6 +763,14 @@ class ApiCondominioController(ApiController):
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = usuario.id
             resp = InvitacionManager(self.db).delete_invitacion_rapida(data['idinvitacion'], data['estado'], data['user'], data['ip'])
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+
+                data['codigoqr'] = resp.codigoautorizacion
+
+                self.funcion_sincronizar(usuario, data, "sincronizar_cancelar_invitacion_rapida")
+
             self.respond(response=None, success=True, message='Invitacion rapida Cancelada.')
 
         except Exception as e:
@@ -809,6 +857,25 @@ class ApiCondominioController(ApiController):
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
+
+    def actualizar_evento(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
+
+            even = EventoManager(self.db).actualizar(data)
+            evento = even.get_dict()
+            self.respond(success=True, response=evento, message='Evento Actualizado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+
+    # Funciones de Integracion dispositivos
 
     def listar_nuevas_configuraciones(self):
         try:
@@ -906,21 +973,198 @@ class ApiCondominioController(ApiController):
         # else:
         #     self.respond(success=False, response="", message='El Usuario no se pudo Loguear.')
 
-    def actualizar_evento(self):
+
+
+    # Funciones de Sincronizacion
+
+    def funcion_sincronizar(self ,u,data, ws):
+        try:
+            if u.fkcondominio:
+                if u.condominio.ip_publica != "":
+                    url = "http://" + u.condominio.ip_publica + ":" + u.condominio.puerto + "/api/v1/" + ws
+
+                    headers = {'Content-Type': 'application/json'}
+                    string = data
+                    cadena = json.dumps(string)
+                    body = cadena
+                    resp = requests.post(url, data=body, headers=headers, verify=False)
+                    response = json.loads(resp.text)
+
+                    # print(response)
+
+
+        except Exception as e:
+            # Other errors are possible, such as IOError.
+            print("Error de conexion funcion sincronizar: " + str(e))
+
+    def sincronizar_condominio(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            print("servicio registrar condominio")
+
+            CondominioManager(self.db).insert(data)
+            self.respond(response=None, success=True, message='Condominio registrado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_usuario(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            # user = UsuarioManager(self.db).insert(data)
+            # user = user.get_dict()
+            self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_invitado(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+            invi = InvitadoManager(self.db).insert(data)
+            invita = invi.get_dict()
+            self.respond(response=invita, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_evento(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+            data['fkresidente'] = u.fkresidente
+
+            domi = ResidenteManager(self.db).obtener_domicilios(u.fkresidente)
+            data['fkdomicilio'] = domi.id
+
+            EventoManager(self.db).insert(data)
+            self.respond(response=None, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_invitacion(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = usuario.id
 
-            even = EventoManager(self.db).actualizar(data)
-            evento = even.get_dict()
-            self.respond(success=True,response=evento, message='Evento Actualizado correctamente.')
+            event = EventoManager(self.db).obtener_x_codigo(data['fkevento'])
+            data['fkevento'] = event.id
+
+            invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
+            data['fkinvitado'] = invi.id
+
+            resp = InvitacionManager(self.db).insert(data)
+            invitacion = resp.get_dict()
+            self.respond(response=invitacion, success=True, message='Insertado correctamente.')
 
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
+
+    def sincronizar_invitacion_rapida(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+            data['fkresidente'] = u.fkresidente
+
+            domi = ResidenteManager(self.db).obtener_domicilios(u.fkresidente)
+            data['fkdomicilio'] = domi.id
+
+
+            invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
+            data['fkinvitado'] = invi.id
+
+
+            EventoManager(self.db).insertar_invitacion_rapida(data)
+            self.respond(response=None, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_cancelar_evento(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
+
+            event = EventoManager(self.db).obtener_x_codigo(data['idevento'])
+            data['idevento'] = event.id
+
+            resp = EventoManager(self.db).delete(data['idevento'], data['estado'], data['user'], data['ip'])
+            self.respond(response=None, success=True, message='Evento Cancelado.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_cancelar_invitacion(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
+
+            inv = InvitacionManager(self.db).obtener_x_codigo(data['codigoqr'])
+            data['idinvitacion'] = inv.id
+
+            resp = InvitacionManager(self.db).delete(data['idinvitacion'], data['estado'], data['user'], data['ip'])
+
+            self.respond(response=None, success=True, message='Invitacion Cancelada.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_cancelar_invitacion_rapida(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = usuario.id
+
+            inv = InvitacionManager(self.db).obtener_x_codigo(data['codigoqr'])
+            data['idinvitacion'] = inv.id
+
+            resp = InvitacionManager(self.db).delete_invitacion_rapida(data['idinvitacion'], data['estado'], data['user'], data['ip'])
+
+            self.respond(response=None, success=True, message='Invitacion Cancelada.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
 
 
     # Funciones de Bitacora

@@ -18,6 +18,9 @@ class EventoManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity)
 
+    def obtener_x_codigo(self,idevento):
+        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.codigo == idevento).first()
+
     def validar_eventos(self):
 
         fechadate = datetime.now(pytz.timezone('America/La_Paz'))
@@ -126,6 +129,7 @@ class EventoManager(SuperManager):
         a = super().insert(objeto)
         print("registro evento: " + str(a.id))
 
+
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Evento.", fecha=fecha,tabla="evento", identificador=a.id)
         super().insert(b)
 
@@ -144,7 +148,7 @@ class EventoManager(SuperManager):
         diccionary['horaf'] = ""
         diccionary['fktipoevento'] = 6
         diccionary['descripcion'] = "Invitacion rapida"
-        lista.append(dict(fkinvitado=diccionary['fkinvitado'],fktipopase=diccionary['fktipopase']))
+        lista.append(dict(fkinvitado=diccionary['fkinvitado'],fktipopase=diccionary['fktipopase'],codigoautorizacion=diccionary['codigoautorizacion']))
         diccionary['invitaciones'] = lista
 
         objeto = EventoManager(self.db).entity(**diccionary)
@@ -238,6 +242,8 @@ class EventoManager(SuperManager):
         self.db.merge(x)
         self.db.commit()
 
+
+
         return mensaje
 
     def generar_codigo_autorizacion(self, objeto):
@@ -246,9 +252,9 @@ class EventoManager(SuperManager):
             # codigoqr = random.randrange(9999)
             # obj.codigoautorizacion = "EVEN" +str(objeto.id) + "INVI" +str(obj.id)
             #obj.codigoautorizacion = str(objeto.id) + str(obj.id) + str(codigoqr)
-            objeto.codigoautorizacion = str(objeto.fkevento) + str(objeto.id)
+            objeto.codigoautorizacion = str(objeto.id)
 
-        objeto = super().update(objeto)
+            objeto = super().update(objeto)
 
         sin_guardia = False
         if objeto.evento.fkdomicilio:
@@ -404,6 +410,9 @@ class InvitacionManager(SuperManager):
     def __init__(self, db):
         super().__init__(Invitacion, db)
 
+    def obtener_x_codigo(self,codigoqr):
+        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.codigoautorizacion == codigoqr).first()
+
     def obtener_invitaciones(self,idevento):
         return self.db.query(Invitacion).filter(Invitacion.estado == True).filter(Invitacion.fkevento == idevento).all()
 
@@ -437,10 +446,17 @@ class InvitacionManager(SuperManager):
         self.db.merge(x)
         self.db.commit()
 
-        # diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
-        # ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
+        sin_guardia = False
+        if x.evento.fkdomicilio:
+            sin_guardia = x.evento.domicilio.condominio.singuardia
+        elif x.evento.fkareasocial:
+            sin_guardia = x.evento.areasocial.condominio.singuardia
 
-        return mensaje
+        if sin_guardia:
+            diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+            ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
+
+        return x
 
     def delete_invitacion_rapida(self, id,state, user, ip):
         x = self.db.query(Invitacion).filter(Invitacion.id == id).first()
@@ -461,10 +477,17 @@ class InvitacionManager(SuperManager):
         self.db.merge(even)
         self.db.commit()
 
-        diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
-        ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
+        sin_guardia = False
+        if x.evento.fkdomicilio:
+            sin_guardia = x.evento.domicilio.condominio.singuardia
+        elif x.evento.fkareasocial:
+            sin_guardia = x.evento.areasocial.condominio.singuardia
 
-        return mensaje
+        if sin_guardia:
+            diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+            ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
+
+        return x
 
 
 

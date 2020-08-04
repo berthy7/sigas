@@ -73,7 +73,7 @@ class CondominioManager(SuperManager):
         if principal.estado:
 
             if c.ip_publica != "":
-                url = "http://" + c.ip_publica + ":" + c.puerto + "/api/v1/registrar_condominio"
+                url = "http://" + c.ip_publica + ":" + c.puerto + "/api/v1/sincronizar_condominio"
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['id'] = c.id
