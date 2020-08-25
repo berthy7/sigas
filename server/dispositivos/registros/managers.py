@@ -96,7 +96,7 @@ class RegistrosManager(SuperManager):
 
                         tarjeta_obj = self.db.query(Nropase).filter(Nropase.tarjeta == str(reg.tarjeta)).first()
                         if tarjeta_obj:
-                            tarjeta = tarjeta_obj.tipo + str(tarjeta_obj.numero)
+                            codigo = tarjeta_obj.tipo + str(tarjeta_obj.numero)
 
                 else:
                     codigo = "Usuario no registrado"
@@ -181,7 +181,7 @@ class RegistrosManager(SuperManager):
 
                         tarjeta_obj = self.db.query(Nropase).filter(Nropase.tarjeta == str(reg.tarjeta)).first()
                         if tarjeta_obj:
-                            tarjeta = tarjeta_obj.tipo + str(tarjeta_obj.numero)
+                            codigo = tarjeta_obj.tipo + str(tarjeta_obj.numero)
 
                 else:
                     codigo = "Usuario no registrado"
