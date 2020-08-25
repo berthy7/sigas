@@ -75,8 +75,8 @@ class RegistrosManager(SuperManager):
                         residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.codigo).first()
 
                         if residente_qr:
-                            codigo = residente_qr.fullname + " - Codigo Qr"
-                            tarjeta = "Residente"
+                            codigo = residente_qr.fullname
+                            tarjeta = "Codigo Qr residente"
 
                         residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
@@ -157,8 +157,8 @@ class RegistrosManager(SuperManager):
                         residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.codigo).first()
 
                         if residente_qr:
-                            codigo = residente_qr.fullname + " - Codigo Qr"
-                            tarjeta = "Residente"
+                            codigo = residente_qr.fullname
+                            tarjeta = "Codigo Qr residente"
 
                         residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
