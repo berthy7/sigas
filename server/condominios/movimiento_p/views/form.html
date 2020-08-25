@@ -1,0 +1,283 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:65vw; max-width: 1000px" >
+        <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="movimiento_p_title" class="modal-title">Formulario de Ingreso</h3>
+                    <h4 id="movimiento_p_enable" class=""></h4>
+                </div>
+
+                <div class="modal-body">
+                <div id="movimiento_p_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">ID</label>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <div class="switch p-l-own">
+
+                               <label>
+                                   Residente
+                                   <input id="switch_visita" type="checkbox">
+                                   <span class="lever"></span>
+                                   Visita
+                               </label>
+                            </div>
+                             </br>
+                        </div>
+                    </div>
+                    <div class="bordesdiv">
+                        <input type="hidden" id="idperfil" value="{{ idperfil }}">
+                        <div id="div_invitacion" class="row clearfix">
+                            <div class="modal-header header-own">
+                                <h4  class="modal-title">Invitacion</h4>
+                                <input type="hidden" id="fkinvitacion" value="">
+
+                            </div>
+                            </br>
+                            <div class="row clearfix">
+                                <div class="col-sm-1">
+                                </div>
+                                <div class="col-sm-4">
+    {#                                 <label  class="form-label">Codigo Qr</label>#}
+                                        <div class="form-line focused">
+                                            <input id="codigoautorizacion" type="password" autocomplete="off" class="form-control" placeholder="Habilitar Escaner">
+                                        </div>
+
+                                </div>
+{#                                <div class="col-sm-2">#}
+{#                                    <button id="validar_invitacion" type="button" class="btn bg-indigo waves-effect" title="Agregar">Validar Codigo#}
+{#                                        <i class="material-icons"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+                            </div>
+                        </div>
+                        <div id="div_residente" class="row clearfix" hidden>
+                            <div class="modal-header header-own">
+                                <h4  class="modal-title">Codigo Qr del Residente</h4>
+                                <input type="hidden" id="fkinvitacion_residente" value="">
+                            </div>
+                            </br>
+                            <div class="row clearfix">
+                                <div class="col-sm-1">
+                                </div>
+                                <div class="col-sm-4">
+    {#                                 <label  class="form-label">Codigo Qr</label>#}
+                                        <div class="form-line focused">
+                                            <input id="codigoautorizacion_residente" type="password" autocomplete="off" class="form-control" placeholder="Habilitar Escaner">
+                                        </div>
+
+                                </div>
+{#                                <div class="col-sm-2">#}
+{#                                    <button id="validar_invitacion" type="button" class="btn bg-indigo waves-effect" title="Agregar">Validar Codigo#}
+{#                                        <i class="material-icons"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+                        <div class="col-sm-10">
+                             <div class="row m-b-10">
+                                <div class="text-center">
+                                 <img id='imagen_mensaje' src='' width='200px' >
+                                    </br>
+                                </br>
+                                </div>
+                             </div>
+                        </div>
+
+                    </div>
+                        </br>
+                    </div>
+                    </br>
+
+                    <div class="bordesdiv">
+
+                        <div class="modal-header header-own">
+                            <h4  class="modal-title">Datos del Ingreso</h4>
+                        </div>
+                        </br>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Domicilios</label>
+                                 <select id="fkdomicilio" class="form-control">
+                                    {% for domi in domicilios %}
+                                        <option value="{{domi.id}}">{{domi.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                               <label>Areas Sociales</label>
+                                 <select id="fkareasocial" class="form-control">
+                                    {% for area in areasociales %}
+                                        <option value="{{area.id}}">{{area.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Tipo de Pase</label>
+                                 <select id="fktipopase" class="form-control" required>
+                                    {% for tipopase in tipopases %}
+                                        <option value="{{tipopase.id}}">{{tipopase.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Tipo de Autorizacion</label>
+                                 <select id="fkautorizacion" class="form-control" required>
+                                    {% for autor in autorizaciones %}
+                                        <option value="{{autor.id}}">{{autor.nombre}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group form-float">
+                                    <label class="form-label">Observacion</label>
+                                    <div class="form-line">
+                                        <textarea id="observacion" name="Observacion" class="md-textarea form-control">  </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                               <label>Residente que autoriza</label>
+                                 <select id="fkresidente" class="form-control">
+                                    {% for resi in residentes %}
+                                        <option value="{{resi.id}}">{{resi.fullname}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                            <div class="col-sm-6">
+                               <label>Nro. de Pases</label>
+                                 <select id="nropase" class="form-control">
+
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                                <div class="form-group"align="center">
+                                    <img id='show_img' src='' width='250px'>
+                                </div>
+                            </div>
+                        </div>
+                        </br>
+                    </div>
+                    </br>
+                    <div class="bordesdiv">
+                        <div id="div_datos_visita">
+                            <div class="modal-header header-own">
+                                <h4  class="modal-title">Datos Visita</h4>
+                            </div>
+                            </br>
+                            <div class="row clearfix">
+                                <div class="col-sm-6">
+                                   <label>Tipo de Documento</label>
+                                     <select id="fktipodocumento" class="form-control">
+                                        {% for tipodoc in tipodocumento %}
+                                            <option value="{{tipodoc.id}}">{{tipodoc.nombre}}</option>
+                                        {% end %}
+                                     </select>
+                                    </br>
+                                    </br>
+                                </div>
+                                <div class="col-sm-6">
+                                   <label>Buscar Persona</label>
+                                     <select id="fkinvitado" class="form-control">
+                                         <option value="0">Nueva Persona</option>
+                                        {% for invi in invitados %}
+                                            <option value="{{invi.id}}">{{invi.ci}} - {{invi.fullname}}</option>
+                                        {% end %}
+                                     </select>
+                                    </br>
+                                    </br>
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-2">
+                                     <label  class="form-label">Nombre</label>
+                                        <div class="form-line">
+                                            <input id="nombre" name="Nombre" type="text" class="form-control text" required>
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                     <label class="form-label">Apellido paterno</label>
+                                        <div class="form-line">
+                                            <input id="apellidop" name="Apellido Paterno" type="text" class="form-control text" required>
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                     <label class="form-label">Apellido materno</label>
+                                        <div class="form-line">
+                                            <input id="apellidom" name="Apellido Materno" type="text" class="form-control text">
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="ci" class="form-label">Ci</label>
+                                        <div class="form-line">
+                                            <input id="ci" name="Ci"  type="text" class="form-control text" required>
+
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label>Expedido</label>
+                                     <select id="expendido"  class="form-control">
+                                        <option value="BN">BN</option>
+                                        <option value="CH">CH</option>
+                                         <option value="CB">CB</option>
+                                         <option value="LP">LP</option>
+                                         <option value="OR">OR</option>
+                                         <option value="PD">PD</option>
+                                         <option value="PT">PT</option>
+                                         <option value="SC">SC</option>
+                                         <option value="TJ">TJ</option>
+
+                                     </select>
+                                </div>
+                            </div>
+                            </br>
+                        </div>
+                    </div>
+                    </br>
+
+
+                </div>
+
+                <div class="modal-footer">
+                {% if 'movimiento_p_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'movimiento_p_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

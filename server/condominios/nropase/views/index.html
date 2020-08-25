@@ -1,0 +1,91 @@
+{% extends ../../../common/views/layout.html %}
+
+{% block style %}
+    {% set user = usuario %}
+    <link rel="stylesheet" href="condominios/nropase/assets/nropase.css">
+{% end %}
+
+{% block content %}
+
+{% include form.html %}
+
+
+    <div class="header"><h2 class="title-rg-own">Cant de Tarjetas</h2></div>
+    <div class="body">
+        <div class="row clearfix">
+            <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                {% if 'nropase_insert' in privileges %}
+                    <button id="new" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                {% end %}
+                <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect">
+                    <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
+                </button>
+            </div>
+        </div>
+
+        {% if 'nropase_query' in privileges %}
+        <div class="row">
+            <div class="body table-responsive">
+                <table id="data_table" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="order_by_th" data-name="names">N°</th>
+                            <th class="order_by_th" data-name="names">Numero de pase</th>
+                            <th class="actions_header">Tarjeta</th>
+                            <th class="order_by_th" data-name="names">Tipo</th>
+                            <th class="order_by_th" data-name="names">Estado</th>
+                            <th class="actions_header">Condominios</th>
+                            <th class="actions_header">Editar</th>
+                            <th class="actions_header">Sincronizar</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+        {% end %}
+    </div>
+{% end %}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="condominios/nropase/assets/nropase.js"></script>
+<script>
+        $(document).ready(function () {
+
+            var data = [];
+            {% set cont = 0 %}
+            {% for c in objects %}
+               var cond =""
+                {% for co in c.condominios %}
+                    cond = cond + '<p>{{ co.condominio.nombre }}</p>'
+                {% end %}
+                data.push( [
+                    '{{ c.id }}',
+                    '{{ c.numero}}',
+                    '{{ c.tarjeta}}',
+                    '{{ c.tipo}}',
+                    '{{ c.situacion}}',
+                    cond,
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>',
+                    '<button id="sincro" onClick="sincronizacion(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light sincro" title="Sincronizacion"><i class="material-icons">update</i></button>'
+
+                ]);
+            {% set cont = cont + 1 %}
+            {% end %}
+            cargar_tabla(data)
+        });
+
+
+</script>
+{% end %}
+
+    <td>
+        {% for o in c.objetivos %}
+            <p>{{ o.descripcion}}</p>
+        {% end %}
+    </td>
+

@@ -1,0 +1,94 @@
+{% extends ../../../common/views/layout.html %}
+
+{% block style %}
+    {% set user = usuario %}
+    <link rel="stylesheet" href="condominios/domicilio/assets/domicilio.css">
+{% end %}
+
+{% block content %}
+
+{% include form.html %}
+
+    <div class="header"><h2 class="title-rg-own">Domicilios</h2></div>
+    <ul class="nav nav-tabs tab-nav-right" id="myTab" role="tablist">
+        <li class="nav-item" >
+            <a id="primero" class="nav-link active" id="home-tab" data-toggle="tab" href="#body-cont" role="tab"
+               aria-controls="profile" aria-selected="true">Casas</a>
+        </li>
+        <li class="nav-item">
+            <a id='segundo' class="nav-link" id="profile-tab" data-toggle="tab" href="#body-second" role="tab"
+               aria-controls="profile" aria-selected="false">Departamentos</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade body" id="body-cont" role="tabpanel" aria-labelledby="home-tab">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                    {% if 'domicilio_insert' in privileges %}
+                        <button id="new" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                        <button id="new_departamento" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                    {% end %}
+                        <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect">
+                        <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
+                        </button>
+                    </div>
+                </div>
+                </br>
+                </br>
+                <div id="div_filtro" class="row clearfix">
+                    <div class="col-sm-3">
+                        <label>Filtrar por Condominio</label>
+                         <select id="fcondominio" class="form-control">
+                                <option value="0">Todos</option>
+                            {% for cond in condominios %}
+                                <option value="{{cond.id}}">{{cond.nombre}}</option>
+                            {% end %}
+                         </select>
+
+                    </div>
+                </div>
+                <input type="hidden" id="idomicilio" value="">
+
+                {% if 'domicilio_query' in privileges %}
+                <div class="row">
+                    <div class="body table-responsive">
+                        <table id="data_table" class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="order_by_th" data-name="names">Nrº</th>
+                                    <th class="order_by_th" data-name="names">Codigo</th>
+                                    <th class="order_by_th" data-name="names">Ubicacion</th>
+                                    <th class="order_by_th" data-name="names">Numero</th>
+                                    <th class="order_by_th" data-name="names">Nro. Interno</th>
+                                    <th class="order_by_th" data-name="names">Condominio</th>
+                                    <th class="actions_header">Editar</th>
+                                </tr>
+                            </thead>
+
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+                {% end %}
+            </div>
+        </div>
+    </div>
+
+{% end %}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="condominios/domicilio/assets/domicilio.js"></script>
+
+    <script src="resources/js/dataTables.buttons.js"></script>
+    <script src="resources/js/pdfmake.js"></script>
+    <script src="resources/js/vfs_fonts.js"></script>
+    <script src="resources/js/buttons.bootstrap.js"></script>
+    <script src="resources/js/buttons.html5.js"></script>
+    <script src="resources/js/buttons.print.js"></script>
+    <script src="resources/js/buttons.colVis.js"></script>
+{% end %}
