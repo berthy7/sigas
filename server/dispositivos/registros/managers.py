@@ -94,6 +94,9 @@ class RegistrosManager(SuperManager):
                             codigo = invitacion.invitado.fullname + " - Autorizado por " + invitacion.evento.residente.fullname
                             tarjeta = "Visita"
 
+                        tarjeta_obj = self.db.query(Nropase).filter(Nropase.tarjeta == str(reg.tarjeta)).first()
+                        if tarjeta_obj:
+                            tarjeta = tarjeta_obj.tipo + str(tarjeta_obj.numero)
 
                 else:
                     codigo = "Usuario no registrado"
@@ -175,6 +178,10 @@ class RegistrosManager(SuperManager):
                         if invitacion:
                             codigo = invitacion.invitado.fullname + " - Autorizado por " + invitacion.evento.residente.fullname
                             tarjeta = "Visita"
+
+                        tarjeta_obj = self.db.query(Nropase).filter(Nropase.tarjeta == str(reg.tarjeta)).first()
+                        if tarjeta_obj:
+                            tarjeta = tarjeta_obj.tipo + str(tarjeta_obj.numero)
 
                 else:
                     codigo = "Usuario no registrado"
