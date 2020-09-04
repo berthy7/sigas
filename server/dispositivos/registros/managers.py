@@ -95,13 +95,13 @@ class RegistrosManager(SuperManager):
                         if invitacion:
                             codigo = invitacion.invitado.fullname
                             tarjeta = invitacion.tipopase.nombre
-                            autorizacion = invitacion.evento.residente.fullname
+                            autorizacion = invitacion.evento.residente.fullname + " " + invitacion.evento.residente.telefono
 
-                            if invitacion.fkevento.fkdomicilio:
+                            if invitacion.evento.fkdomicilio:
 
                                 destino = invitacion.evento.domicilio.nombre
 
-                            elif invitacion.fkevento.fkareasocial:
+                            elif invitacion.evento.fkareasocial:
 
                                 destino = invitacion.evento.areasocial.nombre
 
@@ -189,13 +189,13 @@ class RegistrosManager(SuperManager):
                         if invitacion:
                             codigo = invitacion.invitado.fullname
                             tarjeta = invitacion.tipopase.nombre
-                            autorizacion = invitacion.evento.residente.fullname
+                            autorizacion = invitacion.evento.residente.fullname + " " + invitacion.evento.residente.telefono
 
-                            if invitacion.fkevento.fkdomicilio:
+                            if invitacion.evento.fkdomicilio:
 
                                 destino = invitacion.evento.domicilio.nombre
 
-                            elif invitacion.fkevento.fkareasocial:
+                            elif invitacion.evento.fkareasocial:
 
                                 destino = invitacion.evento.areasocial.nombre
 
