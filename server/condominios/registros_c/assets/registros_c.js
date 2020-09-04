@@ -167,7 +167,7 @@ $('#filtrar').click(function () {
 
         var data = [];
         for (var i = 0; i < Object.keys(response.response).length; i++) {
-
+            console.log(response['response'][i]["autorizacion"])
             data.push( [
                 response['response'][i]["id"],
                 response['response'][i]["tarjeta"],
