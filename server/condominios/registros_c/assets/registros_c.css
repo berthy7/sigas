@@ -1,3 +1,7 @@
 .form-group .form-line::after {
     border-bottom: 2px solid #006227;
 }
+
+.bg-alarm{
+    background-color: #ff9b8e !important;
+}

@@ -98,7 +98,7 @@ function cargar_tabla(data){
         scroller:       true,
         createdRow: function( row, data, dataIndex ) {
             // agregar clase con css
-            if(data[2] == "Alarma"){
+            if(data[2] == "Alarma" || data[2] == "Puerta Forzada"){
                 $(row).addClass('bg-alarm');
             }
             
@@ -290,6 +290,7 @@ $('#filtrar').click(function () {
                 response['response'][i]["id"],
                 response['response'][i]["tarjeta"],
                 response['response'][i]["codigo"],
+                response['response'][i]["autorizacion"],
                 response['response'][i]["dia"],
                 response['response'][i]["mes"],
                 response['response'][i]["año"],

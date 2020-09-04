@@ -96,7 +96,7 @@ class DispositivoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().insert(objeto)
-        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Registro Dispositivo.", fecha=fecha,tabla="marca", identificador=a.id)
+        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Registro Dispositivo.", fecha=fecha,tabla="dispositivo", identificador=a.id)
         super().insert(b)
         return a
 
@@ -105,7 +105,7 @@ class DispositivoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().update(objeto)
-        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Modifico Dispositivo.", fecha=fecha,tabla="marca", identificador=a.id)
+        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Modifico Dispositivo.", fecha=fecha,tabla="dispositivo", identificador=a.id)
         super().insert(b)
         return a
 
@@ -113,7 +113,7 @@ class DispositivoManager(SuperManager):
         x = self.db.query(self.entity).filter(self.entity.id == id).one()
         x.estado = estado
         fecha = BitacoraManager(self.db).fecha_actual()
-        b = Bitacora(fkusuario=user, ip=ip, accion="Eliminó Dispositivo.", fecha=fecha, tabla="marca", identificador=id)
+        b = Bitacora(fkusuario=user, ip=ip, accion="Eliminó Dispositivo.", fecha=fecha, tabla="dispositivo", identificador=id)
         super().insert(b)
         self.db.merge(x)
         self.db.commit()

@@ -22,7 +22,7 @@ class Registros_cController(CrudController):
         aux = super().get_extra_data()
         us = self.get_user()
         objeto = []
-        aux['registros'] = RegistrosManager(self.db).listar_todo_diccionario(us)
+        aux['registros'] = Registros_cManager(self.db).listar_todo_diccionario(us)
 
         return aux
 
