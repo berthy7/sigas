@@ -293,6 +293,7 @@ $('#filtrar').click(function () {
                 response['response'][i]["tarjeta"],
                 response['response'][i]["codigo"],
                 response['response'][i]["autorizacion"],
+                response['response'][i]["destino"],
                 response['response'][i]["dia"],
                 response['response'][i]["mes"],
                 response['response'][i]["año"],

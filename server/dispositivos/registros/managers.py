@@ -62,7 +62,8 @@ class RegistrosManager(SuperManager):
             codigo = ""
             tarjeta = ""
             cerradura = ""
-            autorizacion = " "
+            autorizacion = ""
+            destino = ""
 
             if reg.evento == 0:
 
@@ -93,8 +94,17 @@ class RegistrosManager(SuperManager):
                             Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
                         if invitacion:
                             codigo = invitacion.invitado.fullname
-                            tarjeta = "Visita"
+                            tarjeta = invitacion.tipopase.nombre
                             autorizacion = invitacion.evento.residente.fullname
+
+                            if invitacion.fkevento.fkdomicilio:
+
+                                destino = invitacion.evento.domicilio.nombre
+
+                            elif invitacion.fkevento.fkareasocial:
+
+                                destino = invitacion.evento.areasocial.nombre
+
 
 
                 else:
@@ -116,7 +126,7 @@ class RegistrosManager(SuperManager):
             if res_cerradura:
                 cerradura =res_cerradura.nombre
             print(autorizacion)
-            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
         return list
 
@@ -144,7 +154,8 @@ class RegistrosManager(SuperManager):
             codigo = ""
             tarjeta = ""
             cerradura = ""
-            autorizacion = " "
+            autorizacion = ""
+            destino = ""
 
             if reg.evento == 0:
 
@@ -177,8 +188,17 @@ class RegistrosManager(SuperManager):
                         invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
                         if invitacion:
                             codigo = invitacion.invitado.fullname
-                            tarjeta = "Visita"
+                            tarjeta = invitacion.tipopase.nombre
                             autorizacion = invitacion.evento.residente.fullname
+
+                            if invitacion.fkevento.fkdomicilio:
+
+                                destino = invitacion.evento.domicilio.nombre
+
+                            elif invitacion.fkevento.fkareasocial:
+
+                                destino = invitacion.evento.areasocial.nombre
+
 
                 else:
                     codigo = "Usuario no registrado"
@@ -199,7 +219,7 @@ class RegistrosManager(SuperManager):
             if res_cerradura:
                 cerradura =res_cerradura.nombre
 
-            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
         return list
 
