@@ -86,6 +86,7 @@ function activar_alarma(id_registro) {
 
 
 function cargar_tabla(data){
+    console.log("CArgar tabla")
 
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
@@ -167,7 +168,7 @@ $('#filtrar').click(function () {
 
         var data = [];
         for (var i = 0; i < Object.keys(response.response).length; i++) {
-            console.log(response['response'][i]["autorizacion"])
+            console.log("filstrar:" + response['response'][i]["autorizacion"])
             data.push( [
                 response['response'][i]["id"],
                 response['response'][i]["tarjeta"],

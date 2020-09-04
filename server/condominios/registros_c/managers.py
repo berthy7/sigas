@@ -48,7 +48,7 @@ class Registros_cManager(SuperManager):
             codigo = ""
             tarjeta = ""
             cerradura = ""
-            autorizacion = ""
+            autorizacion = " "
 
             if reg.evento == 0:
 
@@ -130,7 +130,7 @@ class Registros_cManager(SuperManager):
             codigo = ""
             tarjeta = ""
             cerradura = ""
-            autorizacion = ""
+            autorizacion = " "
 
             if reg.evento == 0:
 
