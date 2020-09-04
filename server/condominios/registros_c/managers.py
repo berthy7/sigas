@@ -82,7 +82,7 @@ class Registros_cManager(SuperManager):
                         if invitacion:
                             codigo = invitacion.invitado.fullname
                             tarjeta = invitacion.tipopase.nombre
-                            autorizacion = invitacion.evento.residente.fullname + " " + invitacion.evento.residente.telefono
+                            autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
 
                             if invitacion.evento.fkdomicilio:
 
@@ -174,7 +174,7 @@ class Registros_cManager(SuperManager):
                         if invitacion:
                             codigo = invitacion.invitado.fullname
                             tarjeta = invitacion.tipopase.nombre
-                            autorizacion = invitacion.evento.residente.fullname + " " + invitacion.evento.residente.telefono
+                            autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
 
                             if invitacion.evento.fkdomicilio:
 
