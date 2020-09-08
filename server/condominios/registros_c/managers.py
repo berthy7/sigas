@@ -64,17 +64,20 @@ class Registros_cManager(SuperManager):
                         residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.codigo).first()
 
                         if residente_qr:
-                            codigo = residente_qr.fullname + " - Codigo Qr"
+                            codigo =  "Codigo Qr"
                             tarjeta = "Residente"
+                            autorizacion = residente_qr.fullname
 
                         residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
                         if residente_vehi:
-                            codigo = residente_vehi.fullname + " - Vehicular"
+                            codigo = "Tag Vehicular"
+                            autorizacion = residente_vehi.fullname
 
                         residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
                         if residente:
-                            codigo = residente.fullname + " - Peatonal"
+                            codigo = "Tarjeta Peatonal"
+                            autorizacion = residente.fullname
 
                         codigo_normalizado = int(reg.codigo) - 500000
                         invitacion = self.db.query(Invitacion).filter(
@@ -156,17 +159,20 @@ class Registros_cManager(SuperManager):
                         residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.codigo).first()
 
                         if residente_qr:
-                            codigo = residente_qr.fullname + " - Codigo Qr"
+                            codigo =  "Codigo Qr"
                             tarjeta = "Residente"
+                            autorizacion = residente_qr.fullname
 
                         residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
                         if residente_vehi:
-                            codigo = residente_vehi.fullname + " - Vehicular"
+                            codigo = "Tag Vehicular"
+                            autorizacion = residente_vehi.fullname
 
                         residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
                         if residente:
-                            codigo = residente.fullname + " - Peatonal"
+                            codigo = "Tarjeta Peatonal"
+                            autorizacion = residente.fullname
 
 
                         codigo_normalizado = int(reg.codigo) - 500000
