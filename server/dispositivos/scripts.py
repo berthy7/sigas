@@ -25,7 +25,7 @@ def insertions():
 
         registros_m = session.query(Modulo).filter(Modulo.name == 'registros').first()
         if registros_m is None:
-            registros_m = Modulo(title='Registros', route='/registros', name='registros', icon='assignment')
+            registros_m = Modulo(title='Monitor de eventos', route='/registros', name='registros', icon='assignment')
 
         dispositivos_m.children.append(dispositivo_m)
         dispositivos_m.children.append(config_acceso_m)

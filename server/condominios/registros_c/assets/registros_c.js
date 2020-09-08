@@ -26,12 +26,16 @@ function auxiliar_method() {
         if($("#form").is(":visible")){
             console.log("actualizar desactivado")
         }else{
-            // console.log(refrescar)
+            console.log(refrescar)
             if(refrescar == false){
-                window.location = main_route
+
+                actualizar_tabla_x_fechas(hoy,hoy)
+
+                // window.location = main_route
+
             }
         }
-    }, 10000);
+    }, 5000);
 }
 
 $('#switch_refrescar').change(function() {
@@ -48,45 +52,48 @@ $('#switch_refrescar').change(function() {
 
 function activar_alarma(id_registro) {
     console.log("activar alarma")
-    refrescar = true;
+    // refrescar = true;
     //main_method()
     var sw_alarma = 0;
-        setInterval(function(){
-        if(sw_alarma == 0){
-            document.getElementById("imagen_alarma").src = '/resources/images/imagen_alarma.jpg';
-            sw_alarma = 1;
-        }else{
-            document.getElementById("imagen_alarma").src = '/resources/images/imagen_alarma_blanco.jpg';
-            sw_alarma = 0;
-        }
+        var id = setInterval(function(){
+            if(sw_alarma == 0){
+                document.getElementById("imagen_alarma").src = '/resources/images/imagen_alarma.jpg';
+                sw_alarma = 1;
+            }else{
+                document.getElementById("imagen_alarma").src = '/resources/images/imagen_alarma_blanco.jpg';
+                sw_alarma = 0;
+            }
 
-    }, 700);
+        }, 700);
+
+    objeto = JSON.stringify({
+        'id_registro': id_registro
+
+    })
+
+    ajax_call('registros_alerta', {
+        object: objeto,
+        _xsrf: getCookie("_xsrf")
+    }, null, function () {
+
+    })
+
+    var audio = document.getElementById("audio");
+
+    audio.play();
 
     setTimeout(function () {
-        document.getElementById("imagen_alarma").src = '';
+
         console.log("apagar alarma")
 
-        objeto = JSON.stringify({
-            'id_registro': id_registro
-
-        })
-
-        ajax_call('registros_alerta', {
-            object: objeto,
-            _xsrf: getCookie("_xsrf")
-        }, null, function () {
-
-        })
-
-
-        refrescar = false;
+         clearInterval(id);
+        document.getElementById("imagen_alarma").src = '';
 
     },10000);
 }
 
 
 function cargar_tabla(data){
-    console.log("CArgar tabla")
 
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
@@ -142,18 +149,25 @@ reload_form()
 
 
 $('#filtrar').click(function () {
-    //document.getElementById("filtrar").disabled = true
-    obj = JSON.stringify({
-        'fechainicio': $('#fechai').val(),
-        'fechafin': $('#fechaf').val(),
+
+    actualizar_tabla_filtrar($('#fechai').val(),$('#fechaf').val())
+    
+});
+
+
+function actualizar_tabla_filtrar(fechainicio,fechafin) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
         '_xsrf': getCookie("_xsrf")
     })
-    ruta = "registros_c_filtrar";
+    ruta = "registros_filtrar";
     $.ajax({
         method: "POST",
         url: ruta,
         data: {_xsrf: getCookie("_xsrf"), object: obj},
         async: true,
+
         beforeSend: function () {
            $("#rproc-loader").fadeIn(800);
            $("#new").hide();
@@ -163,12 +177,15 @@ $('#filtrar').click(function () {
            $("#new").show();
         }
 
+
     }).done(function (response) {
         response = JSON.parse(response)
 
         var data = [];
         for (var i = 0; i < Object.keys(response.response).length; i++) {
-            console.log("filstrar:" + response['response'][i]["autorizacion"])
+
+            console.log(response['response'][i]["autorizacion"])
+
             data.push( [
                 response['response'][i]["id"],
                 response['response'][i]["tarjeta"],
@@ -186,7 +203,49 @@ $('#filtrar').click(function () {
 
         cargar_tabla(data)
     })
-});
+}
+
+function actualizar_tabla_x_fechas(fechainicio,fechafin) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "registros_filtrar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
+
+    }).done(function (response) {
+        response = JSON.parse(response)
+
+        var data = [];
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+
+            if (response['response'][i]["evento"] == 6 && response['response'][i]['alertado'] == false){
+                activar_alarma(response['response'][i]["id"])
+            }
+
+            data.push( [
+                response['response'][i]["id"],
+                response['response'][i]["tarjeta"],
+                response['response'][i]["codigo"],
+                response['response'][i]["autorizacion"],
+                response['response'][i]["destino"],
+                response['response'][i]["dia"],
+                response['response'][i]["mes"],
+                response['response'][i]["año"],
+                response['response'][i]["hora"],
+                response['response'][i]['dispositivo'],
+                response['response'][i]["cerradura"],
+            ]);
+        }
+
+        cargar_tabla(data)
+    })
+}
 
 validationKeyup("form")
 validationSelectChange("form")

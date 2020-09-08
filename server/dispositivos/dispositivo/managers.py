@@ -7,6 +7,7 @@ from ...usuarios.usuario.managers import *
 from ..registros.models import *
 from ...condominios.nropase.models import *
 from ...condominios.evento.models import *
+from sqlalchemy.sql import func, extract, cast, text
 
 
 from openpyxl import load_workbook
@@ -52,7 +53,7 @@ class DispositivoManager(SuperManager):
             config = self.db.query(Configuraciondispositivo) \
                 .filter(Configuraciondispositivo.fkdispositivo == dispo.id) \
                 .filter(Configuraciondispositivo.estado == True) \
-                .filter(Configuraciondispositivo.situacion == "Abrir").order_by(Configuraciondispositivo.id.asc()).all()
+                .order_by(Configuraciondispositivo.id.asc()).all()
 
             dispo.configuraciondispositivo = config
 
@@ -440,6 +441,12 @@ class ConfiguraciondispositivoManager(SuperManager):
 
         objeto = ConfiguraciondispositivoManager(self.db).entity(**sincro)
         super().insert(objeto)
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+
+        b = Bitacora(fkusuario=diccionary['user'], ip=diccionary['ip_local'], accion="Abrió cerradura Nº"+str(diccionary['cerradura']), fecha=fecha, tabla="dispositivo")
+        super().insert(b)
+
 
 
 class InterpreteManager(SuperManager):

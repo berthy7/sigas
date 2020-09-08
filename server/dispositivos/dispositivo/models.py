@@ -65,7 +65,7 @@ class Configuraciondispositivo(Serializable, Base):
     id = Column(Integer, primary_key=True)
     codigo = Column(Text, nullable=False)
     tarjeta = Column(Text, nullable=False)
-    situacion = Column(String(100), default="Acceso")
+    situacion = Column(String(100), default="Acceso")  #Acceso Denegado Configuracion_inicial Abrir
     fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
     estado = Column(Boolean, default=True)
     codigoacceso = Column(String(100), nullable=True, default="")

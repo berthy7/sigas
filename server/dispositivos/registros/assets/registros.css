@@ -5,3 +5,7 @@
 .bg-alarm{
     background-color: #ff9b8e !important;
 }
+
+#audio{
+display: none
+}

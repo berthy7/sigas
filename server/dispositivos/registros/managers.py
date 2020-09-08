@@ -125,7 +125,6 @@ class RegistrosManager(SuperManager):
 
             if res_cerradura:
                 cerradura =res_cerradura.nombre
-            print(autorizacion)
             list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
         return list
@@ -236,7 +235,7 @@ class RegistrosManager(SuperManager):
             marcacion[6] = datetime.strptime(marcacion[6], '%d/%m/%Y %H:%M:%S')
 
             print("llegaron marcaciones: "+str(marcacion[6]))
-            respuesta = self.db.query(self.entity).filter(self.entity.time == marcacion[6]).filter(self.entity.tarjeta == marcacion[0]).filter(self.entity.fkdispositivo == marcaciones['iddispositivo']).first()
+            respuesta = self.db.query(self.entity).filter(self.entity.evento == marcacion[4]).filter(self.entity.time == marcacion[6]).filter(self.entity.tarjeta == marcacion[0]).filter(self.entity.fkdispositivo == marcaciones['iddispositivo']).first()
 
             if not respuesta:
                 print("regstro marcacion")
