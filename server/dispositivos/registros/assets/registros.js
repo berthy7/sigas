@@ -109,7 +109,7 @@ function cargar_tabla(data){
             if(data[2] == "Alarma"){
                 $(row).addClass('bg-alarm');
             }else if(data[2] == "Puerta Forzada"){
-                $(row).addClass('bg-bg-puerta-forzada');
+                $(row).addClass('bg-puerta-forzada');
             }
             
         },
