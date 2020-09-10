@@ -46,7 +46,7 @@ class Usuario(Serializable, Base):
 
 
 
-        dictionary['fullname'] = str(self.nombre)  + " " + str(self.apellidop)+ " " + str(self.auxApellidom)
+        dictionary['fullname'] = str(self.nombre)  + " " + str(self.apellidop)+ " " + str(auxApellidom)
         del(dictionary['password'])
         return dictionary
 
