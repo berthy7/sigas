@@ -175,8 +175,6 @@ class DomicilioManager(SuperManager):
 
                                 self.db.merge(domi)
                                 self.db.flush()
-                            else:
-                                print(str(i)+" "+ "No agregado")
 
                         else:
                             return {'message': 'Falta Codigo Condominio', 'success': False}

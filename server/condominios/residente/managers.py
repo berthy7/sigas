@@ -214,7 +214,7 @@ class ResidenteManager(SuperManager):
                                 else:
                                     idtarjeta = None
 
-                                list_acceso.append(dict(fechai=fechai, fechaf=fechaf, estado=True))
+                                list_acceso.append(dict(fechai=fechai, fechaf=fechaf, estado=False))
                                 residente = dict( nombre=str(nombre),
                                                   apellidop=str(apellidop),
                                                   apellidom=str(apellidom),
