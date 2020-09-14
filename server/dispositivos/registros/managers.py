@@ -65,6 +65,8 @@ class RegistrosManager(SuperManager):
             autorizacion = ""
             destino = ""
 
+            tarjeta = str(reg.tarjeta)
+
             if reg.evento == 0:
 
                 if reg.codigo != "0":
@@ -163,6 +165,8 @@ class RegistrosManager(SuperManager):
             cerradura = ""
             autorizacion = ""
             destino = ""
+
+            tarjeta = str(reg.tarjeta)
 
             if reg.evento == 0:
 
