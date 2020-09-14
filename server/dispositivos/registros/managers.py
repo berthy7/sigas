@@ -92,6 +92,11 @@ class RegistrosManager(SuperManager):
                             codigo = "Tarjeta Peatonal"
                             autorizacion = residente.fullname
 
+                        tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjeta:
+                            codigo = str(tarjeta.tarjeta)
+                            autorizacion = ""
+
                         codigo_normalizado = int(reg.codigo) - 500000
                         invitacion = self.db.query(Invitacion).filter(
                             Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
@@ -187,6 +192,11 @@ class RegistrosManager(SuperManager):
                         if residente:
                             codigo = "Tarjeta Peatonal"
                             autorizacion = residente.fullname
+
+                        tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjeta:
+                            codigo = str(tarjeta.tarjeta)
+                            autorizacion = ""
 
 
                         codigo_normalizado = int(reg.codigo) - 500000
