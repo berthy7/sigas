@@ -174,7 +174,7 @@ class UsuarioManager(SuperManager):
                 inicial_cod = 100000
                 codigoInbio = inicial_cod + int(resi.codigo)
 
-                diccionary = dict(codigo=resi.codigo, tarjeta=resi.codigoqr, situacion=situacion, fkcondominio=x.fkcondominio)
+                diccionary = dict(codigo=str(codigoInbio), tarjeta=resi.codigoqr, situacion=situacion, fkcondominio=x.fkcondominio)
 
                 ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
 
