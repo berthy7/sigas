@@ -51,13 +51,11 @@ class Registros_cManager(SuperManager):
             autorizacion = ""
             destino = ""
 
-            tarjeta = str(reg.tarjeta)
-
             if reg.evento == 0:
-
+                tarjeta = reg.tarjeta
                 if reg.codigo != "0":
                     codigo = reg.codigo
-                    tarjeta = reg.tarjeta
+
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
@@ -81,9 +79,9 @@ class Registros_cManager(SuperManager):
                             codigo = "Tarjeta Peatonal"
                             autorizacion = residente.fullname
 
-                        tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
-                        if tarjeta:
-                            codigo = str(tarjeta.tarjeta)
+                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjetaObj:
+                            codigo = str(tarjetaObj.tarjeta)
                             autorizacion = ""
 
                         codigo_normalizado = int(reg.codigo) - 500000
@@ -105,6 +103,7 @@ class Registros_cManager(SuperManager):
 
                 else:
                     codigo = "Usuario no registrado"
+
 
             else:
 
@@ -153,13 +152,14 @@ class Registros_cManager(SuperManager):
             autorizacion = ""
             destino = ""
 
-            tarjeta = str(reg.tarjeta)
+
 
             if reg.evento == 0:
 
-
+                tarjeta = str(reg.tarjeta)
                 if reg.codigo != "0":
                     codigo = reg.codigo
+
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
@@ -183,9 +183,9 @@ class Registros_cManager(SuperManager):
                             codigo = "Tarjeta Peatonal"
                             autorizacion = residente.fullname
 
-                        tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
-                        if tarjeta:
-                            codigo = str(tarjeta.tarjeta)
+                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjetaObj:
+                            codigo = str(tarjetaObj.tarjeta)
                             autorizacion = ""
 
 
@@ -203,10 +203,6 @@ class Registros_cManager(SuperManager):
                             elif invitacion.evento.fkareasocial:
 
                                 destino = invitacion.evento.areasocial.nombre
-
-
-
-
 
 
                 else:

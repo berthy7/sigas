@@ -65,13 +65,11 @@ class RegistrosManager(SuperManager):
             autorizacion = ""
             destino = ""
 
-            tarjeta = str(reg.tarjeta)
-
             if reg.evento == 0:
-
+                tarjeta = reg.tarjeta
                 if reg.codigo != "0":
                     codigo = reg.codigo
-                    tarjeta = reg.tarjeta
+
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
@@ -94,9 +92,9 @@ class RegistrosManager(SuperManager):
                             codigo = "Tarjeta Peatonal"
                             autorizacion = residente.fullname
 
-                        tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
-                        if tarjeta:
-                            codigo = str(tarjeta.tarjeta)
+                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjetaObj:
+                            codigo = str(tarjetaObj.tarjeta)
                             autorizacion = ""
 
                         codigo_normalizado = int(reg.codigo) - 500000
@@ -170,10 +168,9 @@ class RegistrosManager(SuperManager):
 
             if reg.evento == 0:
 
-
+                tarjeta = reg.tarjeta
                 if reg.codigo != "0":
                     codigo = reg.codigo
-                    tarjeta = reg.tarjeta
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
@@ -197,9 +194,9 @@ class RegistrosManager(SuperManager):
                             codigo = "Tarjeta Peatonal"
                             autorizacion = residente.fullname
 
-                        tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
-                        if tarjeta:
-                            codigo = str(tarjeta.tarjeta)
+                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjetaObj:
+                            codigo = str(tarjetaObj.tarjeta)
                             autorizacion = ""
 
 
