@@ -66,10 +66,10 @@ class RegistrosManager(SuperManager):
             destino = ""
 
             if reg.evento == 0:
-                tarjeta = reg.tarjeta
+
                 if reg.codigo != "0":
                     codigo = reg.codigo
-
+                    tarjeta = reg.tarjeta
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
@@ -117,6 +117,7 @@ class RegistrosManager(SuperManager):
 
                 else:
                     codigo = "Usuario no registrado"
+                    tarjeta = reg.tarjeta
 
             else:
 

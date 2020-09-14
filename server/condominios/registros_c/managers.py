@@ -52,9 +52,10 @@ class Registros_cManager(SuperManager):
             destino = ""
 
             if reg.evento == 0:
-                tarjeta = reg.tarjeta
+
                 if reg.codigo != "0":
                     codigo = reg.codigo
+                    tarjeta = reg.tarjeta
 
 
                     if reg.fkdispositivo:
@@ -156,10 +157,10 @@ class Registros_cManager(SuperManager):
 
             if reg.evento == 0:
 
-                tarjeta = str(reg.tarjeta)
+
                 if reg.codigo != "0":
                     codigo = reg.codigo
-
+                    tarjeta = str(reg.tarjeta)
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
