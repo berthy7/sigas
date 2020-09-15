@@ -165,13 +165,12 @@ class RegistrosManager(SuperManager):
             autorizacion = ""
             destino = ""
 
-            tarjeta = str(reg.tarjeta)
-
             if reg.evento == 0:
 
                 tarjeta = reg.tarjeta
                 if reg.codigo != "0":
                     codigo = reg.codigo
+                    tarjeta = reg.tarjeta
 
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
@@ -197,8 +196,9 @@ class RegistrosManager(SuperManager):
 
                         tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
                         if tarjetaObj:
-                            codigo = str(tarjetaObj.tarjeta)
+                            codigo = str(tarjetaObj.tipo)
                             autorizacion = ""
+                            tarjeta = str(tarjetaObj.tarjeta)
 
 
                         codigo_normalizado = int(reg.codigo) - 500000
@@ -219,6 +219,7 @@ class RegistrosManager(SuperManager):
 
                 else:
                     codigo = "Usuario no registrado"
+                    tarjeta = reg.tarjeta
 
             else:
 
