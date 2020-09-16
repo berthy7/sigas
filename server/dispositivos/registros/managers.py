@@ -74,7 +74,7 @@ class RegistrosManager(SuperManager):
                     if reg.fkdispositivo:
                         idcondominio = reg.dispositivo.fkcondominio
 
-                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.codigo).first()
+                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
 
                         if residente_qr:
                             codigo =  "Codigo Qr"
@@ -176,7 +176,7 @@ class RegistrosManager(SuperManager):
                         idcondominio = reg.dispositivo.fkcondominio
 
 
-                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.codigo).first()
+                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
 
                         if residente_qr:
                             codigo =  "Codigo Qr"
