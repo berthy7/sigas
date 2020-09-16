@@ -52,7 +52,6 @@ class RegistrosManager(SuperManager):
         else:
             registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
 
-
         list = []
         nombre_meses = {1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
                        9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'}
@@ -100,9 +99,10 @@ class RegistrosManager(SuperManager):
                                     codigo = str(provper.fullname)
                                     tarjeta = str(tarjetaObj.tipo)
 
-                            autorizacion = ""
-                            codigo = str(tarjetaObj.tipo)
-                            tarjeta = str(tarjetaObj.tarjeta)
+                            else:
+                                autorizacion = ""
+                                codigo = str(tarjetaObj.tipo)
+                                tarjeta = str(tarjetaObj.tarjeta)
 
                         codigo_normalizado = int(reg.codigo) - 500000
                         invitacion = self.db.query(Invitacion).filter(
@@ -209,9 +209,11 @@ class RegistrosManager(SuperManager):
                                     codigo = str(provper.fullname)
                                     tarjeta = str(tarjetaObj.tipo)
 
-                            autorizacion = ""
-                            codigo = str(tarjetaObj.tipo)
-                            tarjeta = str(tarjetaObj.tarjeta)
+
+                            else:
+                                autorizacion = ""
+                                codigo = str(tarjetaObj.tipo)
+                                tarjeta = str(tarjetaObj.tarjeta)
 
 
 

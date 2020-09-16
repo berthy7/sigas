@@ -88,9 +88,10 @@ class Registros_cManager(SuperManager):
                                     codigo = str(provper.fullname)
                                     tarjeta = str(tarjetaObj.tipo)
 
-                            autorizacion = ""
-                            codigo = str(tarjetaObj.tipo)
-                            tarjeta = str(tarjetaObj.tarjeta)
+                            else:
+                                autorizacion = ""
+                                codigo = str(tarjetaObj.tipo)
+                                tarjeta = str(tarjetaObj.tarjeta)
 
 
                         codigo_normalizado = int(reg.codigo) - 500000
@@ -200,9 +201,10 @@ class Registros_cManager(SuperManager):
                                     codigo = str(provper.fullname)
                                     tarjeta = str(tarjetaObj.tipo)
 
-                            autorizacion = ""
-                            codigo = str(tarjetaObj.tipo)
-                            tarjeta = str(tarjetaObj.tarjeta)
+                            else:
+                                autorizacion = ""
+                                codigo = str(tarjetaObj.tipo)
+                                tarjeta = str(tarjetaObj.tarjeta)
 
 
 
