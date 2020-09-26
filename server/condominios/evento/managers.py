@@ -287,8 +287,16 @@ class EventoManager(SuperManager):
         fechahoy = fecha_hoy_str[0:10]
         horahoy = fecha_hoy_str[11:19]
 
-        fecha_date = datetime.strptime(fechahoy, '%d/%m/%Y')
+        print(str(fechahoy))
 
+        try:
+            fecha_date = datetime.strptime(fechahoy, '%d/%m/%Y')
+
+        except Exception as e:
+            print("Excepcion conrolada:"+ str(e))
+            fecha_date = datetime.strptime(fechahoy, '%Y-%m-%d')
+
+        print("fecha date:"+str(fecha_date))
         time_horahoy = datetime.strptime(horahoy, '%H:%M:%S').time()
 
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fecha_date).filter(

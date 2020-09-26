@@ -44,6 +44,7 @@ function verificar_qr() {
                 response = JSON.parse(response)
 
                 if (response.success) {
+
                     $('#fkinvitacion').val(response.response.id)
                     $('#fkinvitado').selectpicker('refresh')
                     $('#fkinvitado').val(response.response.fkinvitado)
@@ -63,6 +64,8 @@ function verificar_qr() {
                     $('#fkautorizacion').selectpicker('refresh')
                     cargar_nropase($( "#fktipopase option:selected" ).text())
 
+                    $('#fkresidente').val(response.response.evento.fkresidente)
+                    $('#fkresidente').selectpicker('refresh')
 
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
