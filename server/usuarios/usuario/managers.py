@@ -299,7 +299,7 @@ class UsuarioManager(SuperManager):
             remitente = "<"+server.correo+">"
             destinatarios = correos
             asunto = 'Creacion de Usuario SIGAS'
-            cuerpo = "Saludos "+ str(usuario.nombre) +" "+ str(usuario.apellidop) +" "+" "+ str(usuario.apellidom) + "\n" + "Se le ha creado acceso al sistema SIGAS"+ "\n" + "Url: http://sistemacondominio.herokuapp.com"+ "\n" + "\n" + "Credenciales: "+ "\n" + str(condominio)+ "\n" + "Username: "+ str(usuario.username) + "\n" + "Password: "+ str(password) + "\n" + "Perfil: "+ str(usuario.rol.nombre) + "\n" + "\n" +  "Saludos"
+            cuerpo = "Saludos "+ str(usuario.nombre) +" "+ str(usuario.apellidop) +" "+" "+ str(usuario.apellidom) + "\n" + "Se le ha creado acceso al sistema SIGAS"+ "\n" + "Url: http://sigas-web.herokuapp.com"+ "\n" + "\n" + "Credenciales: "+ "\n" + str(condominio)+ "\n" + "Username: "+ str(usuario.username) + "\n" + "Password: "+ str(password) + "\n" + "Perfil: "+ str(usuario.rol.nombre) + "\n" + "\n" +  "Saludos"
             # Creamos el objeto mensaje
             mensaje = MIMEMultipart('alternative')
             # Establecemos los atributos del mensaje
@@ -342,7 +342,7 @@ class UsuarioManager(SuperManager):
             destinatarios = correos
             asunto = 'Reinicio de Contraseña usuario SIGAS'
             cuerpo = "Saludos " + str(usuario.nombre) + " " + str(usuario.apellidop) + " " + " " + str(
-                usuario.apellidom) + "\n" + "Se ha reiniciado su contraseña de acceso al sistema SIGAS" + "\n" + "Url: http://sistemacondominio.herokuapp.com" + "\n" + "\n" + "Credenciales: " + "\n" + str(
+                usuario.apellidom) + "\n" + "Se ha reiniciado su contraseña de acceso al sistema SIGAS" + "\n" + "Url: http://sigas-web.herokuapp.com" + "\n" + "\n" + "Credenciales: " + "\n" + str(
                 condominio) + "\n" + "Username: " + str(usuario.username) + "\n" + "Password: " + str(
                 password) + "\n" + "Perfil: " + str(usuario.rol.nombre) + "\n" + "\n" + "Saludos"
             # Creamos el objeto mensaje
@@ -407,7 +407,7 @@ class UsuarioManager(SuperManager):
 
             if principal.estado == False:
 
-                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_credenciales"
+                url = "http://sigas-web.herokuapp.com/api/v1/actualizar_credenciales"
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo

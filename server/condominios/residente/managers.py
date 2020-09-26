@@ -413,7 +413,7 @@ class ResidenteManager(SuperManager):
             principal = self.db.query(Principal).first()
             if principal.estado == False:
 
-                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_foto"
+                url = "http://sigas-web.herokuapp.com/api/v1/actualizar_foto"
 
                 headers = {'Content-Type': 'application/json'}
 
