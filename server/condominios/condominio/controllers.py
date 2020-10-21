@@ -36,6 +36,18 @@ class CondominioController(CrudController):
         CondominioManager(self.db).insert(diccionary)
         self.respond(success=True, message='Insertado correctamente.')
 
+    def edit(self):
+        self.set_session()
+        self.verif_privileges()
+        ins_manager = self.manager(self.db)
+        diccionary = json.loads(self.get_argument("object"))
+        indicted_object = ins_manager.obtain(diccionary['id'])
+        if len(ins_manager.errors) == 0:
+            self.respond(indicted_object.get_dict(), message='Operacion exitosa!')
+        else:
+            self.respond([item.__dict__ for item in ins_manager.errors], False, 'Ocurrió un error al insertar')
+        self.db.close()
+
     def update(self):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))

@@ -456,6 +456,17 @@ class InvitacionManager(SuperManager):
     def obtener_x_codigo(self,codigoqr):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.codigoautorizacion == codigoqr).first()
 
+    def obtener_x_codigoqr(self,codigoqr):
+        return self.db.query(self.entity).filter(self.entity.codigoautorizacion == codigoqr).first()
+
+    def multiacceso(self,idInvitacion):
+        i = self.db.query(self.entity).filter(self.entity.id == idInvitacion).first()
+
+        if i.multiacceso:
+            return False
+        else:
+            return True
+
     def obtener_invitaciones(self,idevento):
         return self.db.query(Invitacion).filter(Invitacion.estado == True).filter(Invitacion.fkevento == idevento).all()
 

@@ -47,6 +47,7 @@ class InvitadoManager(SuperManager):
         invitado = InvitadoManager(self.db).obtener_x_ci(diccionary['ci'])
 
         if invitado is None:
+
             objeto = InvitadoManager(self.db).entity(**diccionary)
             fecha = BitacoraManager(self.db).fecha_actual()
             objeto.vehiculos = []
@@ -68,6 +69,7 @@ class InvitadoManager(SuperManager):
                 invitado.expendido = diccionary['expendido']
             if invitado.telefono is None:
                 invitado.telefono = diccionary['telefono']
+
             a = super().update(invitado)
 
         if usuario.fkresidente != None:

@@ -62,6 +62,9 @@ function verificar_qr() {
                     $('#fkautorizacion').val(1)
                     $('#fkautorizacion').selectpicker('refresh')
                     cargar_nropase($( "#fktipopase option:selected" ).text())
+                    
+                    $('#fkresidente').val(response.response.idresidente)
+                    $('#fkresidente').selectpicker('refresh')
 
 
                     document.getElementById("imagen_mensaje").src = response.message;

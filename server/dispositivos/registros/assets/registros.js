@@ -193,6 +193,43 @@ $('#insert').click(function () {
     }
 
 
+function attach_edit() {
+    $('.edit').click(function () {
+        self = $(this).attr('data-id')
+        
+        $('#id').val($(this).attr('data-fkdispositivo'))
+        $('#dispositivo').val($(this).attr('data-dispositivo'))
+        $('#numero').val($(this).attr('data-nro'))
+        $('#cerradura').val($(this).attr('data-cerradura'))
+
+
+        clean_form()
+        verif_inputs('')
+        $('#id_div').hide()
+        $('#update').show()
+        $('#form').modal('show')
+
+    })
+}
+attach_edit()
+
+
+$('#abrir1').click(function () {
+    objeto = JSON.stringify({
+        'id': parseInt($('#id').val()),
+        'cerradura': $('#numero').val()
+
+    })
+    ajax_call('dispositivo_abrir_cerradura', {
+        object: objeto,
+        _xsrf: getCookie("_xsrf")
+    }, null, function () {
+        $('#form').modal('hide')
+    })
+
+})
+
+
 $('#update').click(function () {
     notvalid = validationInputSelectsWithReturn("form");
     if (notvalid===false) {

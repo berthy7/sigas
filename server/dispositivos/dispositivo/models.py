@@ -51,6 +51,7 @@ class Cerraduras(Serializable, Base):
     fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
     fkentrada = Column(Integer, ForeignKey('entrada.id'), nullable=True)
     estado = Column(Boolean, default=True)
+    linea = Column(Boolean, default=True)
 
     dispositivo = relationship('Dispositivo')
     entrada = relationship('Entrada')

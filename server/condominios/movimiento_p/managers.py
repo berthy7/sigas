@@ -111,7 +111,11 @@ class Movimiento_pManager(SuperManager):
 
         # deshabilitar invitacion
         if a.fkinvitacion:
-            InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+            multi = InvitacionManager(self.db).multiacceso(a.fkinvitacion)
+
+            if multi:
+
+                InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
         return a

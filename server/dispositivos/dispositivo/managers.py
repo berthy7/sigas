@@ -64,12 +64,29 @@ class DispositivoManager(SuperManager):
             marcaciones = self.db.query(func.count(RegistrosControlador.id)).filter(RegistrosControlador.fkdispositivo == dispo.id)
 
             cantidad = marcaciones[0][0]
-            resp.append(dict(id=dispo.id,ip=dispo.ip,puerto=dispo.puerto,estado=dispo.estado,cant_marcaciones=cantidad,accesos=resp_config))
+            resp.append(dict(id=dispo.id,ip=dispo.ip,puerto=dispo.puerto,estado=dispo.estado,tipo=dispo.fktipodispositivo,cant_marcaciones=cantidad,accesos=resp_config))
 
         return resp
 
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
+
+
+    def listar_cerraduras(self):
+
+        lista = list()
+
+        imagen = "/resources/images/dispositivo.PNG"
+
+        for x in  self.db.query(Cerraduras).filter(Cerraduras.estado == True).all():
+
+            if x.linea:
+                imagen = "/resources/images/dispositivo.PNG"
+            else:
+                imagen ="/resources/images/dispositivo_off.png"
+
+            lista.append(dict(id=x.id,fkdispositivo=x.fkdispositivo,dispositivo=x.dispositivo.descripcion,nro=x.numero,cerradura=x.nombre,imagen=imagen))
+        return lista
 
     def listar_x_usuario(self,usuario):
 
@@ -366,6 +383,9 @@ class ConfiguraciondispositivoManager(SuperManager):
 
         for dis in dispositivos:
             diccionary['fkdispositivo'] = dis.id
+
+            if dis.fktipodispositivo == 4:
+                diccionary['tarjeta'] = diccionary['residente']
 
             objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
             super().insert(objeto)

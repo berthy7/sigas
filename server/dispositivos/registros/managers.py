@@ -7,6 +7,7 @@ from ...operaciones.bitacora.managers import *
 from ..dispositivo.models import *
 from ...condominios.movimiento.managers import *
 from ...condominios.portero_virtual.managers import *
+from ...condominios.evento.managers import *
 
 
 from openpyxl import load_workbook
@@ -71,56 +72,70 @@ class RegistrosManager(SuperManager):
                     tarjeta = reg.tarjeta
 
                     if reg.fkdispositivo:
-                        idcondominio = reg.dispositivo.fkcondominio
 
-                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
+                        if reg.dispositivo.fktipodispositivo != 4:
 
-                        if residente_qr:
-                            codigo =  "Codigo Qr"
-                            tarjeta = "Residente"
-                            autorizacion = residente_qr.fullname
+                            idcondominio = reg.dispositivo.fkcondominio
 
-                        residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
+                            residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
 
-                        if residente_vehi:
-                            codigo = "Tag Vehicular"
-                            autorizacion = residente_vehi.fullname
+                            if residente_qr:
+                                codigo =  "Codigo Qr"
+                                tarjeta = "Residente"
+                                autorizacion = residente_qr.fullname
 
-                        residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
-                        if residente:
-                            codigo = "Tarjeta Peatonal"
-                            autorizacion = residente.fullname
+                            residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
-                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
-                        if tarjetaObj:
-                            if tarjetaObj.tipo == "Provper":
-                                provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
-                                if provper:
+                            if residente_vehi:
+                                codigo = "Tag Vehicular"
+                                autorizacion = residente_vehi.fullname
+
+                            residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
+                            if residente:
+                                codigo = "Tarjeta Peatonal"
+                                autorizacion = residente.fullname
+
+                            tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                            if tarjetaObj:
+                                if tarjetaObj.tipo == "Provper":
+                                    provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
+                                    if provper:
+                                        codigo = str(tarjetaObj.tarjeta)
+                                        tarjeta = str(tarjetaObj.tipo)
+                                        autorizacion = str(provper.fullname)
+
+                                else:
+                                    autorizacion = ""
                                     codigo = str(tarjetaObj.tarjeta)
                                     tarjeta = str(tarjetaObj.tipo)
-                                    autorizacion = str(provper.fullname)
 
+                            codigo_normalizado = int(reg.codigo) - 500000
+                            invitacion = self.db.query(Invitacion).filter(
+                                Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                            if invitacion:
+                                codigo = invitacion.invitado.fullname
+                                tarjeta = invitacion.tipopase.nombre
+                                autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
+
+                                if invitacion.evento.fkdomicilio:
+
+                                    destino = invitacion.evento.domicilio.nombre
+
+                                elif invitacion.evento.fkareasocial:
+
+                                    destino = invitacion.evento.areasocial.nombre
+
+                        else:
+                            codigo_normalizado_residente = int(reg.codigo) - 100000
+                            residente_biometrico = self.db.query(Residente).filter(Residente.codigo == codigo_normalizado_residente).first()
+
+                            if residente_biometrico:
+                                autorizacion = residente_biometrico.fullname
                             else:
                                 autorizacion = ""
-                                codigo = str(tarjetaObj.tarjeta)
-                                tarjeta = str(tarjetaObj.tipo)
 
-                        codigo_normalizado = int(reg.codigo) - 500000
-                        invitacion = self.db.query(Invitacion).filter(
-                            Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
-                        if invitacion:
-                            codigo = invitacion.invitado.fullname
-                            tarjeta = invitacion.tipopase.nombre
-                            autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
-
-                            if invitacion.evento.fkdomicilio:
-
-                                destino = invitacion.evento.domicilio.nombre
-
-                            elif invitacion.evento.fkareasocial:
-
-                                destino = invitacion.evento.areasocial.nombre
-
+                            codigo = "Apertura"
+                            tarjeta = reg.codigo
 
 
                 else:
@@ -181,58 +196,73 @@ class RegistrosManager(SuperManager):
                     tarjeta = reg.tarjeta
 
                     if reg.fkdispositivo:
-                        idcondominio = reg.dispositivo.fkcondominio
+
+                        if reg.dispositivo.fktipodispositivo != 4:
+
+                            idcondominio = reg.dispositivo.fkcondominio
 
 
-                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
+                            residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
 
-                        if residente_qr:
-                            codigo =  "Codigo Qr"
-                            tarjeta = "Residente"
-                            autorizacion = residente_qr.fullname
+                            if residente_qr:
+                                codigo =  "Codigo Qr"
+                                tarjeta = "Residente"
+                                autorizacion = residente_qr.fullname
 
-                        residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
+                            residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
-                        if residente_vehi:
-                            codigo = "Tag Vehicular"
-                            autorizacion = residente_vehi.fullname
+                            if residente_vehi:
+                                codigo = "Tag Vehicular"
+                                autorizacion = residente_vehi.fullname
 
-                        residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
-                        if residente:
-                            codigo = "Tarjeta Peatonal"
-                            autorizacion = residente.fullname
+                            residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
+                            if residente:
+                                codigo = "Tarjeta Peatonal"
+                                autorizacion = residente.fullname
 
-                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
-                        if tarjetaObj:
-                            if tarjetaObj.tipo == "Provper":
-                                provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
-                                if provper:
+                            tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                            if tarjetaObj:
+                                if tarjetaObj.tipo == "Provper":
+                                    provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
+                                    if provper:
+                                        codigo = str(tarjetaObj.tarjeta)
+                                        tarjeta = str(tarjetaObj.tipo)
+                                        autorizacion = str(provper.fullname)
+
+                                else:
+                                    autorizacion = ""
                                     codigo = str(tarjetaObj.tarjeta)
                                     tarjeta = str(tarjetaObj.tipo)
-                                    autorizacion = str(provper.fullname)
 
+
+
+                            codigo_normalizado = int(reg.codigo) - 500000
+                            invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                            if invitacion:
+                                codigo = invitacion.invitado.fullname
+                                tarjeta = invitacion.tipopase.nombre
+                                autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
+
+                                if invitacion.evento.fkdomicilio:
+
+                                    destino = invitacion.evento.domicilio.nombre
+
+                                elif invitacion.evento.fkareasocial:
+
+                                    destino = invitacion.evento.areasocial.nombre
+
+                        else:
+                            codigo_normalizado_residente = int(reg.codigo) - 100000
+                            residente_biometrico = self.db.query(Residente).filter(
+                                Residente.codigo == codigo_normalizado_residente).first()
+
+                            if residente_biometrico:
+                                autorizacion = residente_biometrico.fullname
                             else:
                                 autorizacion = ""
-                                codigo = str(tarjetaObj.tarjeta)
-                                tarjeta = str(tarjetaObj.tipo)
 
-
-
-                        codigo_normalizado = int(reg.codigo) - 500000
-                        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
-                        if invitacion:
-                            codigo = invitacion.invitado.fullname
-                            tarjeta = invitacion.tipopase.nombre
-                            autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
-
-                            if invitacion.evento.fkdomicilio:
-
-                                destino = invitacion.evento.domicilio.nombre
-
-                            elif invitacion.evento.fkareasocial:
-
-                                destino = invitacion.evento.areasocial.nombre
-
+                            codigo = "Apertura"
+                            tarjeta = reg.codigo
 
                 else:
                     codigo = "Usuario no registrado"
@@ -274,10 +304,20 @@ class RegistrosManager(SuperManager):
             respuesta = self.db.query(self.entity).filter(self.entity.evento == marcacion[4]).filter(self.entity.time == marcacion[6]).filter(self.entity.tarjeta == marcacion[0]).filter(self.entity.fkdispositivo == marcaciones['iddispositivo']).first()
 
             if not respuesta:
-                print("regstro marcacion")
+                print("registro marcacion")
                 object = RegistrosControlador(tarjeta=marcacion[0],codigo=marcacion[1],verificado=marcacion[2],puerta=marcacion[3],evento=marcacion[4],estado=marcacion[5],time=marcacion[6],fkdispositivo=marcaciones['iddispositivo'])
                 MovimientoManager(self.db).actualizar_movimiento(object)
                 # PorterovirtualManager(self.db).actualizar_marcacion(object)
+
+                i = InvitacionManager(self.db).obtener_x_codigoqr(marcacion[0])
+
+                # deshabilitar invitacion
+                if i:
+                    multi = InvitacionManager(self.db).multiacceso(i.id)
+
+                    if multi:
+                        InvitacionManager(self.db).delete(i.id, False, None, None)
+
                 self.db.add(object)
 
         self.db.commit()
