@@ -61,9 +61,10 @@ class MovimientoManager(SuperManager):
         diccionary['cantpasajeros'] = abs(int(diccionary['cantpasajeros']))
 
         diccionary['placa'] = diccionary['placa'].replace(" ", "")
+
         if diccionary['visita']:
             if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-                if diccionary['ci'] != "":
+                if diccionary['nombre'] != "":
                     invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
                     diccionary['fkinvitado'] = invitado.id
                 else:

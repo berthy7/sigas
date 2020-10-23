@@ -115,7 +115,7 @@ class RegistrosManager(SuperManager):
                             if invitacion:
                                 codigo = invitacion.invitado.fullname
                                 tarjeta = invitacion.tipopase.nombre
-                                autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
+                                autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
                                 if invitacion.evento.fkdomicilio:
 
@@ -130,11 +130,15 @@ class RegistrosManager(SuperManager):
                             residente_biometrico = self.db.query(Residente).filter(Residente.codigo == codigo_normalizado_residente).first()
 
                             if residente_biometrico:
-                                autorizacion = residente_biometrico.fullname
+                                autorizacion = residente_biometrico.nombre + " " + residente_biometrico.apellidop
                             else:
                                 autorizacion = ""
 
-                            codigo = "Apertura"
+                            if reg.verificado == 16:
+                                codigo = "Apertura Rostro"
+                            else:
+                                codigo = "Apertura Huella"
+
                             tarjeta = reg.codigo
 
 
@@ -241,7 +245,7 @@ class RegistrosManager(SuperManager):
                             if invitacion:
                                 codigo = invitacion.invitado.fullname
                                 tarjeta = invitacion.tipopase.nombre
-                                autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
+                                autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
                                 if invitacion.evento.fkdomicilio:
 
@@ -253,15 +257,20 @@ class RegistrosManager(SuperManager):
 
                         else:
                             codigo_normalizado_residente = int(reg.codigo) - 100000
+
                             residente_biometrico = self.db.query(Residente).filter(
                                 Residente.codigo == codigo_normalizado_residente).first()
 
                             if residente_biometrico:
-                                autorizacion = residente_biometrico.fullname
+                                autorizacion = residente_biometrico.nombre + " " + residente_biometrico.apellidop
                             else:
                                 autorizacion = ""
 
-                            codigo = "Apertura"
+                            if reg.verificado == 16:
+                                codigo = "Apertura Rostro"
+                            else:
+                                codigo = "Apertura Huella"
+
                             tarjeta = reg.codigo
 
                 else:
