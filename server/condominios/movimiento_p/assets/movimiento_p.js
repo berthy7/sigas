@@ -63,14 +63,65 @@ function verificar_qr() {
                     $('#fkautorizacion').selectpicker('refresh')
 
                     cargar_nropase($( "#fktipopase option:selected" ).text())
+                    
+                    $('#fkresidente').val(response.response.evento.fkresidente)
+                    $('#fkresidente').selectpicker('refresh')
 
 
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
+                    
+                    document.getElementById('switch_multiacceso').checked=response.response.evento.multiacceso
+                    document.getElementById('switch_sinregistro').checked=response.response.evento.sinregistro
+
+                    $('#div_accesos').show()
+                    
+                    if (!response.response.evento.sinregistro) {
+                        $('#nombre').prop("required", true);
+                        $('#apellidop').prop("required", true);
+                        $('#ci').prop("required", true);
+
+                        $('#placa').prop("required", true);
+                        $('#fkcolor').prop("required", true);
+                        $('#fkmarca').prop("required", true);
+
+                        $('#fktipodocumento').val(1)
+                        $('#fktipodocumento').selectpicker("refresh")
+
+                        $('.div_vehiculo').show()
+
+                    } else {
+                        $('#nombre').removeAttr("required");
+                        eraseError('nombre')
+                        $('#apellidop').removeAttr("required");
+                        eraseError('apellidop')
+                        $('#ci').removeAttr("required");
+                        eraseError('ci')
+
+                        $('#placa').removeAttr("required");
+                        eraseError('placa')
+                        $('#fkcolor').removeAttr("required");
+                        eraseError('fkcolor')
+                        $('#fkmarca').removeAttr("required");
+                        eraseError('fkmarca')
+
+                        $('#fktipodocumento').val(4)
+                        $('#fktipodocumento').selectpicker("refresh")
+
+
+                        $('.div_vehiculo').hide()
+                        
+                    }
 
                 } else {
+                    $('#fktipodocumento').val(1)
+                    $('#fktipodocumento').selectpicker("refresh")
+                    
                     document.getElementById("imagen_mensaje").src = response.message;
-
+                    document.getElementById('switch_multiacceso').checked=false
+                    document.getElementById('switch_sinregistro').checked=false
+                    $('#div_accesos').hide()
+                    
                     limpiar_formulario()
 
                 }
@@ -255,7 +306,7 @@ $('#nropase').selectpicker({
 
 $('#switch_visita').change(function() {
    sw_visita = $(this).prop('checked')
-
+    limpiar_formulario()
     if(sw_visita){
 
         $('#div_residente').hide()
@@ -318,8 +369,8 @@ function cargar_tabla(data){
         dom: "Bfrtip" ,
         buttons: [
             {  extend : 'excelHtml5',
-               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10]},
-                sheetName: 'Reporte Control y Registro Peatonal',
+               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9]},
+                sheetName: 'Control y Registro Peatonal',
                title: 'Control y Registro Peatonal'  },
             {  extend : 'pdfHtml5',
                 orientation: 'landscape',
@@ -328,7 +379,7 @@ function cargar_tabla(data){
                     doc.styles.tableBodyOdd.alignment = 'center';
                },
                exportOptions : {
-                    columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10]
+                    columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9]
                 },
                title: 'Control y Registro Peatonal'
             }
@@ -585,15 +636,24 @@ function cargar_residente(fkdomicilio) {
         response = JSON.parse(response)
         console.log(response)
 
-        $('#fkresidente').html('');
-        var select = document.getElementById("fkresidente")
-        for (var i = 0; i < Object.keys(response.response).length; i++) {
-            var option = document.createElement("OPTION");
-            option.innerHTML = response['response'][i]['fullname'];
-            option.value = response['response'][i]['id'];
-            select.appendChild(option);
+        if(Object.keys(response.response).length == 0){
+            $('#fkresidente').val('')
+            $('#fkresidente').selectpicker('refresh');
+
+        }else{
+            for (var i = 0; i < Object.keys(response.response).length; i++) {
+
+                $('#fkresidente').val(response['response'][i]['id'])
+                $('#fkresidente').selectpicker('refresh');
+
+                break;
+
+            }
+
         }
-        $('#fkresidente').selectpicker('refresh');
+
+
+
 
     })
 

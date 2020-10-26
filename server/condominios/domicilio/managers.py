@@ -76,7 +76,7 @@ class DomicilioManager(SuperManager):
         if int(fkdomicilio) != 0:
 
 
-            x = self.db.query(Residente).join(ResidenteDomicilio).filter(Residente.estado == True).filter(
+            x = self.db.query(Residente).join(ResidenteDomicilio).filter(
                 ResidenteDomicilio.fkdomicilio == fkdomicilio).order_by(
                 Residente.nombre.asc()).all()
 

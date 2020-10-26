@@ -318,14 +318,12 @@ class RegistrosManager(SuperManager):
                 MovimientoManager(self.db).actualizar_movimiento(object)
                 # PorterovirtualManager(self.db).actualizar_marcacion(object)
 
-                # i = InvitacionManager(self.db).obtener_x_codigoqr(marcacion[0])
-                #
-                # # deshabilitar invitacion
-                # if i:
-                #     multi = InvitacionManager(self.db).multiacceso(i.id)
-                #
-                #     if multi:
-                #         InvitacionManager(self.db).delete(i.id, False, None, None)
+                i = InvitacionManager(self.db).obtener_x_codigoqr(marcacion[0])
+                if i:
+                    # deshabilitar invitacion
+                    accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(i.id)
+                    if accesos_invitacion['multiacceso'] is False:
+                        InvitacionManager(self.db).delete(i.id, False, None, None)
 
                 self.db.add(object)
 

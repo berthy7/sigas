@@ -42,6 +42,7 @@ function verificar_qr() {
                 async: false
             }).done(function (response) {
                 response = JSON.parse(response)
+                $('.div_vehiculo').show()
 
                 if (response.success) {
                     $('#fkinvitacion').val(response.response.id)
@@ -63,15 +64,65 @@ function verificar_qr() {
                     $('#fkautorizacion').selectpicker('refresh')
                     cargar_nropase($( "#fktipopase option:selected" ).text())
                     
-                    $('#fkresidente').val(response.response.idresidente)
+                    $('#fkresidente').val(response.response.evento.fkresidente)
                     $('#fkresidente').selectpicker('refresh')
 
 
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
 
+                    document.getElementById('switch_multiacceso').checked=response.response.evento.multiacceso
+                    document.getElementById('switch_sinregistro').checked=response.response.evento.sinregistro
+
+                    $('#div_accesos').show()
+
+                    if (!response.response.evento.sinregistro) {
+                        $('#nombre').prop("required", true);
+                        $('#apellidop').prop("required", true);
+                        $('#ci').prop("required", true);
+
+                        $('#placa').prop("required", true);
+                        $('#fkcolor').prop("required", true);
+                        $('#fkmarca').prop("required", true);
+
+                        $('#fktipodocumento').val(1)
+                        $('#fktipodocumento').selectpicker("refresh")
+
+                        $('.div_vehiculo').show()
+
+                    } else {
+                        $('#nombre').removeAttr("required");
+                        eraseError('nombre')
+                        $('#apellidop').removeAttr("required");
+                        eraseError('apellidop')
+                        $('#ci').removeAttr("required");
+                        eraseError('ci')
+
+                        $('#placa').removeAttr("required");
+                        eraseError('placa')
+                        $('#fkcolor').removeAttr("required");
+                        eraseError('fkcolor')
+                        $('#fkmarca').removeAttr("required");
+                        eraseError('fkmarca')
+
+                        $('#fktipodocumento').val(4)
+                        $('#fktipodocumento').selectpicker("refresh")
+
+
+                        $('.div_vehiculo').hide()
+
+
+                    }
+
                 } else {
+                    $('#fktipodocumento').val(1)
+                    $('#fktipodocumento').selectpicker("refresh")
+
                     document.getElementById("imagen_mensaje").src = response.message;
+
+                    document.getElementById('switch_multiacceso').checked=false
+                    document.getElementById('switch_sinregistro').checked=false
+                    $('#div_accesos').hide()
 
                     limpiar_formulario()
 
@@ -280,7 +331,8 @@ $('#switch').change(function() {
 
 $('#switch_visita').change(function() {
    sw_visita = $(this).prop('checked')
-
+    $('.div_vehiculo').show()
+    limpiar_formulario()
     if(sw_visita){
 
         $('#div_residente').hide()
@@ -308,6 +360,9 @@ $('#switch_visita').change(function() {
 
 
         $('#fkresidente').prop("required", true);
+        $('#div_accesos').hide()
+        document.getElementById('switch_multiacceso').checked=false
+        document.getElementById('switch_sinregistro').checked=false
 
 
     }
@@ -898,7 +953,7 @@ function limpiar_formulario() {
     $('#ci').val('')
     $('#expendido').val('')
     $('#expendido').selectpicker("refresh")
-    $('#cantpasajeros').val('')
+    $('#cantpasajeros').val(0)
     $('#placa').val('')
     $('#tipo').val('')
     $('#tipo').selectpicker("refresh")
@@ -916,6 +971,8 @@ function limpiar_formulario() {
     $('#fktipopase').selectpicker("refresh")
     $('#fkautorizacion').val('')
     $('#fkautorizacion').selectpicker("refresh")
+    $('#fkresidente').val('')
+    $('#fkresidente').selectpicker("refresh")
     $('#codigoautorizacion').val('')
     $('#codigoautorizacion_residente').val('')
     $('#nropase').val('')
@@ -930,6 +987,10 @@ function limpiar_formulario() {
     $('#ci_conductor').val('')
     $('#expendido_conductor').val('')
     $('#expendido_conductor').selectpicker("refresh")
+
+    $('#div_accesos').hide()
+    document.getElementById('switch_multiacceso').checked=false
+    document.getElementById('switch_sinregistro').checked=false
 }
 
 $('#new').click(function () {
@@ -986,6 +1047,12 @@ $('#new').click(function () {
 
     document.getElementById('switch_visita').checked=true
     $('#switch_visita').change()
+    $('#div_accesos').hide()
+    document.getElementById('switch_multiacceso').checked=false
+    document.getElementById('switch_sinregistro').checked=false
+
+    $('.div_vehiculo').show()
+
 
     verif_inputs('')
     validationInputSelects("form")
@@ -1006,14 +1073,9 @@ $('#insert').click(function () {
             'warning'
         )
     }else{
-        if($('#fkmarca').val() == 0 && $('#nombre_marca').val() == ""){
-            swal(
-                'Error de datos.',
-                 'Ingrese Marca del vehiculo',
-                'warning'
-            )
-        }else{
-
+        
+        if($('#switch_sinregistro').prop('checked')){
+            
             notvalid = validationInputSelectsWithReturn("form");
             if (notvalid===false) {
                 objeto = JSON.stringify({
@@ -1067,8 +1129,75 @@ $('#insert').click(function () {
                     'error'
                 )
             }
+            
+            
+            
+        }else{
+            
+            if($('#fkmarca').val() == 0 && $('#nombre_marca').val() == ""){
+    
+                swal(
+                    'Error de datos.',
+                     'Ingrese Marca del vehiculo',
+                    'warning'
+                )
+            }else{
+                
+                notvalid = validationInputSelectsWithReturn("form");
+                if (notvalid===false) {
+                    objeto = JSON.stringify({
+                        'fkinvitacion': $('#fkinvitacion').val(),
+                        'codigoautorizacion': $('#codigoautorizacion').val(),
+                        'fktipodocumento': $('#fktipodocumento').val(),
+                        'fkinvitado': $('#fkinvitado').val(),
+                        'nombre': $('#nombre').val(),
+                        'apellidop': $('#apellidop').val(),
+                        'apellidom': $('#apellidom').val(),
+                        'ci': $('#ci').val(),
+                        'expendido': $('#expendido').val(),
+                        'fkvehiculo': $('#fkvehiculo').val(),
+                        'cantpasajeros': $('#cantpasajeros').val(),
+                        'placa': $('#placa').val(),
+                        'fktipo': $('#fktipo').val(),
+                        'fkcolor': $('#fkcolor').val(),
+                        'fkmarca': $('#fkmarca').val(),
+                        'nombre_marca': $('#nombre_marca').val(),
+                        'fkmodelo': $('#fkmodelo').val(),
+                        'fkdomicilio': $('#fkdomicilio').val(),
+                        'fkareasocial': $('#fkareasocial').val(),
+                        'fktipopase': $('#fktipopase').val(),
+                        'fkautorizacion': $('#fkautorizacion').val(),
+                        'fkresidente': $('#fkresidente').val(),
+                        'fknropase': $('#nropase').val(),
+                        'observacion': $('#observacion').val(),
+                        'visita': sw_visita,
+    
+                        'fkconductor': $('#fkconductor').val(),
+                        'fktipodocumento_conductor': $('#fktipodocumento_conductor').val(),
+                        'nombre_conductor': $('#nombre_conductor').val(),
+                        'apellidop_conductor': $('#apellidop_conductor').val(),
+                        'apellidom_conductor': $('#apellidom_conductor').val(),
+                        'ci_conductor': $('#ci_conductor').val(),
+                        'expendido_conductor': $('#expendido_conductor').val()
+                    })
+                    ajax_call('movimiento_insert', {
+                        object: objeto,
+                        _xsrf: getCookie("_xsrf")
+                    }, null, function () {
+                        setTimeout(function () {
+                            window.location = main_route
+                        }, 2000);
+                    })
+                    $('#form').modal('hide')
+                } else {
+                    swal(
+                        'Error de datos.',
+                         notvalid,
+                        'error'
+                    )
+                }
+            }
         }
-
     }
 })
 

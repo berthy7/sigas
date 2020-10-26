@@ -1,5 +1,8 @@
 main_route = '/evento'
 
+var multiacceso = false;
+var sinregistro = false;
+
 $(document).ready(function () {
    
 });
@@ -65,6 +68,16 @@ $('#personas').selectpicker({
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar',
     title: 'Seleccione'
+})
+
+$('#switch_multiacceso').change(function() {
+   multiacceso = $(this).prop('checked')
+
+})
+
+$('#switch_sinregistro').change(function() {
+   sinregistro = $(this).prop('checked')
+
 })
 
 function actualizar_tabla(response){
@@ -403,6 +416,8 @@ $('#new').click(function () {
     $('#horai').val('')
     $('#fechaf').val('')
     $('#horaf').val('')
+    document.getElementById('switch_multiacceso').checked=false
+    document.getElementById('switch_sinregistro').checked=false
     $('#integrante_div').empty()
 
     validationInputSelects("form")
@@ -427,6 +442,8 @@ $('#insert').click(function () {
             'horai': $('#horai').val(),
             'fechaf': $('#fechaf').val(),
             'horaf': $('#horaf').val(),
+            'multiacceso':multiacceso,
+            'sinregistro': sinregistro,
             'invitaciones': get_invitado()
         })
         ajax_call('evento_insert', {
@@ -473,6 +490,8 @@ function editar(elemento){
             $('#horai').val(self.horai)
             $('#fechaf').val(self.fechaf)
             $('#horaf').val(self.horaf)
+            document.getElementById('switch_multiacceso').checked=self.multiacceso
+            document.getElementById('switch_sinregistro').checked=self.sinregistro
 
 
             $('#integrante_div').empty()
@@ -519,6 +538,8 @@ $('#update').click(function () {
             'horai': $('#horai').val(),
             'fechaf': $('#fechaf').val(),
             'horaf': $('#horaf').val(),
+            'multiacceso':multiacceso,
+            'sinregistro': sinregistro,
             'invitaciones': get_invitado()
         })
         ajax_call('evento_update', {
