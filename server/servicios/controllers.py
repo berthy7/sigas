@@ -932,9 +932,9 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             x = ast.literal_eval(data)
-            print("ws listar dispositivos " + str(data['idinterprete']))
+            print("ws listar dispositivos " + str(x['idinterprete']))
 
-            resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(data)
+            resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(x)
 
             self.db.close()
 
