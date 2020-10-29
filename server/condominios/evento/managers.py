@@ -28,8 +28,11 @@ class EventoManager(SuperManager):
         fecha_hoy_str = fechadate.strftime('%Y-%m-%d %H:%M:%S')
         fechahoy = fecha_hoy_str[0:10]
 
+        # x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
+        #     Evento.fechaf >= fechahoy).filter(Evento.situacion != "Acceso").filter(Evento.situacion != "Denegado").all()
+
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
-            Evento.fechaf >= fechahoy).filter(Evento.situacion != "Acceso").filter(Evento.situacion != "Denegado").all()
+            Evento.fechaf >= fechahoy).all()
 
         for invi in x:
             respuesta = EventoManager(self.db).validar_invitacion(invi.codigoautorizacion)
