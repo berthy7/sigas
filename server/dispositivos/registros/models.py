@@ -21,5 +21,9 @@ class RegistrosControlador(Serializable, Base):
     time = Column(DateTime)
     fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
     sincronizado = Column(Boolean, default=False)
+    alertado = Column(Boolean, default=False)
 
     dispositivo = relationship('Dispositivo')
+
+
+

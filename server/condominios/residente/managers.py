@@ -51,12 +51,14 @@ class ResidenteManager(SuperManager):
         objeto.estado = estado
 
 
-
-
         a = super().insert(objeto)
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)
+
+        a.codigo = a.id
+        a.codigoqr= a.id
+        super().update(a)
 
         if a.fknropase:
             NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
@@ -72,7 +74,7 @@ class ResidenteManager(SuperManager):
                 idcondominio = DomicilioManager(self.db).obtener_fkcondominio(d)
                 break
 
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.ci,password="residente2020",fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,enabled=estado)
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password="sigas2020",fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,enabled=estado)
         UsuarioManager(self.db).insert(dict_usuario)
 
 
@@ -152,13 +154,12 @@ class ResidenteManager(SuperManager):
         try:
             wb = load_workbook(filename="server/common/resources/uploads/" + cname)
             ws = wb.active
-            colnames = ['CODIGO', 'NOMBRE','APELLIDOP','APELLIDOM', 'CI', 'UBICACION', 'SEXO', 'FECHANACIMIENTO', 'TELEFONO', 'TIPO', 'CORREO',
+            colnames = ['NOMBRE','APELLIDOP','APELLIDOM', 'CI', 'UBICACION', 'SEXO', 'FECHANACIMIENTO', 'TELEFONO', 'TIPO', 'CORREO',
                         'DOMICILIO','NUMERO','TARTEJAPEATONAL', 'PLACA', 'COLOR', 'TIPOVEHICULO', 'MARCA', 'MODELO', 'TARJETAVEHICULAR', 'FECHAI', 'FECHAF']
             indices = {cell[0].value: n - 1 for n, cell in enumerate(ws.iter_cols(min_row=1, max_row=1), start=1) if
                        cell[0].value in colnames}
             if len(indices) == len(colnames):
                 for row in ws.iter_rows(min_row=2):
-                    codigo = row[indices['CODIGO']].value
                     nombre =  row[indices['NOMBRE']].value
                     apellidop = row[indices['APELLIDOP']].value
                     apellidom = row[indices['APELLIDOM']].value
@@ -186,11 +187,10 @@ class ResidenteManager(SuperManager):
                     fechaf = fechaf.strftime('%d/%m/%Y')
 
 
-                    if codigo is not None and nombre is not None and domicilio is not None and numero is not None:
-                        print(codigo)
+                    if nombre is not None and correo is not None and domicilio is not None and numero is not None:
+
                         query = self.db.query(self.entity).filter(
-                            self.entity.codigo == str(codigo)).filter(
-                            self.entity.ci == str(ci)).all()
+                            self.entity.correo == str(correo)).first()
 
                         list_domicilio = list()
                         list_vehiculo = list()
@@ -214,9 +214,8 @@ class ResidenteManager(SuperManager):
                                 else:
                                     idtarjeta = None
 
-                                list_acceso.append(dict(fechai=fechai, fechaf=fechaf, estado=True))
-                                residente = dict(codigo=str(codigo),
-                                                  nombre=str(nombre),
+                                list_acceso.append(dict(fechai=fechai, fechaf=fechaf, estado=False))
+                                residente = dict( nombre=str(nombre),
                                                   apellidop=str(apellidop),
                                                   apellidom=str(apellidom),
                                                   ci=str(ci),
@@ -253,7 +252,6 @@ class ResidenteManager(SuperManager):
             if 'UNIQUE constraint failed: residente.codigo' in str(e):
                 return {'message': 'codigo de residente', 'success': False}
             return {'message': str(e), 'success': False}
-
 
     def persona_excel(self, empleados):
         fecha = datetime.now()
@@ -369,13 +367,13 @@ class ResidenteManager(SuperManager):
     def listar_residentes(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(Residente.estado == True).filter(ResidenteDomicilio.vivienda == True).order_by(Residente.nombre.asc()).all()
+            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(ResidenteDomicilio.vivienda == True).order_by(Residente.nombre.asc()).all()
 
         elif usuario.rol.nombre == "RESIDENTE":
             return self.db.query(Residente).filter(Residente.id == usuario.fkresidente).order_by(Residente.nombre.asc()).all()
 
         else:
-            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio).filter(Residente.estado == True) \
+            return self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).join(Condominio) \
                 .filter(ResidenteDomicilio.vivienda == True).filter(Condominio.id == usuario.fkcondominio).order_by(Residente.nombre.asc()).all()
 
 
@@ -413,7 +411,7 @@ class ResidenteManager(SuperManager):
             principal = self.db.query(Principal).first()
             if principal.estado == False:
 
-                url = "http://sigas-web.herokuapp.com/api/v1/actualizar_foto"
+                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_foto"
 
                 headers = {'Content-Type': 'application/json'}
 

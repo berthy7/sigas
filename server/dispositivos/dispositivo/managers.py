@@ -6,6 +6,8 @@ from ...operaciones.bitacora.managers import *
 from ...usuarios.usuario.managers import *
 from ..registros.models import *
 from ...condominios.nropase.models import *
+from ...condominios.evento.models import *
+from sqlalchemy.sql import func, extract, cast, text
 
 
 from openpyxl import load_workbook
@@ -31,6 +33,9 @@ class DispositivoManager(SuperManager):
     def list_all(self):
         return dict(objects=self.db.query(self.entity).filter(self.entity.estado == True))
 
+    def listar_x_condominio(self,idcondominio):
+        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fkcondominio == idcondominio).all()
+
     def listar_todo_cant_marcaciones(self,x):
         id_interprete = x['idinterprete']
         # print(str(id_interprete))
@@ -48,7 +53,7 @@ class DispositivoManager(SuperManager):
             config = self.db.query(Configuraciondispositivo) \
                 .filter(Configuraciondispositivo.fkdispositivo == dispo.id) \
                 .filter(Configuraciondispositivo.estado == True) \
-                .filter(Configuraciondispositivo.situacion == "Abrir").order_by(Configuraciondispositivo.id.asc()).all()
+                .order_by(Configuraciondispositivo.id.asc()).all()
 
             dispo.configuraciondispositivo = config
 
@@ -59,12 +64,29 @@ class DispositivoManager(SuperManager):
             marcaciones = self.db.query(func.count(RegistrosControlador.id)).filter(RegistrosControlador.fkdispositivo == dispo.id)
 
             cantidad = marcaciones[0][0]
-            resp.append(dict(id=dispo.id,ip=dispo.ip,puerto=dispo.puerto,estado=dispo.estado,cant_marcaciones=cantidad,accesos=resp_config))
+            resp.append(dict(id=dispo.id,ip=dispo.ip,puerto=dispo.puerto,estado=dispo.estado,tipo=dispo.fktipodispositivo,cant_marcaciones=cantidad,accesos=resp_config))
 
         return resp
 
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
+
+
+    def listar_cerraduras(self):
+
+        lista = list()
+
+        imagen = "/resources/images/dispositivo.PNG"
+
+        for x in  self.db.query(Cerraduras).filter(Cerraduras.estado == True).all():
+
+            if x.linea:
+                imagen = "/resources/images/dispositivo.PNG"
+            else:
+                imagen ="/resources/images/dispositivo_off.png"
+
+            lista.append(dict(id=x.id,fkdispositivo=x.fkdispositivo,dispositivo=x.dispositivo.descripcion,nro=x.numero,cerradura=x.nombre,imagen=imagen))
+        return lista
 
     def listar_x_usuario(self,usuario):
 
@@ -83,10 +105,6 @@ class DispositivoManager(SuperManager):
             return self.db.query(Cerraduras).join(Dispositivo).filter(Cerraduras.estado == True).filter(Dispositivo.fkcondominio == usuario.fkcondominio).all()
 
 
-    def listar_x_condominio(self, idcondominio):
-        x = self.db.query(self.entity).filter(self.entity.fkcondominio == idcondominio).filter(self.entity.estado == True).all()
-        return x
-
     def listar_tipos_dispositivo(self):
         return self.db.query(Tipodispositivo).filter(Tipodispositivo.estado == True).all()
 
@@ -96,7 +114,7 @@ class DispositivoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().insert(objeto)
-        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Registro Dispositivo.", fecha=fecha,tabla="marca", identificador=a.id)
+        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Registro Dispositivo.", fecha=fecha,tabla="dispositivo", identificador=a.id)
         super().insert(b)
         return a
 
@@ -105,7 +123,7 @@ class DispositivoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().update(objeto)
-        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Modifico Dispositivo.", fecha=fecha,tabla="marca", identificador=a.id)
+        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip_local, accion="Modifico Dispositivo.", fecha=fecha,tabla="dispositivo", identificador=a.id)
         super().insert(b)
         return a
 
@@ -113,7 +131,7 @@ class DispositivoManager(SuperManager):
         x = self.db.query(self.entity).filter(self.entity.id == id).one()
         x.estado = estado
         fecha = BitacoraManager(self.db).fecha_actual()
-        b = Bitacora(fkusuario=user, ip=ip, accion="Eliminó Dispositivo.", fecha=fecha, tabla="marca", identificador=id)
+        b = Bitacora(fkusuario=user, ip=ip, accion="Eliminó Dispositivo.", fecha=fecha, tabla="dispositivo", identificador=id)
         super().insert(b)
         self.db.merge(x)
         self.db.commit()
@@ -299,80 +317,79 @@ class ConfiguraciondispositivoManager(SuperManager):
 
     def insert_sincronizacion(self, diccionary):
         x = self.db.query(Nropase).filter(Nropase.id == diccionary['id']).first()
+        fkcondominio = x.condominios[0].fkcondominio
 
-        sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Acceso", fkdispositivo=diccionary['id'])
+        sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Acceso", fkdispositivo=diccionary['id'], fkcondominio=fkcondominio)
 
-        dispositivos = DispositivoManager(self.db).listar_todo()
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(sincro)
 
-        for dis in dispositivos:
-            sincro['fkdispositivo'] = dis.id
-
-            objeto = ConfiguraciondispositivoManager(self.db).entity(**sincro)
-            super().insert(objeto)
 
     def insert_acceso_Tarjetas(self, diccionary):
         x = self.db.query(Nropase).filter(Nropase.id == diccionary['id']).first()
 
-        sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Acceso", fkdispositivo=diccionary['id'])
+        fkcondominio = x.condominios[0].fkcondominio
 
-        dispositivos = DispositivoManager(self.db).listar_todo()
+        sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Acceso", fkdispositivo=diccionary['id'], fkcondominio=fkcondominio)
 
-        for dis in dispositivos:
-            sincro['fkdispositivo'] = dis.id
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(sincro)
 
-            objeto = ConfiguraciondispositivoManager(self.db).entity(**sincro)
-            super().insert(objeto)
-
-
-    def insert_qr_invitacion(self, diccionary):
-        inicial_id = 500000
-        codigo = inicial_id + int(diccionary['codigo'])
-        diccionary['codigo'] = str(codigo)
-        dispositivos = DispositivoManager(self.db).listar_todo()
-
-        for dis in dispositivos:
-            diccionary['fkdispositivo'] = dis.id
-
-            objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
-            super().insert(objeto)
 
     def insert_qr_residente(self, diccionary):
         diccionary['codigo'] = str(diccionary['codigo'])
-        dispositivos = DispositivoManager(self.db).listar_todo()
 
-        for dis in dispositivos:
-            diccionary['fkdispositivo'] = dis.id
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
 
-            objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
-            super().insert(objeto)
 
-    def denegar_qr_invitacion(self, diccionary):
+    def insert_qr_invitacion(self, diccionary):
+        invitacion = self.db.query(Invitacion).filter(Invitacion.id == diccionary['codigo']).first()
+
+        fkcondominio = None
+        if invitacion.evento.fkdomicilio:
+            fkcondominio = invitacion.evento.domicilio.fkcondominio
+        elif invitacion.evento.fkareasocial:
+            fkcondominio = invitacion.evento.areasocial.fkcondominio
+
+        diccionary['fkcondominio']  =  fkcondominio
+        
         inicial_id = 500000
         codigo = inicial_id + int(diccionary['codigo'])
         diccionary['codigo'] = str(codigo)
-        dispositivos = DispositivoManager(self.db).listar_todo()
+        
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
+
+
+
+    def denegar_qr_invitacion(self, diccionary):
+        invitacion = self.db.query(Invitacion).filter(Invitacion.id == diccionary['codigo']).first()
+
+        fkcondominio = None
+        if invitacion.evento.fkdomicilio:
+            fkcondominio = invitacion.evento.domicilio.fkcondominio
+        elif invitacion.evento.fkareasocial:
+            fkcondominio = invitacion.evento.areasocial.fkcondominio
+
+        diccionary['fkcondominio'] = fkcondominio
+
+        inicial_id = 500000
+        codigo = inicial_id + int(diccionary['codigo'])
+        diccionary['codigo'] = str(codigo)
+
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
+
+
+    def funcion_configuracion_dispositivo(self,diccionary):
+
+        dispositivos = DispositivoManager(self.db).listar_x_condominio(diccionary['fkcondominio'])
 
         for dis in dispositivos:
             diccionary['fkdispositivo'] = dis.id
 
+            if dis.fktipodispositivo == 4:
+                diccionary['tarjeta'] = diccionary['residente']
+
             objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
             super().insert(objeto)
 
-    # def insert_config_acceso(self, diccionary):
-    #     dispositivos = DispositivoManager(self.db).listar_x_condominio(diccionary.fkcondominio)
-    #
-    #     for dis in dispositivos:
-    #         list_cerraduras = []
-    #         print(dis.ip)
-    #         for config_cerraduras in diccionary.configcerraduras:
-    #             if dis.id == config_cerraduras.cerraduras.fkdispositivo:
-    #                 list_cerraduras.append(dict(cerradura=config_cerraduras.fkcerraduras,estado =config_cerraduras.estado))
-    #
-    #
-    #         codigo_acceso = ConfiguraciondispositivoManager(self.db).obtener_codigo_acceso(list_cerraduras)
-    #
-    #         # objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
-    #         # super().insert(objeto)
 
     def obtener_codigo_acceso(self, list_cerraduras):
         codigo_acceso = 0
@@ -445,6 +462,12 @@ class ConfiguraciondispositivoManager(SuperManager):
         objeto = ConfiguraciondispositivoManager(self.db).entity(**sincro)
         super().insert(objeto)
 
+        fecha = BitacoraManager(self.db).fecha_actual()
+
+        b = Bitacora(fkusuario=diccionary['user'], ip=diccionary['ip_local'], accion="Abrió cerradura Nº"+str(diccionary['cerradura']), fecha=fecha, tabla="dispositivo")
+        super().insert(b)
+
+
 
 class InterpreteManager(SuperManager):
 
@@ -453,6 +476,16 @@ class InterpreteManager(SuperManager):
 
     def obtener_interpretes(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
+
+
+class DispositivoeventosManager(SuperManager):
+
+    def __init__(self, db):
+        super().__init__(Dispositivoeventos, db)
+
+    def obtener_x_codigo(self, codigo):
+        return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
+
 
 
 

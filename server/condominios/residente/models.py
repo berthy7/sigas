@@ -55,6 +55,7 @@ class Residente(Serializable, Base):
 
         return aux
 
+
     def get_dict(self, way=None):
         aux = super().get_dict(way)
         lista_domicilios = list()

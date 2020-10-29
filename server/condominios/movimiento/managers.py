@@ -61,40 +61,46 @@ class MovimientoManager(SuperManager):
         diccionary['cantpasajeros'] = abs(int(diccionary['cantpasajeros']))
 
         diccionary['placa'] = diccionary['placa'].replace(" ", "")
-        if diccionary['visita']:
-            if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-                if diccionary['ci'] != "":
-                    invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
-                    diccionary['fkinvitado'] = invitado.id
+
+        if diccionary['fkinvitacion'] == "":
+            diccionary['fkinvitacion'] = None
+
+        accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(diccionary['fkinvitacion'])
+
+        if accesos_invitacion['sinregistro']:
+            diccionary['fkvehiculo'] = None
+            diccionary['fkconductor'] = None
+        else:
+
+            if diccionary['visita']:
+                if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
+                    if diccionary['nombre'] != "":
+                        invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
+                        diccionary['fkinvitado'] = invitado.id
+                    else:
+                        diccionary['fkinvitado'] = None
+
                 else:
-                    diccionary['fkinvitado'] = None
-
+                    invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
             else:
-                invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
-        else:
-            diccionary['fkinvitado'] = None
+                diccionary['fkinvitado'] = None
 
 
-        if diccionary['fkconductor'] == "" or diccionary['fkconductor'] == "0":
-            diccionary['nombre_conductor'] = diccionary['nombre_conductor'].replace(" ", "")
-            if diccionary['nombre_conductor'] != "":
+            if diccionary['fkconductor'] == "" or diccionary['fkconductor'] == "0":
+                diccionary['nombre_conductor'] = diccionary['nombre_conductor'].replace(" ", "")
+                if diccionary['nombre_conductor'] != "":
+                    conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
+                    diccionary['fkconductor'] = conductor.id
+                else:
+                    diccionary['fkconductor'] = None
+            else:
                 conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
-                diccionary['fkconductor'] = conductor.id
-            else:
-                diccionary['fkconductor'] = None
-        else:
-            conductor = InvitadoManager(self.db).registrar_conductor(diccionary)
 
 
-        if diccionary['fkvehiculo'] == "" or diccionary['fkvehiculo'] == "0":
-            vehiculo = VehiculoManager(self.db).registrar_vehiculo(diccionary)
-            diccionary['fkvehiculo'] = vehiculo
+            if diccionary['fkvehiculo'] == "" or diccionary['fkvehiculo'] == "0":
+                vehiculo = VehiculoManager(self.db).registrar_vehiculo(diccionary)
+                diccionary['fkvehiculo'] = vehiculo
 
-        if diccionary['fkinvitacion'] == "":
-            diccionary['fkinvitacion'] = None
-
-        if diccionary['fkinvitacion'] == "":
-            diccionary['fkinvitacion'] = None
 
         if diccionary['fktipodocumento_conductor'] == "":
             diccionary['fktipodocumento_conductor'] = None
@@ -146,7 +152,9 @@ class MovimientoManager(SuperManager):
 
         # deshabilitar invitacion
         if a.fkinvitacion:
-            InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+
+            if accesos_invitacion['multiacceso'] is False:
+                InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
         return a

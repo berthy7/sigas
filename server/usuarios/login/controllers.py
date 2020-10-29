@@ -2,6 +2,7 @@ from tornado.gen import coroutine
 from .managers import *
 from ...common.controllers import SuperController
 from ...operaciones.bitacora.models import *
+from ..usuario.managers import *
 import pytz
 
 class LoginController(SuperController):
@@ -53,14 +54,19 @@ class LoginController(SuperController):
 
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
 
-        fecha_str = str(fechaHora)
-        fecha_ = fecha_str[0:19]
-        fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+        with transaction() as db:
+            principal = UsuarioManager(db).obtener_principal()
 
-        timezone = pytz.timezone('America/La_Paz')
-        fecha_utc = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+        if principal:
 
-        return fecha_utc
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+
+        return fechaHora
 
     def insertar_bitacora(self, bitacora):
         with transaction() as session:
@@ -76,6 +82,8 @@ class LogoutController(SuperController):
             user_id = self.get_user_id()
             ip = self.request.remote_ip
             fecha = self.fecha_actual()
+
+
             b = Bitacora(fkusuario=user_id, ip=ip, accion="Finalizó sesión.", fecha=fecha)
             self.insertar_bitacora(b)
             self.clear_cookie('user')
@@ -85,7 +93,22 @@ class LogoutController(SuperController):
             self.redirect(self.get_argument("next", "/"))
 
     def fecha_actual(self):
-        return datetime.now(pytz.timezone('America/La_Paz'))
+
+        fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
+
+        with transaction() as db:
+            principal = UsuarioManager(db).obtener_principal()
+
+        if principal:
+
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+
+        return fechaHora
 
     def insertar_bitacora(self, bitacora):
         with transaction() as session:

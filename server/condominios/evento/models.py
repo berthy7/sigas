@@ -24,6 +24,8 @@ class Evento(Serializable, Base):
     fkdomicilio = Column(Integer, ForeignKey('domicilio.id'), nullable=True)
     fkareasocial = Column(Integer, ForeignKey('areasocial.id'), nullable=True)
     situacion = Column(String(100), nullable=True, default="")
+    multiacceso = Column(Boolean, default=False, nullable=True)
+    sinregistro = Column(Boolean, default=False, nullable=True)
 
     estado = Column(Boolean, default=True)
 
@@ -79,6 +81,7 @@ class Invitacion(Serializable, Base):
     fkinvitado = Column(Integer, ForeignKey('invitado.id'), nullable=True)
     fktipopase = Column(Integer, ForeignKey('tipo_pase.id'), nullable=True)
     codigoautorizacion = Column(Text, nullable=True, default="")
+
 
     estado = Column(Boolean, default=True)
 

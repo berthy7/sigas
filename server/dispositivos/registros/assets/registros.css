@@ -1,3 +1,18 @@
 .form-group .form-line::after {
     border-bottom: 2px solid #006227;
 }
+
+.bg-alarm{
+    background-color: #ff6b66 !important;
+
+}
+
+.bg-puerta-forzada{
+    background-color: #ff961f !important;
+
+}
+
+
+#audio{
+display: none
+}

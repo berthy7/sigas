@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from ...common.managers import *
 from ...operaciones.bitacora.managers import *
 from ...condominios.movimiento.managers import *
+from ...dispositivos.dispositivo.managers import *
 
 
 from openpyxl import load_workbook
@@ -45,21 +46,85 @@ class Registros_cManager(SuperManager):
         for reg in registros:
 
             codigo = ""
+            tarjeta = ""
             cerradura = ""
+            autorizacion = ""
+            destino = ""
 
-            if reg.codigo != "0":
-                codigo = reg.codigo
-                residente_vehi = self.db.query(Residente).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
-                if residente_vehi:
-                    codigo = residente_vehi.fullname + " - Vehicular"
+            if reg.evento == 0:
 
-                residente = self.db.query(Residente).filter(Residente.fknropase == reg.codigo).first()
-                if residente:
-                    codigo = residente.fullname + " - Peatonal"
+                if reg.codigo != "0":
+                    codigo = reg.codigo
+                    tarjeta = reg.tarjeta
+
+
+                    if reg.fkdispositivo:
+                        idcondominio = reg.dispositivo.fkcondominio
+
+
+                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
+
+                        if residente_qr:
+                            codigo =  "Codigo Qr"
+                            tarjeta = "Residente"
+                            autorizacion = residente_qr.fullname
+
+                        residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
+
+                        if residente_vehi:
+                            codigo = "Tag Vehicular"
+                            autorizacion = residente_vehi.fullname
+
+                        residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
+                        if residente:
+                            codigo = "Tarjeta Peatonal"
+                            autorizacion = residente.fullname
+
+                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjetaObj:
+                            if tarjetaObj.tipo == "Provper":
+                                provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
+                                if provper:
+                                    codigo = str(tarjetaObj.tarjeta)
+                                    tarjeta = str(tarjetaObj.tipo)
+                                    autorizacion = str(provper.fullname)
+
+                            else:
+                                autorizacion = ""
+                                codigo = str(tarjetaObj.tarjeta)
+                                tarjeta = str(tarjetaObj.tipo)
+
+
+                        codigo_normalizado = int(reg.codigo) - 500000
+                        invitacion = self.db.query(Invitacion).filter(
+                            Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                        if invitacion:
+                            codigo = invitacion.invitado.fullname
+                            tarjeta = invitacion.tipopase.nombre
+                            autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
+
+                            if invitacion.evento.fkdomicilio:
+
+                                destino = invitacion.evento.domicilio.nombre
+
+                            elif invitacion.evento.fkareasocial:
+
+                                destino = invitacion.evento.areasocial.nombre
+
+
+                else:
+                    codigo = "Usuario no registrado"
 
 
             else:
-                codigo = "Usuario no resgistrado"
+
+                evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
+
+                if evento:
+                    codigo = evento.nombre
+                else:
+                    codigo ="Evento no registrado"
+
 
             res_dispotivo = self.db.query(Dispositivo).filter(Dispositivo.id == reg.fkdispositivo).first()
             res_cerradura = self.db.query(Cerraduras).filter(Cerraduras.fkdispositivo == res_dispotivo.id).filter(Cerraduras.numero == reg.puerta ).first()
@@ -67,7 +132,7 @@ class Registros_cManager(SuperManager):
             if res_cerradura:
                 cerradura =res_cerradura.nombre
 
-            list.append(dict(id=reg.id,tarjeta=reg.tarjeta,codigo=codigo,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
         return list
 
@@ -93,21 +158,86 @@ class Registros_cManager(SuperManager):
         for reg in registros:
 
             codigo = ""
+            tarjeta = ""
             cerradura = ""
+            autorizacion = ""
+            destino = ""
 
-            if reg.codigo != "0":
-                codigo = reg.codigo
-                residente_vehi = self.db.query(Residente).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
-                if residente_vehi:
-                    codigo = residente_vehi.fullname + " - Vehicular"
 
-                residente = self.db.query(Residente).filter(Residente.fknropase == reg.codigo).first()
-                if residente:
-                    codigo = residente.fullname + " - Peatonal"
 
+            if reg.evento == 0:
+
+
+                if reg.codigo != "0":
+                    codigo = reg.codigo
+                    tarjeta = str(reg.tarjeta)
+
+                    if reg.fkdispositivo:
+                        idcondominio = reg.dispositivo.fkcondominio
+
+
+                        residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
+
+                        if residente_qr:
+                            codigo =  "Codigo Qr"
+                            tarjeta = "Residente"
+                            autorizacion = residente_qr.fullname
+
+                        residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
+
+                        if residente_vehi:
+                            codigo = "Tag Vehicular"
+                            autorizacion = residente_vehi.fullname
+
+                        residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
+                        if residente:
+                            codigo = "Tarjeta Peatonal"
+                            autorizacion = residente.fullname
+
+                        tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                        if tarjetaObj:
+                            if tarjetaObj.tipo == "Provper":
+                                provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
+                                if provper:
+                                    codigo = str(tarjetaObj.tarjeta)
+                                    tarjeta = str(tarjetaObj.tipo)
+                                    autorizacion = str(provper.fullname)
+
+                            else:
+                                autorizacion = ""
+                                codigo = str(tarjetaObj.tarjeta)
+                                tarjeta = str(tarjetaObj.tipo)
+
+
+
+                        codigo_normalizado = int(reg.codigo) - 500000
+                        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                        if invitacion:
+                            codigo = invitacion.invitado.fullname
+                            tarjeta = invitacion.tipopase.nombre
+                            autorizacion = invitacion.evento.residente.fullname + " Cel:" + invitacion.evento.residente.telefono
+
+                            if invitacion.evento.fkdomicilio:
+
+                                destino = invitacion.evento.domicilio.nombre
+
+                            elif invitacion.evento.fkareasocial:
+
+                                destino = invitacion.evento.areasocial.nombre
+
+
+                else:
+                    codigo = "Usuario no registrado"
 
             else:
-                codigo = "Usuario no resgistrado"
+
+                evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
+
+                if evento:
+                    codigo = evento.nombre
+                else:
+                    codigo ="Evento no registrado"
+
 
             res_dispotivo = self.db.query(Dispositivo).filter(Dispositivo.id == reg.fkdispositivo).first()
             res_cerradura = self.db.query(Cerraduras).filter(Cerraduras.fkdispositivo == res_dispotivo.id).filter(Cerraduras.numero == reg.puerta ).first()
@@ -115,7 +245,7 @@ class Registros_cManager(SuperManager):
             if res_cerradura:
                 cerradura =res_cerradura.nombre
 
-            list.append(dict(id=reg.id,tarjeta=reg.tarjeta,codigo=codigo,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
         return list
 

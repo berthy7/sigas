@@ -51,6 +51,7 @@ class Cerraduras(Serializable, Base):
     fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
     fkentrada = Column(Integer, ForeignKey('entrada.id'), nullable=True)
     estado = Column(Boolean, default=True)
+    linea = Column(Boolean, default=True)
 
     dispositivo = relationship('Dispositivo')
     entrada = relationship('Entrada')
@@ -65,7 +66,7 @@ class Configuraciondispositivo(Serializable, Base):
     id = Column(Integer, primary_key=True)
     codigo = Column(Text, nullable=False)
     tarjeta = Column(Text, nullable=False)
-    situacion = Column(String(100), default="Acceso")
+    situacion = Column(String(100), default="Acceso")  #Acceso Denegado Configuracion_inicial Abrir
     fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
     estado = Column(Boolean, default=True)
     codigoacceso = Column(String(100), nullable=True, default="")
@@ -94,6 +95,18 @@ class Dispositivointerprete(Serializable, Base):
 
     dispositivo = relationship('Dispositivo')
     interprete = relationship('Interprete')
+
+
+
+class Dispositivoeventos(Serializable, Base):
+    way = {}
+
+    __tablename__ = 'dispositivoeventos'
+
+    id = Column(Integer, primary_key=True)
+    codigo = Column(Integer, nullable=False)
+    nombre = Column(String(100), nullable=False)
+    descripcion = Column(Text, nullable=False)
 
 
 

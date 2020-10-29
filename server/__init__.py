@@ -91,7 +91,6 @@ def create_app():
     #app.listen(int(config['Server']['port']), socket.gethostbyname(socket.gethostname()))
     #print('running server on  http://'+socket.gethostbyname(socket.gethostname())+':'+config['Server']['port'])
     IOLoop.instance().start()
-    print("inicio2")
 
 
 def launch_schedule():

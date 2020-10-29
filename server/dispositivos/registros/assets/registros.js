@@ -28,10 +28,14 @@ function auxiliar_method() {
         }else{
             console.log(refrescar)
             if(refrescar == false){
-                window.location = main_route
+
+                actualizar_tabla_x_fechas(hoy,hoy)
+
+                // window.location = main_route
+
             }
         }
-    }, 10000);
+    }, 5000);
 }
 
 $('#switch_refrescar').change(function() {
@@ -46,6 +50,47 @@ $('#switch_refrescar').change(function() {
 
 })
 
+function activar_alarma(id_registro) {
+    console.log("activar alarma")
+    // refrescar = true;
+    //main_method()
+    var sw_alarma = 0;
+        var id = setInterval(function(){
+            if(sw_alarma == 0){
+                document.getElementById("imagen_alarma").src = '/resources/images/imagen_alarma.jpg';
+                sw_alarma = 1;
+            }else{
+                document.getElementById("imagen_alarma").src = '/resources/images/imagen_alarma_blanco.jpg';
+                sw_alarma = 0;
+            }
+
+        }, 700);
+
+    objeto = JSON.stringify({
+        'id_registro': id_registro
+
+    })
+
+    ajax_call('registros_alerta', {
+        object: objeto,
+        _xsrf: getCookie("_xsrf")
+    }, null, function () {
+
+    })
+
+    var audio = document.getElementById("audio");
+
+    audio.play();
+
+    setTimeout(function () {
+
+        console.log("apagar alarma")
+
+         clearInterval(id);
+        document.getElementById("imagen_alarma").src = '';
+
+    },10000);
+}
 
 function cargar_tabla(data){
 
@@ -59,6 +104,15 @@ function cargar_tabla(data){
         deferRender:    true,
         scrollCollapse: true,
         scroller:       true,
+        createdRow: function( row, data, dataIndex ) {
+            // agregar clase con css
+            if(data[2] == "Alarma"){
+                $(row).addClass('bg-alarm');
+            }else if(data[2] == "Puerta Forzada"){
+                $(row).addClass('bg-puerta-forzada');
+            }
+            
+        },
 
         dom: "Bfrtip" ,
         buttons: [
@@ -90,18 +144,6 @@ function cargar_tabla(data){
     });
 }
 
-
-$('#new').click(function () {
-    $('#nombre').val('')
-
-    verif_inputs('')
-    validationInputSelects("form")
-    $('#id_div').hide()
-    $('#insert').show()
-    $('#update').hide()
-    validationInputSelects("form")
-    $('#form').modal('show')
-})
 
 
 $('#insert').click(function () {
@@ -149,6 +191,43 @@ $('#insert').click(function () {
         $('#form').modal('show')
     })
     }
+
+
+function attach_edit() {
+    $('.edit').click(function () {
+        self = $(this).attr('data-id')
+        
+        $('#id').val($(this).attr('data-fkdispositivo'))
+        $('#dispositivo').val($(this).attr('data-dispositivo'))
+        $('#numero').val($(this).attr('data-nro'))
+        $('#cerradura').val($(this).attr('data-cerradura'))
+
+
+        clean_form()
+        verif_inputs('')
+        $('#id_div').hide()
+        $('#update').show()
+        $('#form').modal('show')
+
+    })
+}
+attach_edit()
+
+
+$('#abrir1').click(function () {
+    objeto = JSON.stringify({
+        'id': parseInt($('#id').val()),
+        'cerradura': $('#numero').val()
+
+    })
+    ajax_call('dispositivo_abrir_cerradura', {
+        object: objeto,
+        _xsrf: getCookie("_xsrf")
+    }, null, function () {
+        $('#form').modal('hide')
+    })
+
+})
 
 
 $('#update').click(function () {
@@ -214,11 +293,16 @@ function eliminar(elemento){
 }
 
 $('#filtrar').click(function () {
-    $("#rgm-loader").show();
-    //document.getElementById("filtrar").disabled = true
-    obj = JSON.stringify({
-        'fechainicio': $('#fechai').val(),
-        'fechafin': $('#fechaf').val(),
+
+    actualizar_tabla_filtrar($('#fechai').val(),$('#fechaf').val())
+    
+});
+
+
+function actualizar_tabla_filtrar(fechainicio,fechafin) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
         '_xsrf': getCookie("_xsrf")
     })
     ruta = "registros_filtrar";
@@ -226,17 +310,32 @@ $('#filtrar').click(function () {
         method: "POST",
         url: ruta,
         data: {_xsrf: getCookie("_xsrf"), object: obj},
-        async: true
+        async: true,
+
+        beforeSend: function () {
+           $("#rproc-loader").fadeIn(800);
+           $("#new").hide();
+        },
+        success: function () {
+           $("#rproc-loader").fadeOut(800);
+           $("#new").show();
+        }
+
+
     }).done(function (response) {
         response = JSON.parse(response)
 
         var data = [];
         for (var i = 0; i < Object.keys(response.response).length; i++) {
 
+            console.log(response['response'][i]["autorizacion"])
+
             data.push( [
                 response['response'][i]["id"],
                 response['response'][i]["tarjeta"],
                 response['response'][i]["codigo"],
+                response['response'][i]["autorizacion"],
+                response['response'][i]["destino"],
                 response['response'][i]["dia"],
                 response['response'][i]["mes"],
                 response['response'][i]["año"],
@@ -248,7 +347,49 @@ $('#filtrar').click(function () {
 
         cargar_tabla(data)
     })
-});
+}
+
+function actualizar_tabla_x_fechas(fechainicio,fechafin) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "registros_filtrar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
+
+    }).done(function (response) {
+        response = JSON.parse(response)
+
+        var data = [];
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+
+            if (response['response'][i]["evento"] == 6 && response['response'][i]['alertado'] == false){
+                activar_alarma(response['response'][i]["id"])
+            }
+
+            data.push( [
+                response['response'][i]["id"],
+                response['response'][i]["tarjeta"],
+                response['response'][i]["codigo"],
+                response['response'][i]["autorizacion"],
+                response['response'][i]["destino"],
+                response['response'][i]["dia"],
+                response['response'][i]["mes"],
+                response['response'][i]["año"],
+                response['response'][i]["hora"],
+                response['response'][i]['dispositivo'],
+                response['response'][i]["cerradura"],
+            ]);
+        }
+
+        cargar_tabla(data)
+    })
+}
 
 validationKeyup("form")
 validationSelectChange("form")

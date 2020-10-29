@@ -94,5 +94,5 @@ class DispositivoController(CrudController):
         diccionary['user'] = self.get_user_id()
         diccionary['ip_local'] = self.request.remote_ip
         ConfiguraciondispositivoManager(self.db).abrir_cerradura(diccionary)
-        self.respond(success=True, message='Sincronizado correctamente.')
+        self.respond(success=True, message='Apertura remota.')
 

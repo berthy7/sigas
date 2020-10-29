@@ -38,7 +38,15 @@ class Usuario(Serializable, Base):
     def get_dict(self, way=None):
         dictionary = super().get_dict(way)
 
-        dictionary['fullname'] = str(self.nombre)  + " " + str(self.apellidop)+ " " + str(self.apellidom)
+        auxApellidom = ""
+        if self.apellidom:
+            auxApellidom = self.apellidom
+        else:
+            auxApellidom = ""
+
+
+
+        dictionary['fullname'] = str(self.nombre)  + " " + str(self.apellidop)+ " " + str(auxApellidom)
         del(dictionary['password'])
         return dictionary
 
@@ -46,19 +54,13 @@ class Usuario(Serializable, Base):
     @hybrid_property
     def fullname(self):
         aux = ""
-        if self.apellidop is not None:
-            aux = self.apellidop + " "
+        auxApellidom = ""
+        if self.apellidom != "None":
+            auxApellidom = self.apellidom
         else:
-            aux = " "
-        if self.apellidom is not None:
-            aux = aux + self.apellidom + " "
-        else:
-            aux = " "
+            auxApellidom = ""
 
-        if self.nombre is not None:
-            aux += self.nombre
-        else:
-            aux = " "
+        aux = str(self.nombre)  + " " + str(self.apellidop)+ " " + str(auxApellidom)
 
         return aux
 

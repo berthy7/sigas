@@ -603,6 +603,9 @@ $('#insert').click(function () {
             'telefono': $('#telefono').val(),
             'descripcion': $('#descripcion').val(),
             'fkresidente': $('#fkresidente').val(),
+            'fknropase': $('#fknropase').val(),
+            'b_fknropase': $('#b_fknropase').val(),
+            
             'vehiculos' : get_vehiculos()
         })
         ajax_call('provper_insert', {
@@ -697,6 +700,10 @@ function editar(elemento){
             $('#fkresidente').val(self.fkresidente)
             $('#fkresidente').selectpicker('refresh')
             $('#descripcion').val(self.descripcion)
+        
+            $('#fknropase').val(self.fknropase)
+            $('#fknropase').selectpicker('refresh')
+            
 
             $('#vehiculo_div').empty()
 
@@ -747,6 +754,7 @@ $('#update').click(function () {
             'telefono': $('#telefono').val(),
             'descripcion': $('#descripcion').val(),
             'fkresidente': $('#fkresidente').val(),
+            'fknropase': $('#fknropase').val(),
             'vehiculos' : get_vehiculos()
         })
         ajax_call('provper_update', {

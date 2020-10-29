@@ -18,6 +18,7 @@ class EventoManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity)
 
+
     def obtener_x_codigo(self,idevento):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.codigo == idevento).first()
 
@@ -203,7 +204,8 @@ class EventoManager(SuperManager):
     def actualizar(self, diccionary):
         objeto = EventoManager(self.db).entity(**diccionary)
 
-
+        print("actualizar uno")
+        print(diccionary)
         if objeto.horai == "":
             objeto.horai = None
         else:
@@ -213,7 +215,7 @@ class EventoManager(SuperManager):
             objeto.horaf = None
         else:
             objeto.horaf = datetime.strptime(objeto.horaf, '%H:%M')
-
+        print("actualizar dos")
         fecha = BitacoraManager(self.db).fecha_actual()
         a = super().update(objeto)
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Modifico Evento.", fecha=fecha,tabla="evento", identificador=a.id)
@@ -227,16 +229,22 @@ class EventoManager(SuperManager):
         for invitacion in x.invitaciones:
             invitacion.estado = state
 
-            diccionary = dict(codigo=invitacion.id, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
-            ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
+            sin_guardia = False
+            if invitacion.evento.fkdomicilio:
+                sin_guardia = invitacion.evento.domicilio.condominio.singuardia
+            elif invitacion.evento.fkareasocial:
+                sin_guardia = invitacion.evento.areasocial.condominio.singuardia
+
+            if sin_guardia:
+
+                diccionary = dict(codigo=invitacion.id, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
+                ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         x.estado = state
         if state:
             mensaje = "Habilito Evento"
         else:
             mensaje = "Deshabilito Evento"
-
-        print("cancelar envento - insert: " + str(x))
 
         fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha, tabla="evento", identificador=id)
@@ -287,13 +295,14 @@ class EventoManager(SuperManager):
         fechahoy = fecha_hoy_str[0:10]
         horahoy = fecha_hoy_str[11:19]
 
+
         print(str(fechahoy))
 
         try:
             fecha_date = datetime.strptime(fechahoy, '%d/%m/%Y')
 
         except Exception as e:
-            print("Excepcion conrolada:"+ str(e))
+            print("Excepcion:"+ str(e))
             fecha_date = datetime.strptime(fechahoy, '%Y-%m-%d')
 
         print("fecha date:"+str(fecha_date))
@@ -302,29 +311,57 @@ class EventoManager(SuperManager):
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fecha_date).filter(
             Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
 
-        if x:
-            if x.evento.horai:
-                if time_horahoy >= x.evento.horai.time():
-                    if x.evento.horaf:
-                        if time_horahoy <= x.evento.horaf.time():
-                            return x
+        try:
+            if x:
+                if x.evento.horai:
+                    if time_horahoy >= x.evento.horai.time():
+                        if x.evento.horaf:
+                            if time_horahoy <= x.evento.horaf.time():
+                                return x
+                            else:
+                                return None
                         else:
-                            return None
+                            return x
                     else:
+                        return None
+
+                elif x.evento.horaf:
+                    if time_horahoy <= x.evento.horaf.time():
                         return x
+                    else:
+                        return None
                 else:
-                    return None
 
-            elif x.evento.horaf:
-                if time_horahoy <= x.evento.horaf.time():
                     return x
-                else:
-                    return None
             else:
-
                 return x
-        else:
-            return x
+
+        except Exception as e:
+            print("Excepcion:" + str(e))
+            if x:
+                if x.evento.horai:
+                    if time_horahoy >= x.evento.horai:
+                        if x.evento.horaf:
+                            if time_horahoy <= x.evento.horaf:
+                                return x
+                            else:
+                                return None
+                        else:
+                            return x
+                    else:
+                        return None
+
+                elif x.evento.horaf:
+                    if time_horahoy <= x.evento.horaf:
+                        return x
+                    else:
+                        return None
+                else:
+
+                    return x
+            else:
+                return x
+
 
     def validar_invitacion_lector(self,codigoautorizacion):
 
@@ -401,7 +438,6 @@ class EventoManager(SuperManager):
         list = {}
         c = 0
 
-
         if usuario.sigas:
             return self.db.query(Evento).filter(self.entity.estado == True).filter(func.date(Evento.fechai).between(fechainicio, fechafin)).all()
         elif usuario.rol.nombre == "RESIDENTE":
@@ -418,8 +454,21 @@ class InvitacionManager(SuperManager):
     def __init__(self, db):
         super().__init__(Invitacion, db)
 
+    def obtener_accesos_evento(self,idinvitacion):
+        i = self.db.query(self.entity).filter(self.entity.id == idinvitacion).first()
+
+        if i:
+            return dict(sinregistro=i.evento.sinregistro,multiacceso=i.evento.multiacceso)
+        else:
+            return dict(sinregistro=False, multiacceso=False)
+
+
     def obtener_x_codigo(self,codigoqr):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.codigoautorizacion == codigoqr).first()
+
+    def obtener_x_codigoqr(self,codigoqr):
+        return self.db.query(self.entity).filter(self.entity.codigoautorizacion == codigoqr).first()
+
 
     def obtener_invitaciones(self,idevento):
         return self.db.query(Invitacion).filter(Invitacion.estado == True).filter(Invitacion.fkevento == idevento).all()

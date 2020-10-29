@@ -38,8 +38,9 @@ class PorterovirtualManager(SuperManager):
             return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fechar.cast(Date) == fechahoy).all()
         else:
 
-            domicilio = self.db.query(self.entity).filter(self.entity.estado == True).join(Residente).filter(Residente.fkcondominio== usuario.fkcondominio)\
-                .filter(self.entity.fechar.cast(Date) == fechahoy).all()
+            domicilio = self.db.query(self.entity).filter(self.entity.estado == True).join(Residente).join(ResidenteDomicilio).join(Domicilio).filter(
+                Domicilio.fkcondominio == usuario.fkcondominio).filter(
+                self.entity.fechar.cast(Date) == fechahoy).all()
 
             return domicilio
 

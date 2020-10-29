@@ -1,0 +1,30 @@
+<thead>
+    <tr>
+        {% for dis in dispositivos %}
+            <th class="order_by_th" data-name="names" style="width: 25px; height: 25px;">{{ dis['dispositivo']}}</th>
+        {% end %}
+    </tr>
+</thead>
+<tbody id="table_content">
+    <tr>
+        {% for dis in dispositivos %}
+            <td>{{ dis['cerradura']}}</td>
+        {% end %}
+
+
+    </tr>
+    <tr>
+        {% for dis in dispositivos %}
+
+            <td>
+                <div id="edit" data-id="{{dis['id']}}" data-fkdispositivo="{{dis['fkdispositivo']}}" data-dispositivo="{{dis['dispositivo']}}" data-cerradura="{{dis['cerradura']}}" data-nro="{{dis['nro']}}" class="caja-icono edit" title="Editar">
+                    <img src={{ dis['imagen']}} />
+                </div>
+
+
+            </td>
+        {% end %}
+
+
+    </tr>
+</tbody>

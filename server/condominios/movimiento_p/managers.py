@@ -57,9 +57,11 @@ class Movimiento_pManager(SuperManager):
 
     def insert(self, diccionary):
 
+
+
         if diccionary['visita']:
             if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-                if diccionary['ci'] != "":
+                if diccionary['nombre'] != "":
                     invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
                     diccionary['fkinvitado'] = invitado.id
                 else:
@@ -111,7 +113,11 @@ class Movimiento_pManager(SuperManager):
 
         # deshabilitar invitacion
         if a.fkinvitacion:
-            InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+            accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(a.fkinvitacion)
+
+            if accesos_invitacion['multiacceso'] is False:
+
+                InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
         return a

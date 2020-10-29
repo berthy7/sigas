@@ -166,25 +166,22 @@ function ocultar_div(tipodispositivo) {
 
 
     }else if("4" == tipodispositivo){
-        $('#div_cerradura').hide()
-        $('#div_cerradura_titulo').hide()
-        $('#div_cerradura1').hide()
+        $('#div_cerradura').show()
+        $('#div_cerradura_titulo').show()
+        $('#div_cerradura1').show()
         $('#div_cerradura2').hide()
         $('#div_cerradura3').hide()
         $('#div_cerradura4').hide()
 
-        $('#b_1').prop('checked', false)
+        $('#b_1').prop('checked', true)
         $('#b_2').prop('checked', false)
         $('#b_3').prop('checked', false)
         $('#b_4').prop('checked', false)
 
-        $('#nombre1').val('')
         $('#nombre2').val('')
         $('#nombre3').val('')
         $('#nombre4').val('')
 
-        $('#fkentrada1').val('')
-        $('#fkentrada1').selectpicker('refresh')
 
         $('#fkentrada2').val('')
         $('#fkentrada2').selectpicker('refresh')

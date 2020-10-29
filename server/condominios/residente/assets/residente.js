@@ -1112,7 +1112,7 @@ function editar(elemento){
         _xsrf: getCookie("_xsrf"),
         object: obj
     }, function (response) {
-        console.log(response)
+       
         var self = response;
             $('#id').val(self.id)
             $('#codigo').val(self.codigo)

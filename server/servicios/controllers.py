@@ -84,7 +84,6 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
         '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'},
         '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'}
-
     }
 
 
@@ -95,6 +94,7 @@ class ApiCondominioController(ApiController):
         password = data['password']
         ip = data['ip']
         user = LoginManager().login(username, password)
+        print("login user:" + str(username))
 
         if user:
             fecha = self.fecha_actual()
@@ -517,6 +517,7 @@ class ApiCondominioController(ApiController):
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
+
     # insercciones
 
     # sincr
@@ -719,6 +720,8 @@ class ApiCondominioController(ApiController):
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = u.id
 
+            print(str(data))
+
             resp = EventoManager(self.db).delete(data['idevento'],data['estado'], data['user'], data['ip'])
 
             principal = self.db.query(Principal).first()
@@ -756,6 +759,7 @@ class ApiCondominioController(ApiController):
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
+
     # sincr
     def cancelar_invitacion_rapida(self):
         try:
@@ -863,12 +867,21 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
 
             even = EventoManager(self.db).actualizar(data)
-            evento = even.get_dict()
-            self.respond(success=True, response=evento, message='Evento Actualizado correctamente.')
+
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+                print("principal")
+                data['codigo'] = even.id
+                print(data)
+                self.funcion_sincronizar(u,data,"sincronizar_actualizar_evento")
+
+
+            # evento = even.get_dict()
+            self.respond(success=True, response=None, message='Evento Actualizado correctamente.')
 
         except Exception as e:
             print(e)
@@ -882,6 +895,7 @@ class ApiCondominioController(ApiController):
         try:
             data = json.loads(self.request.body.decode('utf-8'))
             x = ast.literal_eval(data)
+            print("ws listar nuevas configuraciones " + str(x['idinterprete']))
             self.set_session()
             arraT = self.manager(self.db).get_page(1, 10, None, None, True)
             resp = []
@@ -908,34 +922,17 @@ class ApiCondominioController(ApiController):
         self.set_session()
         data = json.loads(self.request.body.decode('utf-8'))
         x = ast.literal_eval(data)
+        print("ws marcaciones dispositivo " + str(x['iddispositivo']))
 
         RegistrosManager(self.db).insertRegistros(x)
         self.respond(success=True, message='Insertado correctamente.')
 
-
-        # username = data['username']
-        # password = data['password']
-        # ip = data['ip']
-        # user = LoginManager().login(username, password)
-        #
-        # if user:
-        #     fecha = self.fecha_actual()
-        #     b = Bitacora(fkusuario=user.id, ip=ip, accion="Inicio de sesión.", fecha=fecha)
-        #     self.insertar_bitacora(b)
-        #     users =  UsuarioManager(self.db).get_by_pass(user.id)
-        #     usuario = users.get_dict()
-        #     usuario['rol']['modulos'] = None
-        #
-        #     self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
-        #
-        # else:
-        #     self.respond(success=False, response="", message='El Usuario no se pudo Loguear.')
-
     def listar_dispositivos(self):
         try:
+            self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             x = ast.literal_eval(data)
-            self.set_session()
+            print("ws listar dispositivos " + str(x['idinterprete']))
 
             resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(x)
 
@@ -951,28 +948,10 @@ class ApiCondominioController(ApiController):
         self.set_session()
         data = json.loads(self.request.body.decode('utf-8'))
         x = ast.literal_eval(data)
+        print("ws configuraciones procesadas ")
 
         ConfiguraciondispositivoManager(self.db).actualizar_codigos(x)
         self.respond(success=True, message='Actualizado correctamente.')
-
-
-        # username = data['username']
-        # password = data['password']
-        # ip = data['ip']
-        # user = LoginManager().login(username, password)
-        #
-        # if user:
-        #     fecha = self.fecha_actual()
-        #     b = Bitacora(fkusuario=user.id, ip=ip, accion="Inicio de sesión.", fecha=fecha)
-        #     self.insertar_bitacora(b)
-        #     users =  UsuarioManager(self.db).get_by_pass(user.id)
-        #     usuario = users.get_dict()
-        #     usuario['rol']['modulos'] = None
-        #
-        #     self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
-        #
-        # else:
-        #     self.respond(success=False, response="", message='El Usuario no se pudo Loguear.')
 
 
     # Funciones de Sincronizacion
@@ -1168,6 +1147,7 @@ class ApiCondominioController(ApiController):
     def sincronizar_actualizar_evento(self):
         try:
             self.set_session()
+
             data = json.loads(self.request.body.decode('utf-8'))
 
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])

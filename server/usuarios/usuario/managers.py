@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from ...dispositivos.dispositivo.managers import *
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -162,11 +163,30 @@ class UsuarioManager(SuperManager):
             self.db.merge(resi)
             self.db.merge(resiacce)
 
+            if x.condominio.singuardia:
+
+                situacion = ""
+                if enable:
+                    situacion = "Acceso"
+                else:
+                    situacion = "Denegado"
+
+                inicial_cod = 100000
+                codigoInbio = inicial_cod + int(resi.codigo)
+
+                diccionary = dict(codigo=str(codigoInbio), tarjeta=resi.codigoqr, situacion=situacion, fkcondominio=x.fkcondominio, residente=resi.nombre+" "+resi.apellidop)
+
+                ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
+
+
         fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=Usuariocr, ip=ip, accion=message, fecha=fecha)
         super().insert(b)
         self.db.merge(x)
         self.db.commit()
+
+
+
         return True
 
     def activate_Usuarios(self, id, Usuario, ip):
@@ -299,7 +319,7 @@ class UsuarioManager(SuperManager):
             remitente = "<"+server.correo+">"
             destinatarios = correos
             asunto = 'Creacion de Usuario SIGAS'
-            cuerpo = "Saludos "+ str(usuario.nombre) +" "+ str(usuario.apellidop) +" "+" "+ str(usuario.apellidom) + "\n" + "Se le ha creado acceso al sistema SIGAS"+ "\n" + "Url: http://sigas-web.herokuapp.com"+ "\n" + "\n" + "Credenciales: "+ "\n" + str(condominio)+ "\n" + "Username: "+ str(usuario.username) + "\n" + "Password: "+ str(password) + "\n" + "Perfil: "+ str(usuario.rol.nombre) + "\n" + "\n" +  "Saludos"
+            cuerpo = "Saludos "+ str(usuario.nombre) +" "+ str(usuario.apellidop) +" "+" "+ str(usuario.apellidom) + "\n" + "Se le ha creado acceso al sistema SIGAS"+ "\n" + "Url: http://sistemacondominio.herokuapp.com"+ "\n" + "\n" + "Credenciales: "+ "\n" + str(condominio)+ "\n" + "Username: "+ str(usuario.username) + "\n" + "Password: "+ str(password) + "\n" + "Perfil: "+ str(usuario.rol.nombre) + "\n" + "\n" +  "Saludos"
             # Creamos el objeto mensaje
             mensaje = MIMEMultipart('alternative')
             # Establecemos los atributos del mensaje
@@ -342,7 +362,7 @@ class UsuarioManager(SuperManager):
             destinatarios = correos
             asunto = 'Reinicio de Contraseña usuario SIGAS'
             cuerpo = "Saludos " + str(usuario.nombre) + " " + str(usuario.apellidop) + " " + " " + str(
-                usuario.apellidom) + "\n" + "Se ha reiniciado su contraseña de acceso al sistema SIGAS" + "\n" + "Url: http://sigas-web.herokuapp.com" + "\n" + "\n" + "Credenciales: " + "\n" + str(
+                usuario.apellidom) + "\n" + "Se ha reiniciado su contraseña de acceso al sistema SIGAS" + "\n" + "Url: http://sistemacondominio.herokuapp.com" + "\n" + "\n" + "Credenciales: " + "\n" + str(
                 condominio) + "\n" + "Username: " + str(usuario.username) + "\n" + "Password: " + str(
                 password) + "\n" + "Perfil: " + str(usuario.rol.nombre) + "\n" + "\n" + "Saludos"
             # Creamos el objeto mensaje
@@ -407,7 +427,7 @@ class UsuarioManager(SuperManager):
 
             if principal.estado == False:
 
-                url = "http://sigas-web.herokuapp.com/api/v1/actualizar_credenciales"
+                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_credenciales"
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo

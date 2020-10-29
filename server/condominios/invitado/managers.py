@@ -41,12 +41,28 @@ class InvitadoManager(SuperManager):
 
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.ci == str(ciinvitado)).first()
 
+    def obtener_x_nombre_amistad(self,nombreinvitado,usuario):
+
+        if usuario.fkresidente:
+
+            return self.db.query(self.entity).join(Amistad).filter(self.entity.estado == True).filter(self.entity.nombre == str(nombreinvitado)).filter(Amistad.fkresidente == usuario.fkresidente).first()
+        else:
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                self.entity.nombre == str(nombreinvitado)).first()
+
+
     def insert(self, diccionary):
         usuario = UsuarioManager(self.db).get_by_pass(diccionary['user'])
 
-        invitado = InvitadoManager(self.db).obtener_x_ci(diccionary['ci'])
+        if diccionary['ci'] == "":
+            invitado = InvitadoManager(self.db).obtener_x_nombre_amistad(diccionary['nombre'],usuario)
+
+        else:
+            invitado = InvitadoManager(self.db).obtener_x_ci(diccionary['ci'])
+
 
         if invitado is None:
+
             objeto = InvitadoManager(self.db).entity(**diccionary)
             fecha = BitacoraManager(self.db).fecha_actual()
             objeto.vehiculos = []
@@ -68,6 +84,7 @@ class InvitadoManager(SuperManager):
                 invitado.expendido = diccionary['expendido']
             if invitado.telefono is None:
                 invitado.telefono = diccionary['telefono']
+
             a = super().update(invitado)
 
         if usuario.fkresidente != None:
