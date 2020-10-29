@@ -217,7 +217,7 @@ function cargar_tabla(data){
 
 
         },
-        "order": [[ 1, "desc" ]],
+        "order": [[ 0, "desc" ]],
         language : {
             'url': '/resources/js/spanish.json',
         },

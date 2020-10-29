@@ -318,7 +318,7 @@ class RegistrosManager(SuperManager):
                 MovimientoManager(self.db).actualizar_movimiento(object)
                 # PorterovirtualManager(self.db).actualizar_marcacion(object)
 
-                i = InvitacionManager(self.db).obtener_x_codigoqr(marcacion[0])
+                i = EventoManager(self.db).validar_invitacion_lector(marcacion[0])
                 if i:
                     # deshabilitar invitacion
                     accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(i.id)
