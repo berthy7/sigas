@@ -116,7 +116,7 @@ class InvitadoManager(SuperManager):
         ci = diccionario['ci']
         expendido = diccionario['expendido']
 
-        invitado = InvitadoManager(self.db).obtener_x_ci(ci)
+        invitado = InvitadoManager(self.db).obtener_x_nombre_amistad(nombre,usuario)
 
         if invitado:
             return invitado
