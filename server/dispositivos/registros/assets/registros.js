@@ -56,6 +56,7 @@ $('#switch_refrescar').change(function() {
 
     }else{
         refrescar = false;
+        window.location = main_route
     }
 
 })
@@ -369,7 +370,7 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
         'ult_registro': ult_registro_parametro,
         '_xsrf': getCookie("_xsrf")
     })
-    ruta = "registros_filtrar";
+    ruta = "registros_recargar";
     $.ajax({
         method: "POST",
         url: ruta,

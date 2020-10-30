@@ -44,12 +44,135 @@ class RegistrosManager(SuperManager):
     def listar_todo(self):
         return self.db.query(self.entity).all()
 
-    def filtrar(self, fechainicio, fechafin,usuario,ult_registro):
+    def recargar(self, fechainicio, fechafin,usuario,ult_registro):
         list = {}
         c = 0
 
         if usuario.sigas:
             registros = self.db.query(self.entity).filter(func.date(self.entity.time).between(fechainicio, fechafin)).filter(self.entity.id > ult_registro).order_by(self.entity.id.desc()).all()
+        else:
+            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
+
+        list = []
+        nombre_meses = {1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+                       9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'}
+
+        for reg in registros:
+
+            codigo = ""
+            tarjeta = ""
+            cerradura = ""
+            autorizacion = ""
+            destino = ""
+
+            if reg.evento == 0:
+
+                if reg.codigo != "0":
+                    codigo = reg.codigo
+                    tarjeta = reg.tarjeta
+
+                    if reg.fkdispositivo:
+
+                        if reg.dispositivo.fktipodispositivo != 4:
+
+                            idcondominio = reg.dispositivo.fkcondominio
+
+                            residente_qr = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.codigoqr == reg.tarjeta).first()
+
+                            if residente_qr:
+                                codigo =  "Codigo Qr"
+                                tarjeta = "Residente"
+                                autorizacion = residente_qr.fullname
+
+                            residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
+
+                            if residente_vehi:
+                                codigo = "Tag Vehicular"
+                                autorizacion = residente_vehi.fullname
+
+                            residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
+                            if residente:
+                                codigo = "Tarjeta Peatonal"
+                                autorizacion = residente.fullname
+
+                            tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
+                            if tarjetaObj:
+                                if tarjetaObj.tipo == "Provper":
+                                    provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
+                                    if provper:
+                                        codigo = str(tarjetaObj.tarjeta)
+                                        tarjeta = str(tarjetaObj.tipo)
+                                        autorizacion = str(provper.fullname)
+
+                                else:
+                                    autorizacion = ""
+                                    codigo = str(tarjetaObj.tarjeta)
+                                    tarjeta = str(tarjetaObj.tipo)
+
+                            codigo_normalizado = int(reg.codigo) - 500000
+                            invitacion = self.db.query(Invitacion).filter(
+                                Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                            if invitacion:
+                                codigo = invitacion.invitado.fullname
+                                tarjeta = invitacion.tipopase.nombre
+                                autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
+
+                                if invitacion.evento.fkdomicilio:
+
+                                    destino = invitacion.evento.domicilio.nombre
+
+                                elif invitacion.evento.fkareasocial:
+
+                                    destino = invitacion.evento.areasocial.nombre
+
+                        else:
+                            codigo_normalizado_residente = int(reg.codigo) - 100000
+                            residente_biometrico = self.db.query(Residente).filter(Residente.codigo == codigo_normalizado_residente).first()
+
+                            if residente_biometrico:
+                                autorizacion = residente_biometrico.nombre + " " + residente_biometrico.apellidop
+                            else:
+                                autorizacion = ""
+
+                            if reg.verificado == 16:
+                                codigo = "Apertura Rostro"
+                            else:
+                                codigo = "Apertura Huella"
+
+                            tarjeta = reg.codigo
+
+
+                else:
+                    codigo = "Usuario no registrado"
+                    tarjeta = reg.tarjeta
+
+            else:
+
+                evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
+
+                if evento:
+                    codigo = evento.nombre
+                else:
+                    codigo ="Evento no registrado"
+
+
+            res_dispotivo = self.db.query(Dispositivo).filter(Dispositivo.id == reg.fkdispositivo).first()
+            res_cerradura = self.db.query(Cerraduras).filter(Cerraduras.fkdispositivo == res_dispotivo.id).filter(Cerraduras.numero == reg.puerta ).first()
+
+            if res_cerradura:
+                cerradura =res_cerradura.nombre
+            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+
+        print("registros nuevos: " +str(len(registros)))
+
+        return list
+
+    def filtrar(self, fechainicio, fechafin,usuario):
+        list = {}
+        c = 0
+
+        if usuario.sigas:
+            registros = self.db.query(self.entity).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
         else:
             registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
 
