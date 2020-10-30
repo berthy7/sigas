@@ -45,7 +45,7 @@ function auxiliar_method() {
 
             }
         }
-    }, 30000);
+    }, 5000);
 }
 
 $('#switch_refrescar').change(function() {
