@@ -29,9 +29,9 @@ function auxiliar_method() {
             console.log(refrescar)
             if(refrescar == false){
 
-                actualizar_tabla_x_fechas(hoy,hoy)
+                //actualizar_tabla_x_fechas(hoy,hoy)
 
-                // window.location = main_route
+                window.location = main_route
 
             }
         }
