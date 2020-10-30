@@ -60,7 +60,7 @@ class EventoManager(SuperManager):
 
         for even in list_evento:
             if even.horaf:
-                if even.horaf < horahoy:
+                if even.horaf <= horahoy:
 
                     for invi in even.invitaciones:
                             diccionary = dict(codigo=invi.id, tarjeta=invi.codigoautorizacion, situacion="Denegado")

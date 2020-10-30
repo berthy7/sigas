@@ -44,12 +44,12 @@ class RegistrosManager(SuperManager):
     def listar_todo(self):
         return self.db.query(self.entity).all()
 
-    def filtrar(self, fechainicio, fechafin,usuario):
+    def filtrar(self, fechainicio, fechafin,usuario,ult_registro):
         list = {}
         c = 0
 
         if usuario.sigas:
-            registros = self.db.query(self.entity).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
+            registros = self.db.query(self.entity).filter(func.date(self.entity.time).between(fechainicio, fechafin)).filter(self.entity.id > ult_registro).order_by(self.entity.id.desc()).all()
         else:
             registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
 
@@ -163,6 +163,8 @@ class RegistrosManager(SuperManager):
                 cerradura =res_cerradura.nombre
             list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
+        print("registros: " +str(len(registros)))
+
         return list
 
 
@@ -172,12 +174,17 @@ class RegistrosManager(SuperManager):
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
 
+        # if usuario.sigas:
+        #     registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
+        #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+        # else:
+        #     registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(
+        #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+
         if usuario.sigas:
-            registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-                self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+            registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).all()
         else:
-            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-                self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).all()
 
 
         list = []

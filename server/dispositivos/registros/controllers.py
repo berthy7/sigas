@@ -53,7 +53,8 @@ class RegistrosController(CrudController):
         ins_manager = self.manager(self.db)
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
-        indicted_object = ins_manager.filtrar(fechainicio, fechafin,us)
+        ult_registro = data['ult_registro']
+        indicted_object = ins_manager.filtrar(fechainicio, fechafin,us,ult_registro)
         if len(ins_manager.errors) == 0:
             self.respond(indicted_object, message='Operacion exitosa!')
         else:
