@@ -31,7 +31,7 @@ function auxiliar_method() {
 
                 actualizar_tabla_x_fechas(hoy,hoy)
 
-                window.location = main_route
+                // window.location = main_route
 
             }
         }
