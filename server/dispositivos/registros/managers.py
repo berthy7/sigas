@@ -82,18 +82,18 @@ class RegistrosManager(SuperManager):
                             if residente_qr:
                                 codigo =  "Codigo Qr"
                                 tarjeta = "Residente"
-                                autorizacion = residente_qr.fullname
+                                autorizacion = residente_qr.nombre + " " + residente_qr.apellidop
 
                             residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
                             if residente_vehi:
                                 codigo = "Tag Vehicular"
-                                autorizacion = residente_vehi.fullname
+                                autorizacion = residente_vehi.nombre + " " + residente_vehi.apellidop
 
                             residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
                             if residente:
                                 codigo = "Tarjeta Peatonal"
-                                autorizacion = residente.fullname
+                                autorizacion = residente.nombre + " " + residente.apellidop
 
                             tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
                             if tarjetaObj:
@@ -102,7 +102,7 @@ class RegistrosManager(SuperManager):
                                     if provper:
                                         codigo = str(tarjetaObj.tarjeta)
                                         tarjeta = str(tarjetaObj.tipo)
-                                        autorizacion = str(provper.fullname)
+                                        autorizacion = str(provper.nombre) + " " + str(provper.apellidop)
 
                                 else:
                                     autorizacion = ""
@@ -205,18 +205,18 @@ class RegistrosManager(SuperManager):
                             if residente_qr:
                                 codigo =  "Codigo Qr"
                                 tarjeta = "Residente"
-                                autorizacion = residente_qr.fullname
+                                autorizacion = residente_qr.nombre + " " + residente_qr.apellidop
 
                             residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
                             if residente_vehi:
                                 codigo = "Tag Vehicular"
-                                autorizacion = residente_vehi.fullname
+                                autorizacion = residente_vehi.nombre + " " + residente_vehi.apellidop
 
                             residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
                             if residente:
                                 codigo = "Tarjeta Peatonal"
-                                autorizacion = residente.fullname
+                                autorizacion = residente.nombre + " " + residente.apellidop
 
                             tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
                             if tarjetaObj:
@@ -225,7 +225,7 @@ class RegistrosManager(SuperManager):
                                     if provper:
                                         codigo = str(tarjetaObj.tarjeta)
                                         tarjeta = str(tarjetaObj.tipo)
-                                        autorizacion = str(provper.fullname)
+                                        autorizacion = str(provper.nombre) + " " + str(provper.apellidop)
 
                                 else:
                                     autorizacion = ""
@@ -341,18 +341,18 @@ class RegistrosManager(SuperManager):
                             if residente_qr:
                                 codigo =  "Codigo Qr"
                                 tarjeta = "Residente"
-                                autorizacion = residente_qr.fullname
+                                autorizacion = residente_qr.nombre + " " + residente_qr.apellidop
 
                             residente_vehi = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).join(Vehiculo).filter(Vehiculo.fkresidente == Residente.id).filter(Vehiculo.fknropase == reg.codigo).first()
 
                             if residente_vehi:
                                 codigo = "Tag Vehicular"
-                                autorizacion = residente_vehi.fullname
+                                autorizacion = residente_vehi.nombre + " " + residente_vehi.apellidop
 
                             residente = self.db.query(Residente).join(ResidenteDomicilio).join(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Residente.fknropase == reg.codigo).first()
                             if residente:
                                 codigo = "Tarjeta Peatonal"
-                                autorizacion = residente.fullname
+                                autorizacion = residente.nombre + " " + residente.apellidop
 
                             tarjetaObj = self.db.query(Nropase).filter(Nropase.tarjeta == reg.tarjeta).first()
                             if tarjetaObj:
@@ -361,7 +361,7 @@ class RegistrosManager(SuperManager):
                                     if provper:
                                         codigo = str(tarjetaObj.tarjeta)
                                         tarjeta = str(tarjetaObj.tipo)
-                                        autorizacion = str(provper.fullname)
+                                        autorizacion = str(provper.nombre) + " " + str(provper.apellidop)
 
                                 else:
                                     autorizacion = ""
