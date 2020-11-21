@@ -1312,7 +1312,7 @@ def insertions():
 def condominio_schedule():
 
     def sincronizar_invitaciones():
-        print("sincronizacion")
+        # print("sincronizacion")
 
         with transaction() as db:
             EventoManager(db).validar_eventos()
