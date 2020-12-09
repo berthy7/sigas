@@ -15,9 +15,9 @@
         <div class="row clearfix">
             <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
                 {% if 'nropase_insert' in privileges %}
-                    <button id="new" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                    <button id="new" type="button" class="btn bg-indigo waves-effect white-own">Nuevo <i class="material-icons"></i></button>
                 {% end %}
-                <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect">
+                <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
                     <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
                 </button>
             </div>
@@ -70,8 +70,8 @@
                     '{{ c.tipo}}',
                     '{{ c.situacion}}',
                     cond,
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>',
-                    '<button id="sincro" onClick="sincronizacion(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light sincro" title="Sincronizacion"><i class="material-icons">update</i></button>'
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect white-own waves-light edit" title="Editar"><i class="material-icons">create</i></button>',
+                    '<button id="sincro" onClick="sincronizacion(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect white-own waves-light sincro" title="Sincronizacion"><i class="material-icons">update</i></button>'
 
                 ]);
             {% set cont = cont + 1 %}

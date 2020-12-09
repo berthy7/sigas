@@ -8,6 +8,26 @@ import hashlib
 
 class LoginManager:
 
+    def verificar_usuario_correcto(self, username, password):
+
+        password = hashlib.sha512(password.encode()).hexdigest()
+
+        with transaction() as session:
+
+            usuario = session.query(Usuario).\
+                options(joinedload('rol').
+                        joinedload('modulos').
+                        joinedload('children')).\
+                filter(Usuario.username == username).\
+                filter(Usuario.password == password).\
+                first()
+            if not usuario:
+                return None
+            session.expunge(usuario)
+            make_transient(usuario)
+        usuario.rol.modulos = self.order_modules(usuario.rol.modulos)
+        return usuario
+
     def login(self, username, password):
         """Retorna un usuario que coincida con el username y password dados.
 

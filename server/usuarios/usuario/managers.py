@@ -27,11 +27,61 @@ import time
 import hashlib
 import json
 from configparser import ConfigParser
+import uuid
 
 class UsuarioManager(SuperManager):
 
     def __init__(self, db):
         super().__init__(Usuario, db)
+
+
+    def state(self, id,estado, user, ip):
+        x = self.db.query(self.entity).filter(self.entity.id == id).one()
+        x.estado = estado
+
+        if estado :
+            mensaje = "Habilito Usuario"
+        else:
+            mensaje = "Deshabilito Usuario"
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha,
+                     tabla="usuario", identificador=id)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+        return x
+
+
+    def sesion(self, id,estado, user, ip):
+        x = self.db.query(self.entity).filter(self.entity.id == id).one()
+        x.login = estado
+
+        if estado :
+            mensaje = "Inicio session del Usuario " + x.username
+        else:
+            mensaje = "Cerro session del Usuario " + x.username
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha,
+                     tabla="usuario", identificador=id)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+        return x
+
+    def login_token(self, usuario):
+        usuario.login = True
+        usuario.token = str(uuid.uuid4()).replace('-', '')
+
+        return super().update(usuario)
+
+
+    def logout_sin_token(self, usuario):
+        usuario.login = False
+        usuario.token = "Sin Token"
+        super().update(usuario)
+
 
     def obtener_principal(self):
         x = self.db.query(Principal).first()
@@ -189,6 +239,19 @@ class UsuarioManager(SuperManager):
 
         return True
 
+    def exit_user(self, id,  Usuariocr, ip):
+        x = self.db.query(Usuario).filter(Usuario.id == id).one()
+
+        x.login = False
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=Usuariocr, ip=ip, accion="Cierre de Session Forzado"+x.username , fecha=fecha)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+
+        return True
+
     def activate_Usuarios(self, id, Usuario, ip):
         x = self.db.query(Usuario).filter(Usuario.id == id).one()
         x.enabled = 1
@@ -266,6 +329,31 @@ class UsuarioManager(SuperManager):
     def obtener_x_codigo(self, codigo):
         return self.db.query(Usuario).filter(Usuario.codigo == codigo).first()
 
+    def verificar_x_codigo(self,codigo):
+        ver = self.db.query(Usuario).filter(Usuario.codigo==codigo).filter(Usuario.enabled==True).first()
+
+        if ver:
+
+            return dict(respuesta=True, mensaje='')
+        else:
+
+            return dict(respuesta=False,mensaje='Usuario Deshabilitado')
+
+
+    def verificar_x_token(self,token):
+        tok = self.db.query(Usuario).filter(Usuario.token==token).first()
+
+        if tok:
+
+            return dict(respuesta=True, mensaje='')
+        else:
+
+            return dict(respuesta=False,mensaje='Token Incorrecto')
+
+    def obtener_x_id(self, user):
+        return self.db.query(Usuario).filter(Usuario.id == user).first()
+
+
     def update_profile(self, Usuarioprf, ip):
         usuario = self.db.query(Usuario).filter_by(id=Usuarioprf.id).first()
         usuario.username = Usuarioprf.username
@@ -319,7 +407,7 @@ class UsuarioManager(SuperManager):
             remitente = "<"+server.correo+">"
             destinatarios = correos
             asunto = 'Creacion de Usuario SIGAS'
-            cuerpo = "Saludos "+ str(usuario.nombre) +" "+ str(usuario.apellidop) +" "+" "+ str(usuario.apellidom) + "\n" + "Se le ha creado acceso al sistema SIGAS"+ "\n" + "Url: http://sistemacondominio.herokuapp.com"+ "\n" + "\n" + "Credenciales: "+ "\n" + str(condominio)+ "\n" + "Username: "+ str(usuario.username) + "\n" + "Password: "+ str(password) + "\n" + "Perfil: "+ str(usuario.rol.nombre) + "\n" + "\n" +  "Saludos"
+            cuerpo = "Saludos "+ str(usuario.nombre) +" "+ str(usuario.apellidop) +" "+" "+ str(usuario.apellidom) + "\n" + "Se le ha creado acceso al sistema SIGAS"+ "\n" + "Url: http://sigas-web.herokuapp.com"+ "\n" + "\n" + "Credenciales: "+ "\n" + str(condominio)+ "\n" + "Username: "+ str(usuario.username) + "\n" + "Password: "+ str(password) + "\n" + "Perfil: "+ str(usuario.rol.nombre) + "\n" + "\n" +  "Saludos"
             # Creamos el objeto mensaje
             mensaje = MIMEMultipart('alternative')
             # Establecemos los atributos del mensaje
@@ -362,7 +450,7 @@ class UsuarioManager(SuperManager):
             destinatarios = correos
             asunto = 'Reinicio de Contraseña usuario SIGAS'
             cuerpo = "Saludos " + str(usuario.nombre) + " " + str(usuario.apellidop) + " " + " " + str(
-                usuario.apellidom) + "\n" + "Se ha reiniciado su contraseña de acceso al sistema SIGAS" + "\n" + "Url: http://sistemacondominio.herokuapp.com" + "\n" + "\n" + "Credenciales: " + "\n" + str(
+                usuario.apellidom) + "\n" + "Se ha reiniciado su contraseña de acceso al sistema SIGAS" + "\n" + "Url: http://sigas-web.herokuapp.com" + "\n" + "\n" + "Credenciales: " + "\n" + str(
                 condominio) + "\n" + "Username: " + str(usuario.username) + "\n" + "Password: " + str(
                 password) + "\n" + "Perfil: " + str(usuario.rol.nombre) + "\n" + "\n" + "Saludos"
             # Creamos el objeto mensaje
@@ -427,7 +515,7 @@ class UsuarioManager(SuperManager):
 
             if principal.estado == False:
 
-                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_credenciales"
+                url = "http://sigas-web.herokuapp.com/api/v1/actualizar_credenciales"
 
                 headers = {'Content-Type': 'application/json'}
                 diccionary['user'] = us.codigo
@@ -457,7 +545,7 @@ class UsuarioManager(SuperManager):
                      tabla="usuario", identificador=usuario.id)
         super().insert(b)
 
-        UsuarioManager(self.db).correo_password_reinicio(u, diccionary['password'])
+        # UsuarioManager(self.db).correo_password_reinicio(u, diccionary['password'])
 
         return dict(response=None, success=True, message="Actualizado Correctamente")
 
@@ -469,3 +557,27 @@ class ModuloManager:
 
     def list_all(self):
         return self.db.query(Modulo).filter(Modulo.fkmodulo==None)
+
+
+class VersionMovilManager:
+
+    def __init__(self, db):
+        self.db = db
+
+    def version_actual(self):
+
+        verActual = self.db.query(VersionMovil).filter(
+            VersionMovil.estado == True).first()
+
+        return verActual.version
+
+    def verificar_version_actual(self,version):
+
+        ver = self.db.query(VersionMovil).filter(VersionMovil.version==version).filter(VersionMovil.estado==True).first()
+
+        if ver:
+            return dict(respuesta=True, mensaje='')
+
+        else:
+
+            return dict(respuesta=False, mensaje=self.version_actual())

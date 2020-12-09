@@ -29,7 +29,14 @@ $('#fkmodelo').selectpicker({
     title: 'Seleccione'
 })
 
-$('#tipovehiculo').selectpicker({
+$('#fkcolor').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+$('#fktipovehiculo').selectpicker({
     size: 10,
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar',
@@ -350,7 +357,7 @@ document.getElementById("tab-residente").click();
                 <label for="b_'+id_in+'"></label>\
             </div>\
             <div class="col-sm-2">\
-                <button type="button" class="btn bg-red waves-effect clear_vivienda" title="Eliminar">\
+                <button type="button" class="btn bg-red waves-effect white-own clear_vivienda" title="Eliminar">\
                     <i class="material-icons">clear</i>\
                 </button>\
             </div>\
@@ -433,15 +440,26 @@ document.getElementById("tab-residente").click();
             });
 
 
+            var id_fktipo = ''
+            $("input.fktipo").each(function() {
+                id_fktipo  = $(this).prop('id');
+            });
+
             var id_tipo = ''
             $("input.tipo").each(function() {
                 id_tipo  = $(this).prop('id');
             });
-
+            
+            var id_fkcolor = ''
+            $("input.fkcolor").each(function() {
+                id_fkcolor  = $(this).prop('id');
+            });
+            
             var id_color = ''
             $("input.color").each(function() {
                 id_color  = $(this).prop('id');
             });
+
 
             var id_fkmarca = ''
             $("input.fkmarca").each(function() {
@@ -482,9 +500,13 @@ document.getElementById("tab-residente").click();
             $('#' + id_vehiculo ).parent().addClass('focused')
             $('#' + id_placa).val($('#placa').val())
             $('#' + id_placa).parent().addClass('focused')
-            $('#' + id_tipo).val($('#tipovehiculo').val())
+            $('#' + id_fktipo).val($('#fktipovehiculo').val())
+            $('#' + id_fktipo).parent().addClass('focused')
+            $('#' + id_tipo).val($( "#fktipo option:selected" ).text())
             $('#' + id_tipo).parent().addClass('focused')
-            $('#' + id_color).val($('#color').val())
+            $('#' + id_fkcolor).val($('#fkcolor').val())
+            $('#' + id_fkcolor).parent().addClass('focused')
+            $('#' + id_color).val($( "#fkcolor option:selected" ).text())
             $('#' + id_color).parent().addClass('focused')
             $('#' + id_fkmarca).val($('#fkmarca').val())
             $('#' + id_fkmarca).parent().addClass('focused')
@@ -508,9 +530,13 @@ document.getElementById("tab-residente").click();
             $('#id' + id ).parent().addClass('focused')
             $('#placa' + id ).val($('#placa').val())
             $('#placa' + id ).parent().addClass('focused')
-            $('#tipo' + id).val($('#tipovehiculo').val())
+            $('#fktipo' + id).val($('#fktipovehiculo').val())
+            $('#fktipo' + id).parent().addClass('focused')
+            $('#tipo' + id).val($("#fktipo option:selected").text())
             $('#tipo' + id).parent().addClass('focused')
-            $('#color' + id).val($('#color').val())
+            $('#fkcolor' + id).val($('#fkcolor').val())
+            $('#fkcolor' + id).parent().addClass('focused')
+            $('#color' + id).val($("#fkcolor option:selected").text())
             $('#color' + id).parent().addClass('focused')
             $('#fkmarca' + id).val($('#fkmarca').val())
             $('#fkmarca' + id).parent().addClass('focused')
@@ -556,15 +582,26 @@ document.getElementById("tab-residente").click();
                 });
 
 
+                var id_fktipo = ''
+                $("input.fktipo").each(function() {
+                    id_fktipo  = $(this).prop('id');
+                });
+
                 var id_tipo = ''
                 $("input.tipo").each(function() {
                     id_tipo  = $(this).prop('id');
+                });
+
+                var id_fkcolor = ''
+                $("input.fkcolor").each(function() {
+                    id_fkcolor  = $(this).prop('id');
                 });
 
                 var id_color = ''
                 $("input.color").each(function() {
                     id_color  = $(this).prop('id');
                 });
+
 
                 var id_fkmarca = ''
                 $("input.fkmarca").each(function() {
@@ -605,9 +642,13 @@ document.getElementById("tab-residente").click();
                 $('#' + id_vehiculo ).parent().addClass('focused')
                 $('#' + id_placa).val(response.response.placa)
                 $('#' + id_placa).parent().addClass('focused')
-                $('#' + id_tipo).val(response.response.tipo)
+                $('#' + id_fktipo).val(response.response.fktipo)
+                $('#' + id_fktipo).parent().addClass('focused')
+                $('#' + id_tipo).val(response.response.tipo.nombre)
                 $('#' + id_tipo).parent().addClass('focused')
-                $('#' + id_color).val(response.response.color)
+                $('#' + id_fkcolor).val(response.response.fkcolor)
+                $('#' + id_fkcolor).parent().addClass('focused')
+                $('#' + id_color).val(response.response.color.nombre)
                 $('#' + id_color).parent().addClass('focused')
                 $('#' + id_fkmarca).val(response.response.fkmarca)
                 $('#' + id_fkmarca).parent().addClass('focused')
@@ -630,10 +671,10 @@ document.getElementById("tab-residente").click();
              $('#div_nuevo_vehiculo').show()
             // append_input_vehiculos('')
             $('#idvehiculo').val('')
-             $('#tipovehiculo').val('')
-            $('#tipovehiculo').selectpicker('refresh')
+             $('#fktipovehiculo').val('')
+            $('#fktipovehiculo').selectpicker('refresh')
             $('#placa').val('')
-            $('#color').val('')
+            $('#fkcolor').val('')
             $('#fkmarca').val('')
             $('#fkmarca').selectpicker('refresh')
             $('#fkmodelo').val('')
@@ -740,7 +781,7 @@ $('#expendido').selectpicker({
     title: 'Seleccione'
 })
 
-$('#tipo').selectpicker({
+$('#fktipo').selectpicker({
     size: 10,
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar',
@@ -853,8 +894,8 @@ $('#new').click(function () {
     $('#expendido').selectpicker('refresh')
     $('#fechanacimiento').val('')
     $('#telefono').val('')
-    $('#tipo').val('')
-    $('#tipo').selectpicker('refresh')
+    $('#fktipo').val('')
+    $('#fktipo').selectpicker('refresh')
     $('#fknropase_peatonal').val('')
     $('#b_fknropase').val('')
     $('#b_fknropase').selectpicker('refresh')
@@ -962,7 +1003,7 @@ $('#insert').on('click',function (e) {
             'expendido': $('#expendido').val(),
             'fechanacimiento': $('#fechanacimiento').val(),
             'telefono': $('#telefono').val(),
-            'tipo': $('#tipo').val(),
+            'fktipo': $('#fktipo').val(),
             'fknropase': $('#fknropase_peatonal').val(),
             'b_fknropase': $('#b_fknropase').val(),
             'domicilios' : get_viviendas(),
@@ -1001,10 +1042,10 @@ $('#insert').on('click',function (e) {
                             id = response['response'][i]['id']
                             estadoresidente = response['response'][i]['estado']
                             if(estadoresidente == true){
-                                estadoresidente = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo 'checked /><label for='" + id + "'></label>"
+                                estadoresidente = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo 'checked disabled/><label for='" + id + "'></label>"
                                 console.log(estadoresidente)
                             }else{
-                                estadoresidente = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo ' /><label for='" + id + "'></label>"
+                                estadoresidente = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo ' disabled/><label for='" + id + "'></label>"
                                 console.log(estadoresidente)
                             }
 
@@ -1014,7 +1055,7 @@ $('#insert').on('click',function (e) {
                                 response['response'][i]['fullname'],
                                 response['response'][i]['telefono'],
                                 estadoresidente,
-                                "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
+                                "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect white-own waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
                             ]);
                         }
 
@@ -1127,8 +1168,8 @@ function editar(elemento){
             $('#expendido').selectpicker('refresh')
             $('#fechanacimiento').val(self.fechanacimiento)
             $('#telefono').val(self.telefono)
-            $('#tipo').val(self.tipo)
-            $('#tipo').selectpicker('refresh')
+            $('#fktipo').val(self.fktipo)
+            $('#fktipo').selectpicker('refresh')
             $('#fknropase_peatonal').val(self.fknropase)
             $('#fechai').val(self.fechai)
             $('#fechaf').val(self.fechaf)
@@ -1178,9 +1219,9 @@ function editar(elemento){
                 idve = self.vehiculos[vehi]['id']
                 placa= self.vehiculos[vehi]['placa']
                 fktipo = self.vehiculos[vehi]['fktipo']
-                nombretipo = self.vehiculos[vehi]['nombretipo']
+                nombrefktipo = self.vehiculos[vehi]['nombrefktipo']
                 fkcolor = self.vehiculos[vehi]['fkcolor']
-                nombrecolor = self.vehiculos[vehi]['nombrecolor']
+                nombrefkcolor = self.vehiculos[vehi]['nombrefkcolor']
                 fkmarca = self.vehiculos[vehi]['fkmarca']
                 nombremarca = self.vehiculos[vehi]['nombremarca']
                 fkmodelo = self.vehiculos[vehi]['fkmodelo']
@@ -1192,9 +1233,9 @@ function editar(elemento){
                 $('#id' + idve).val(idve)
                 $('#placa' + idve).val(placa)
                 $('#fktipo' + idve).val(fktipo)
-                $('#tipo' + idve).val(nombretipo)
+                $('#fktipo' + idve).val(nombrefktipo)
                 $('#fkcolor' + idve).val(fkcolor)
-                $('#color' + idve).val(nombrecolor)
+                $('#fkcolor' + idve).val(nombrefkcolor)
                 $('#fkmarca' + idve).val(fkmarca)
                 $('#marca' + idve).val(nombremarca)
                 $('#fkmodelo' + idve).val(fkmodelo)
@@ -1243,7 +1284,7 @@ $('#update').on('click',function (e) {
              'expendido': $('#expendido').val(),
              'fechanacimiento': $('#fechanacimiento').val(),
              'telefono': $('#telefono').val(),
-             'tipo': $('#tipo').val(),
+             'fktipo': $('#fktipo').val(),
              'fknropase': $('#fknropase_peatonal').val(),
              'b_fknropase': $('#b_fknropase').val(),
              'actual_fknropase': actual_fknropase,
@@ -1286,7 +1327,7 @@ $('#update').on('click',function (e) {
                     response['response'][i]['fullname'],
                     response['response'][i]['telefono'],
                     estadoresidente,
-                    "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
+                    "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect white-own waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
                 ]);
             }
 

@@ -67,9 +67,10 @@ class MovimientoManager(SuperManager):
 
         accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(diccionary['fkinvitacion'])
 
-        if accesos_invitacion['sinregistro']:
+        if accesos_invitacion['paselibre']:
             diccionary['fkvehiculo'] = None
             diccionary['fkconductor'] = None
+            diccionary['fkinvitado'] = None
         else:
 
             if diccionary['visita']:
@@ -154,7 +155,9 @@ class MovimientoManager(SuperManager):
         if a.fkinvitacion:
 
             if accesos_invitacion['multiacceso'] is False:
-                InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+                if accesos_invitacion['multiple'] is False:
+                    if accesos_invitacion['paselibre'] is False:
+                        InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
         return a

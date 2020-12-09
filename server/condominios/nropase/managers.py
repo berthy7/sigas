@@ -78,7 +78,7 @@ class NropaseManager(SuperManager):
                 self.entity.numero.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(and_(self.entity.tipo != "Residente",self.entity.tipo != "Provper")).filter(Nropase.estado == True).filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(and_(Nropase.tipo != "Residente",Nropase.tipo != "Provper")).filter(Nropase.estado == True).filter(Nropase.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
         else:
             return None

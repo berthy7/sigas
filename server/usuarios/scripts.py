@@ -58,14 +58,25 @@ def insertions():
         update_usuario = session.query(Modulo).filter(Modulo.name == 'usuario_update').first()
         if update_usuario is None:
             update_usuario = Modulo(title='Actualizar', route='/usuario_update', name='usuario_update', menu=False)
+        state_usuario = session.query(Modulo).filter(Modulo.name == 'usuario_state').first()
+        if state_usuario is None:
+            state_usuario = Modulo(title='Habilitar', route='/usuario_state',
+                                        name='usuario_state',menu=False)
         delete_usuario = session.query(Modulo).filter(Modulo.name == 'usuario_delete').first()
         if delete_usuario is None:
             delete_usuario = Modulo(title='Dar de Baja', route='/usuario_delete', name='usuario_delete', menu=False)
 
+        sesion_usuario = session.query(Modulo).filter(Modulo.name == 'usuario_state').first()
+        if sesion_usuario is None:
+            sesion_usuario = Modulo(title='Session', route='/usuario_sesion',
+                                        name='usuario_sesion',menu=False)
+
         usuarios_m.children.append(query_usuario)
         usuarios_m.children.append(insert_usuario)
         usuarios_m.children.append(update_usuario)
+        usuarios_m.children.append(state_usuario)
         usuarios_m.children.append(delete_usuario)
+        usuarios_m.children.append(sesion_usuario)
 
         query_bitacora = session.query(Modulo).filter(Modulo.name == 'bitacora_query').first()
         if query_bitacora is None:
@@ -112,7 +123,9 @@ def insertions():
         superadmin_role.modulos.append(query_usuario)
         superadmin_role.modulos.append(insert_usuario)
         superadmin_role.modulos.append(update_usuario)
+        superadmin_role.modulos.append(state_usuario)
         superadmin_role.modulos.append(delete_usuario)
+        superadmin_role.modulos.append(sesion_usuario)
         superadmin_role.modulos.append(query_rol)
         superadmin_role.modulos.append(insert_rol)
         superadmin_role.modulos.append(update_rol)
@@ -126,18 +139,23 @@ def insertions():
         admin_role.modulos.append(query_usuario)
         admin_role.modulos.append(insert_usuario)
         admin_role.modulos.append(update_usuario)
+        admin_role.modulos.append(state_usuario)
         admin_role.modulos.append(delete_usuario)
+        admin_role.modulos.append(sesion_usuario)
         admin_role.modulos.append(query_bitacora)
 
         super_user = session.query(Usuario).filter(Usuario.username == 'admin').first()
         if super_user is None:
             # hex_dig = hashlib.sha512(b'Password2020').hexdigest()
-            hex_dig = hashlib.sha512(b'Sigas2020').hexdigest()
+            hex_dig = hashlib.sha512(b'PruebasSigas2020').hexdigest()
             super_user = Usuario(username='admin', password=hex_dig,sigas=True)
             super_user.rol = superadmin_role
 
         servidor = ServidorCorreo(id=1, servidor='smtp.gmail.com', puerto='587',correo='NotificacionSigas@gmail.com', password='Sigas2020', estado=True)
         session.add(servidor)
+
+        versionMovil = VersionMovil(id=1, version='1.0.0', estado=True)
+        session.add(versionMovil)
 
         servidor = Principal(id=1, estado=False)
         session.add(servidor)

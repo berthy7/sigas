@@ -113,7 +113,7 @@ class RegistrosManager(SuperManager):
                             invitacion = self.db.query(Invitacion).filter(
                                 Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
                             if invitacion:
-                                codigo = invitacion.invitado.fullname
+                                codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
                                 autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
@@ -236,7 +236,7 @@ class RegistrosManager(SuperManager):
                             invitacion = self.db.query(Invitacion).filter(
                                 Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
                             if invitacion:
-                                codigo = invitacion.invitado.fullname
+                                codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
                                 autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
@@ -373,7 +373,7 @@ class RegistrosManager(SuperManager):
                             codigo_normalizado = int(reg.codigo) - 500000
                             invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
                             if invitacion:
-                                codigo = invitacion.invitado.fullname
+                                codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
                                 autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
@@ -453,7 +453,8 @@ class RegistrosManager(SuperManager):
                     # deshabilitar invitacion
                     accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(i.id)
                     if accesos_invitacion['multiacceso'] is False:
-                        InvitacionManager(self.db).delete(i.id, False, None, None)
+                        if accesos_invitacion['multiple'] is False:
+                            InvitacionManager(self.db).delete(i.id, False, None, None)
 
                 self.db.add(object)
 

@@ -50,6 +50,8 @@ class ResidenteManager(SuperManager):
         objeto.vehiculos = []
         objeto.estado = estado
 
+        objeto.codigo = None
+
 
         a = super().insert(objeto)
 
@@ -74,7 +76,7 @@ class ResidenteManager(SuperManager):
                 idcondominio = DomicilioManager(self.db).obtener_fkcondominio(d)
                 break
 
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password="sigas2020",fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,enabled=estado)
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=a.ci,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,enabled=estado)
         UsuarioManager(self.db).insert(dict_usuario)
 
 
@@ -411,7 +413,7 @@ class ResidenteManager(SuperManager):
             principal = self.db.query(Principal).first()
             if principal.estado == False:
 
-                url = "http://sistemacondominio.herokuapp.com/api/v1/actualizar_foto"
+                url = "http://sigas-web.herokuapp.com/api/v1/actualizar_foto"
 
                 headers = {'Content-Type': 'application/json'}
 

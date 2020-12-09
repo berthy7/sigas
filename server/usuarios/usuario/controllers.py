@@ -164,9 +164,9 @@ class UsuarioController(CrudController):
         username = diccionary['username']
         repetido = UsuarioManager(self.db).verificar_username(username)
         if repetido['respuesta']:
-            self.respond(message='', success=False)
+            self.respond(success=False)
         else:
-            self.respond(message='', success=True)
+            self.respond(success=True)
 
     def restablecer_password(self):
         self.set_session()

@@ -115,17 +115,30 @@
                             </div>
                     </div>
                     <div class="row clearfix">
-                            <div class="col-sm-3">
-                                <div class="switch p-l-own">
+                        <div class="col-sm-3">
+                            <div class="switch p-l-own">
 
-                                   <label>
-                                       Sin registro
-                                       <input id="switch_sinregistro" type="checkbox">
-                                       <span class="lever"></span>
-                                   </label>
-                                </div>
-                                     </br>
+                               <label>
+                                   Pase Libre
+                                   <input id="switch_paselibre" type="checkbox">
+                                   <span class="lever"></span>
+                               </label>
                             </div>
+                                 </br>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <div class="switch p-l-own">
+
+                               <label>
+                                   Multiple
+                                   <input id="switch_multiple" type="checkbox">
+                                   <span class="lever"></span>
+                               </label>
+                            </div>
+                                 </br>
+                        </div>
                     </div>
                     <div class="row clearfix">
                         <div class="modal-header header-own">
@@ -147,7 +160,7 @@
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                <button id="new_integrante" type="button" class="btn bg-indigo waves-effect" title="Agregar">Agregar
+                                <button id="new_integrante" type="button" class="btn bg-indigo white-own waves-effect" title="Agregar">Agregar
                                     <i class="material-icons">add</i>
                                 </button>
                             </div>
@@ -188,10 +201,10 @@
 
                 <div class="modal-footer">
                 {% if 'evento_insert' in privileges %}
-                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
                 {% end %}
                 {% if 'evento_update' in privileges %}
-                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
                 {% end %}
                 </div>
             </div>

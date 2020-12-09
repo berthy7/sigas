@@ -109,7 +109,7 @@ $('#tipo').selectpicker({
                 </div>\
             </div>\
             <div class="col-sm-2">\
-                <button type="button" class="btn bg-red waves-effect clear_condominio" title="Eliminar">\
+                <button type="button" class="btn bg-red waves-effect white-own clear_condominio" title="Eliminar">\
                     <i class="material-icons">clear</i>\
                 </button>\
             </div>\

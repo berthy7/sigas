@@ -57,11 +57,34 @@
                                     </div>
 
                                 </div>
+
                                 <div class="row clearfix">
                                     <div class="col-sm-4">
+                                        <label>Nombre</label>
+                                            <div class="form-line">
+                                                <input id="nombre" name="Nombre" type="text" class="form-control txta-own" required >
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>Apellido Paterno</label>
+                                            <div class="form-line">
+                                                <input id="apellidop" name="Apellido Paterno" type="text" class="form-control txta-own" required >
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>Apellido Materno</label>
+                                            <div class="form-line">
+                                                <input id="apellidom" name="Apellido Materno" type="text" class="form-control txta-own">
+                                            </div>
+                                    </div>
+                                </div>
+                                </br>
+                                </br>
+                                <div class="row clearfix">
+                                    <div class="col-sm-4" hidden>
                                         <label>Codigo</label>
                                             <div class="form-line">
-                                                <input id="codigo" name="Codigo" type="text" class="form-control txta-own" required >
+                                                <input id="codigo" name="Codigo" type="text" class="form-control txta-own" >
                                             </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -88,29 +111,6 @@
                                 </br>
                                 </br>
                                 <div class="row clearfix">
-                                    <div class="col-sm-4">
-                                        <label>Nombre</label>
-                                            <div class="form-line">
-                                                <input id="nombre" name="Nombre" type="text" class="form-control txta-own" required >
-                                            </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label>Apellido Paterno</label>
-                                            <div class="form-line">
-                                                <input id="apellidop" name="Apellido Paterno" type="text" class="form-control txta-own" required >
-                                            </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label>Apellido Materno</label>
-                                            <div class="form-line">
-                                                <input id="apellidom" name="Apellido Materno" type="text" class="form-control txta-own">
-                                            </div>
-                                    </div>
-                                </div>
-                                </br>
-                                </br>
-
-                                <div class="row clearfix">
                                      <div class="col-sm-3">
                                         <label>Telefono</label>
                                             <div class="form-line">
@@ -135,7 +135,7 @@
                                     <div class="col-sm-3">
                                         <label>Correo</label>
                                             <div class="form-line">
-                                                <input id="correo" name="Correo" type="text" class="form-control txta-own">
+                                                <input id="correo" name="Correo" type="text" class="form-control txta-own" required>
                                             </div>
                                     </div>
                                 </div>
@@ -191,7 +191,7 @@
                             <div id="vivienda_form_body" class="box-body">
                                 <div class="row clearfix">
                                     <div id="div_agregar_vivienda" class="col-sm-2">
-                                        <button id="agregar_vivienda" type="button" class="btn bg-indigo waves-effect waves-light"
+                                        <button id="agregar_vivienda" type="button" class="btn bg-indigo waves-effect white-own waves-light"
                                                 title="Agregar Vivienda">Agregar <i class="material-icons">add</i></button>
                                         </br>
                                     </div>
@@ -243,7 +243,7 @@
                             <div id="vehiculo_form_body" class="box-body">
                                 <div class="row clearfix">
                                     <div id="div_agregar_vehiculo" class="col-sm-2">
-                                        <button id="agregar_vehiculo" type="button" class="btn bg-indigo waves-effect waves-light"
+                                        <button id="agregar_vehiculo" type="button" class="btn bg-indigo waves-effect white-own waves-light"
                                                 title="Agregar Vehiculo">Agregar <i class="material-icons">add</i></button>
                                         </br>
                                     </div>
@@ -281,16 +281,12 @@
                                     </div>
                                     <div class="row clearfix">
                                         <div class="col-sm-2">
-                                            <label>Tipo</label>
-                                         <select id="tipovehiculo" class="form-control">
-                                                 <option value="Auto">Auto</option>
-                                                 <option value="Camioneta">Camioneta</option>
-                                                 <option value="Vagoneta">Vagoneta</option>
-                                                 <option value="Jeep">Jeep</option>
-                                                 <option value="Camion">Camion</option>
-                                                 <option value="Motocicleta">Motocicleta</option>
-                                                 <option value="Moto">Moto</option>
-                                             </select>
+                                           <label>Tipo de Vehiculo</label>
+                                         <select id="fktipo" class="form-control" required>
+                                            {% for tipove in tipovehiculos %}
+                                                <option value="{{tipove.id}}">{{tipove.nombre}}</option>
+                                            {% end %}
+                                         </select>
                                         </div>
                                         <div class="col-sm-2">
                                             <label>Placa</label>
@@ -302,11 +298,11 @@
                                         </div>
                                          <div class="col-sm-2">
                                             <label>Color</label>
-                                             <div class="form-group form-float">
-                                                <div class="form-line">
-                                                    <input id="color" name="Color" type="text" class="form-control">
-                                                </div>
-                                             </div>
+                                             <select id="fkcolor" class="form-control" required>
+                                                {% for color in colores %}
+                                                    <option value="{{color.id}}">{{color.nombre}}</option>
+                                                {% end %}
+                                             </select>
                                         </div>
 
                                     </div>
@@ -337,7 +333,7 @@
 
                                         </div>
                                         <div class="col-sm-1">
-                                            <button id="insertar_vehiculo" type="button" class="btn bg-indigo waves-effect agregar_vehiculo" title="Agregar">
+                                            <button id="insertar_vehiculo" type="button" class="btn bg-indigo waves-effect white-own agregar_vehiculo" title="Agregar">
                                                 <i class="material-icons">add</i>
                                             </button>
                                         </div>
@@ -384,7 +380,7 @@
                                         <label class="form-label">Fecha Inicio</label>
                                        <div class="form-group">
                                             <div class="form-line success">
-                                                <input id="fechai" type="text" class="form-control date" required>
+                                                <input id="fechai" name="Fecha Inicio" type="text" class="form-control date" required>
                                             </div>
                                         </div>
                                     </div>
@@ -393,7 +389,7 @@
                                             <label class="form-label">Fecha Fin</label>
                                             <div  class="form-line success">
 
-                                                <input id="fechaf" type="text" class="form-control date" required>
+                                                <input id="fechaf" name="Fecha Fin" type="text" class="form-control date" required>
                                             </div>
                                         </div>
                                     </div>
@@ -402,7 +398,7 @@
                                            <h6>Estado</h6>
                                            <label>
                                                Desactivado
-                                               <input id="switch" type="checkbox">
+                                               <input id="switch" type="checkbox" disabled>
                                                <span class="lever"></span>
                                                Activo
                                            </label>
@@ -421,7 +417,7 @@
                                         <label>Contraseña</label>
                                             <div class="form-line">
                                                 <input id="password" name="Contraseña" type="password" class="form-control txta-own" >
-                                                <button id="generar" type="button" class="btn bg-indigo waves-effect">Generar<i class="material-icons"></i></button>
+                                                <button id="generar" type="button" class="btn bg-indigo waves-effect white-own">Generar<i class="material-icons"></i></button>
                                             </div>
                                     </div>
 
@@ -434,14 +430,14 @@
 
                     <div class="modal-footer">
                     {% if 'residente_insert' in privileges %}
-                        <button id="insert" type="submit" class="btn bg-indigo waves-effect">Guardar <i class="material-icons white-own">save</i></button>
+                        <button id="insert" type="submit" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons white-own">save</i></button>
                     {% end %}
                     {% if 'residente_update' in privileges %}
-                        <button id="update" type="submit" class="btn bg-indigo waves-effect">Modificar <i class="material-icons white-own">refresh</i></button>
+                        <button id="update" type="submit" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons white-own">refresh</i></button>
                     {% end %}
-                    <button id="siguiente1" type="button" class="btn bg-indigo waves-effect">Siguiente<i class="material-icons">arrow_forward</i></button>
-                    <button id="siguiente2" type="button" class="btn bg-indigo waves-effect">Siguiente<i class="material-icons">arrow_forward</i></button>
-                    <button id="siguiente3" type="button" class="btn bg-indigo waves-effect">Siguiente<i class="material-icons">arrow_forward</i></button>
+                    <button id="siguiente1" type="button" class="btn bg-indigo waves-effect white-own">Siguiente<i class="material-icons">arrow_forward</i></button>
+                    <button id="siguiente2" type="button" class="btn bg-indigo waves-effect white-own">Siguiente<i class="material-icons">arrow_forward</i></button>
+                    <button id="siguiente3" type="button" class="btn bg-indigo waves-effect white-own">Siguiente<i class="material-icons">arrow_forward</i></button>
                     </div>
                 </div>
             </form>
@@ -470,7 +466,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button id="insert-importar" type="submit" class="btn bg-indigo">Importar</button>
+                    <button id="insert-importar" type="submit" class="btn bg-indigo white-own">Importar</button>
                 </div>
             </form>
         </div>

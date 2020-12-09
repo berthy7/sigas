@@ -29,6 +29,7 @@ class ApiCondominioController(ApiController):
     manager = ResidenteManager
     routes = {
         '/api/v1/login_movil': {'POST': 'login_movil'},
+        '/api/v1/logout_movil': {'POST': 'logout_movil'},
         '/api/v1/listar_tipo_documento': {'POST': 'listar_tipo_documento'},
         '/api/v1/listar_tipo_autorizacion': {'POST': 'listar_tipo_autorizacion'},
         '/api/v1/listar_tipo_pase': {'POST': 'listar_tipo_pase'},
@@ -90,260 +91,407 @@ class ApiCondominioController(ApiController):
     def login_movil(self):
         self.set_session()
         data = json.loads(self.request.body.decode('utf-8'))
-        username = data['username']
-        password = data['password']
-        ip = data['ip']
-        user = LoginManager().login(username, password)
-        print("login user:" + str(username))
 
-        if user:
-            fecha = self.fecha_actual()
-            b = Bitacora(fkusuario=user.id, ip=ip, accion="Inicio de sesión.", fecha=fecha)
-            self.insertar_bitacora(b)
-            users =  UsuarioManager(self.db).get_by_pass(user.id)
-            usuario = users.get_dict()
-            usuario['rol']['modulos'] = None
+        Respuestaversion = self.consultar_version(data)
 
-            self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
+        if Respuestaversion['respuesta']:
+            print("login_movil: "+ Respuestaversion['mensaje'])
+            print("login: " + data['username'])
 
+            user_correcto = LoginManager().verificar_usuario_correcto(data['username'], data['password'])
+
+            if user_correcto:
+
+                user = LoginManager().login(data['username'], data['password'])
+
+                if user:
+                    if user.login is False:
+                        fecha = self.fecha_actual()
+                        b = Bitacora(fkusuario=user.id, ip=data['ip'], accion="Inicio de sesión movil.", fecha=fecha)
+                        self.insertar_bitacora(b)
+                        users =  UsuarioManager(self.db).get_by_pass(user.id)
+                        usuario = users.get_dict()
+                        usuario['rol']['modulos'] = None
+
+                        user = UsuarioManager(self.db).login_token(user)
+                        usuario['token'] = user.token
+
+
+                        self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
+
+                    else:
+                        self.respond(success=False, response='', message='Este usuario ya esta logeado')
+
+
+                else:
+                    self.respond(success=False, response='', message='Usuario Deshabilitado')
+            else:
+                self.respond(success=False, response='', message='Usuario o Contraseña Incorrrecto')
         else:
-            self.respond(success=False, response="", message='El Usuario no se pudo Loguear.')
+            self.respond(success=False, response=Respuestaversion['mensaje'], message="version incorrecta")
+
+    def logout_movil(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            user = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+
+            UsuarioManager(self.db).logout_sin_token(user)
+
+            fecha = self.fecha_actual()
+            b = Bitacora(fkusuario=user.id, ip=data['ip'], accion="Cierre de sesión movil.", fecha=fecha)
+            self.insertar_bitacora(b)
+
+            self.respond(response='', success=True, message="Usuario cerro sesion.")
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+
 
     def listar_tipo_pase(self):
+        print("consulto listar_tipo_pase")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
 
-            arraT['objeto'] = TipopaseManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            Respuestausuario = self.verificar_usuario(data)
 
-            self.respond(response=resp, success=True, message="Tipo pase recuperados correctamente.")
+            if Respuestausuario['success']:
+
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = TipopaseManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Tipo pase recuperados correctamente.")
+
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'], message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
+
     def listar_tipo_documento(self):
+        print("consulto listar_tipo_documento")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
 
-            arraT['objeto'] = TipodocumentoManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            Respuestausuario = self.verificar_usuario(data)
 
-            self.respond(response=resp, success=True, message="Tipo documento recuperados correctamente.")
+            if Respuestausuario['success']:
+
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = TipodocumentoManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Tipo documento recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                                 message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_tipo_autorizacion(self):
+        print("consulto listar_tipo_autorizacion")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = AutorizacionManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Tipo autorizacion recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = AutorizacionManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Tipo autorizacion recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_tipo_evento(self):
+        print("consulto listar_tipo_evento")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = TipoEventoManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Tipo evento recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = TipoEventoManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Tipo evento recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_tipo_vehiculo(self):
+        print("consulto listar_tipo_vehiculo")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = TipovehiculoManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Tipo evento recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = TipovehiculoManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Tipo evento recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_color(self):
+        print("consulto listar_color")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = ColorManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Tipo evento recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = ColorManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="colores recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_marcas(self):
+        print("consulto listar_marcas")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = MarcaManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
 
-            self.respond(response=resp, success=True, message="Marcas recuperadas correctamente.")
+                arraT['objeto'] = MarcaManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Marcas recuperadas correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_modelos(self):
+        print("consulto listar_modelos")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = ModeloManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Modelos recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = ModeloManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Modelos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_modelos_x_marca(self):
+        print("consulto listar_modelos_x_marca")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
-            idmarca = data['idmarca']
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = ModeloManager(self.db).listar_x_marca(idmarca)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Modelos recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = ModeloManager(self.db).listar_x_marca(data['idmarca'])
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Modelos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_vehiculo(self):
+        print("consulto listar_vehiculo")
         try:
-            data = json.loads(self.request.body.decode('utf-8'))
             self.set_session()
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = VehiculoManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                obj_dict['residente'] = None
-                obj_dict['invitado'] = None
-                obj_dict['nropase'] =  None
+            if Respuestausuario['success']:
 
-                resp.append(obj_dict)
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
 
-            self.db.close()
+                arraT['objeto'] = VehiculoManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    obj_dict['residente'] = None
+                    obj_dict['invitado'] = None
+                    obj_dict['nropase'] =  None
 
-            self.respond(response=resp, success=True, message="Vehiculos recuperados correctamente.")
+                    resp.append(obj_dict)
+
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Vehiculos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_invitados_todos(self):
+        print("consulto listar_invitados_todos")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = InvitadoManager(self.db).listar_todo()
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                obj_dict['vehiculos'] = None
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
 
-            self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+                arraT['objeto'] = InvitadoManager(self.db).listar_todo()
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    obj_dict['vehiculos'] = None
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
     def listar_invitados(self):
+        print("consulto listar_invitados")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user= data['user']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            if Respuestausuario['success']:
 
-            arraT['objeto'] = InvitadoManager(self.db).listar_x_residente(usuario)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                obj_dict['vehiculos'] = None
-                resp.append(obj_dict)
-            self.db.close()
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = InvitadoManager(self.db).listar_x_residente(usuario)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    obj_dict['vehiculos'] = None
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -351,22 +499,30 @@ class ApiCondominioController(ApiController):
 
     # parametro: user
     def listar_numero_pases(self):
+        print("consulto listar_numero_pases")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user= data['user']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            if Respuestausuario['success']:
 
-            arraT['objeto'] = NropaseManager(self.db).listar_numero_pases(usuario)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            self.respond(response=resp, success=True, message="Domicilios recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = NropaseManager(self.db).listar_numero_pases(usuario)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Domicilios recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -374,22 +530,31 @@ class ApiCondominioController(ApiController):
 
     # parametro: user
     def listar_domicilios(self):
+        print("consulto listar_domicilios")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user= data['user']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT['objeto'] = DomicilioManager(self.db).listar_domicilios(usuario)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+            if Respuestausuario['success']:
 
-            self.respond(response=resp, success=True, message="Domicilios recuperados correctamente.")
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = DomicilioManager(self.db).listar_domicilios(usuario)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Domicilios recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -397,22 +562,30 @@ class ApiCondominioController(ApiController):
 
     # parametro: user
     def listar_areas_sociales(self):
+        print("consulto listar_areas_sociales")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user= data['user']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            if Respuestausuario['success']:
 
-            arraT['objeto'] = AreasocialManager(self.db).listar_todo(usuario)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            self.respond(response=resp, success=True, message="Areas Sociales recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = AreasocialManager(self.db).listar_todo(usuario)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Areas Sociales recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -420,25 +593,27 @@ class ApiCondominioController(ApiController):
 
     # parametro: user
     def listar_eventos(self):
+        print("consulto listar_eventos")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user= data['user']
-            fechai = data['fechai']
-            fechaf = data['fechaf']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            if Respuestausuario['success']:
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
 
-            # arraT['objeto'] = EventoManager(self.db).listar_eventos(usuario)
-            arraT['objeto'] = EventoManager(self.db).filtrar(fechai, fechaf, user)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+                arraT['objeto'] = EventoManager(self.db).filtrar(data['fechai'], data['fechaf'], data['user'])
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
 
-            self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+                self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -446,21 +621,28 @@ class ApiCondominioController(ApiController):
 
     # parametro: evento
     def listar_invitacion(self):
+        print("consulto listar_invitacion")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            idevento= data['evento']
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            if Respuestausuario['success']:
 
-            arraT['objeto'] = InvitacionManager(self.db).obtener_invitaciones(idevento)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
 
-            self.respond(response=resp, success=True, message="Invitaciones recuperados correctamente.")
+                arraT['objeto'] = InvitacionManager(self.db).obtener_invitaciones(data['evento'])
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Invitaciones recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -468,22 +650,30 @@ class ApiCondominioController(ApiController):
 
     # parametro: user
     def listar_residentes(self):
+        print("consulto listar_residentes")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user = data['user']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
+            Respuestausuario = self.verificar_usuario(data)
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+            if Respuestausuario['success']:
 
-            arraT['objeto'] = CondominioManager(self.db).obtener_residentes(usuario.fkcondominio)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            self.respond(response=resp, success=True, message="Residentes recuperados correctamente.")
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = CondominioManager(self.db).obtener_residentes(usuario.fkcondominio)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Residentes recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -491,27 +681,30 @@ class ApiCondominioController(ApiController):
 
     # parametro: user
     def listar_movimientos(self):
+        print("consulto listar_movimientos")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            user = data['user']
-            usuario = UsuarioManager(self.db).obtener_x_codigo(user)
+            Respuestausuario = self.verificar_usuario(data)
 
-            fechai = data['fechai']
-            fechaf = data['fechaf']
-            # usuario = UsuarioManager(self.db).get_by_pass(user)
+            if Respuestausuario['success']:
 
-            arraT = self.manager(self.db).get_page(1, 10, None, None, True)
-            resp = []
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            # arraT['objeto'] = CondominioManager(self.db).obtener_movimientos(usuario.fkcondominio)
-            arraT['objeto'] = MovimientoManager(self.db).filtrar_movil(fechai, fechaf, usuario)
-            for item in arraT['objeto']:
-                obj_dict = item.get_dict()
-                resp.append(obj_dict)
-            self.db.close()
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
 
-            self.respond(response=resp, success=True, message="Movimientos recuperados correctamente.")
+                arraT['objeto'] = MovimientoManager(self.db).filtrar_movil(data['fechai'], data['fechaf'], usuario)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Movimientos recuperados correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
@@ -522,22 +715,29 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def insertar_invitado(self):
+        print("consulto insertar_invitado")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
 
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
+            if Respuestausuario['success']:
 
-            invi =InvitadoManager(self.db).insert(data)
-            invita = invi.get_dict()
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
-                    self.funcion_sincronizar(u, data, "sincronizar_invitado")
+                invi =InvitadoManager(self.db).insert(data)
+                invita = invi.get_dict()
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                        self.funcion_sincronizar(u, data, "sincronizar_invitado")
 
 
-            self.respond(response=invita,success=True, message='Insertado correctamente.')
+                self.respond(response=invita,success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -545,15 +745,24 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def insertar_vehiculo(self):
+        print("consulto insertar_vehiculo")
+
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            data['id']= ""
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            Respuestausuario = self.verificar_usuario(data)
 
-            VehiculoManager(self.db).registrar_vehiculo_invitado(data,data['fkinvitado'])
-            self.respond(success=True, message='Insertado correctamente.')
+            if Respuestausuario['success']:
+
+                data['id']= ""
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+
+                VehiculoManager(self.db).registrar_vehiculo_invitado(data,data['fkinvitado'])
+                self.respond(success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -562,24 +771,32 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def insertar_evento(self):
+        print("consulto insertar_evento")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
-            data['fkareasocial']  =""
+            Respuestausuario = self.verificar_usuario(data)
 
-            event = EventoManager(self.db).insert(data)
+            if Respuestausuario['success']:
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
-                event.codigo = event.id
-                data['codigo'] = event.id
-                self.db.merge(event)
-                self.db.commit()
-                self.funcion_sincronizar(u,data,"sincronizar_evento")
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+                data['fkareasocial']  =""
 
-            self.respond(success=True, message='Insertado correctamente.')
+                event = EventoManager(self.db).insert(data)
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    event.codigo = event.id
+                    data['codigo'] = event.id
+                    self.db.merge(event)
+                    self.db.commit()
+                    self.funcion_sincronizar(u,data,"sincronizar_evento")
+
+                self.respond(success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -588,25 +805,34 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def insertar_invitacion(self):
+        print("consulto insertar_invitacion")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
 
-            resp = InvitacionManager(self.db).insert(data)
+            Respuestausuario = self.verificar_usuario(data)
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
-                data['codigoautorizacion'] = resp.codigoautorizacion
+            if Respuestausuario['success']:
 
-                invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
-                data['ci'] = invi.ci
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
 
-                self.funcion_sincronizar(u,data,"sincronizar_invitacion")
+                resp = InvitacionManager(self.db).insert(data)
 
-            invitacion = resp.get_dict()
-            self.respond(response=invitacion, success=True, message='Insertado correctamente.')
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    data['codigoautorizacion'] = resp.codigoautorizacion
+
+                    invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
+                    data['ci'] = invi.ci
+
+                    self.funcion_sincronizar(u,data,"sincronizar_invitacion")
+
+                invitacion = resp.get_dict()
+                self.respond(response=invitacion, success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -615,31 +841,40 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def insertar_invitacion_rapida(self):
+        print("consulto insertar_invitacion_rapida")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
-            data['codigoautorizacion'] = ""
 
-            resp = EventoManager(self.db).insertar_invitacion_rapida(data)
+            Respuestausuario = self.verificar_usuario(data)
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
-                resp.codigo = resp.id
-                data['codigo'] = resp.id
-                self.db.merge(resp)
-                self.db.commit()
+            if Respuestausuario['success']:
 
-                invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
-                data['ci'] = invi.ci
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+                data['codigoautorizacion'] = ""
 
-                data['codigoautorizacion'] = resp.invitaciones[0].codigoautorizacion
+                resp = EventoManager(self.db).insertar_invitacion_rapida(data)
 
-                self.funcion_sincronizar(u, data, "sincronizar_invitacion_rapida")
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    resp.codigo = resp.id
+                    data['codigo'] = resp.id
+                    self.db.merge(resp)
+                    self.db.commit()
 
-            resp_dict = resp.get_dict()
-            self.respond(response=resp_dict,success=True, message='Insertado correctamente.')
+                    invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
+                    data['ci'] = invi.ci
+
+                    data['codigoautorizacion'] = resp.invitaciones[0].codigoautorizacion
+
+                    self.funcion_sincronizar(u, data, "sincronizar_invitacion_rapida")
+
+                resp_dict = resp.get_dict()
+                self.respond(response=resp_dict,success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -647,16 +882,22 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def insertar_movimiento(self):
+        print("consulto insertar_movimiento")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
-            print("ingreso Vehicular movil ci: " + str(data['ci']))
-            resp = MovimientoManager(self.db).insert(data)
-            objeto = resp.get_dict()
-            self.respond(response=objeto, success=True, message='Insertado correctamente.')
+            Respuestausuario = self.verificar_usuario(data)
 
+            if Respuestausuario['success']:
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+                print("ingreso Vehicular movil ci: " + str(data['ci']))
+                resp = MovimientoManager(self.db).insert(data)
+                objeto = resp.get_dict()
+                self.respond(response=objeto, success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -664,32 +905,47 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def insertar_movimiento_peatonal(self):
-            try:
-                self.set_session()
-                data = json.loads(self.request.body.decode('utf-8'))
+        print("consulto insertar_movimiento_peatonal")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
                 usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
                 data['user'] = usuario.id
                 print("ingreso Peatonal movil ci: " + str(data['ci']))
                 resp = Movimiento_pManager(self.db).insert(data)
                 objeto = resp.get_dict()
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
-            except Exception as e:
-                print(e)
-                self.respond(response=str(e), success=False, message=str(e))
-            self.db.close()
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
 
     def validar_codigo(self):
+        print("consulto validar_codigo")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            codigo = data['codigo']
-            resp = EventoManager(self.db).validar_invitacion_lector(codigo)
-            if resp:
-                invitacion = resp.get_dict()
-                self.respond(response=invitacion, success=True, message='Codigo Aceptado.')
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                resp = EventoManager(self.db).validar_invitacion_lector(data['codigo'])
+                if resp:
+                    invitacion = resp.get_dict()
+                    self.respond(response=invitacion, success=True, message='Codigo Aceptado.')
+                else:
+                    self.respond(response=resp, success=False, message='Codigo Denegado.')
             else:
-                self.respond(response=resp, success=False, message='Codigo Denegado.')
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -697,15 +953,22 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def validar_qr_residente(self):
+        print("consulto validar_qr_residente")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            codigo = data['codigo']
-            resp = ResidenteManager(self.db).validar_codigo(codigo)
-            if resp:
-                self.respond(response=resp, success=True, message='Codigo Aceptado.')
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                resp = ResidenteManager(self.db).validar_codigo(data['codigo'])
+                if resp:
+                    self.respond(response=resp, success=True, message='Codigo Aceptado.')
+                else:
+                    self.respond(response=resp, success=False, message='Codigo Denegado.')
             else:
-                self.respond(response=resp, success=False, message='Codigo Denegado.')
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -714,23 +977,31 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def cancelar_evento(self):
+        print("consulto cancelar_evento")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
+            Respuestausuario = self.verificar_usuario(data)
 
-            print(str(data))
+            if Respuestausuario['success']:
 
-            resp = EventoManager(self.db).delete(data['idevento'],data['estado'], data['user'], data['ip'])
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
+                print(str(data))
 
-                self.funcion_sincronizar(u,data,"sincronizar_cancelar_evento")
+                resp = EventoManager(self.db).delete(data['idevento'],data['estado'], data['user'], data['ip'])
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+
+                    self.funcion_sincronizar(u,data,"sincronizar_cancelar_evento")
 
 
-            self.respond(response=None, success=True, message='Evento Cancelado.')
+                self.respond(response=None, success=True, message='Evento Cancelado.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -739,21 +1010,29 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def cancelar_invitacion(self):
+        print("consulto cancelar_invitacion")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
-            resp = InvitacionManager(self.db).delete(data['idinvitacion'], data['estado'], data['user'], data['ip'])
+            Respuestausuario = self.verificar_usuario(data)
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
+            if Respuestausuario['success']:
 
-                data['codigoqr'] = resp.codigoautorizacion
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+                resp = InvitacionManager(self.db).delete(data['idinvitacion'], data['estado'], data['user'], data['ip'])
 
-                self.funcion_sincronizar(u,data,"sincronizar_cancelar_invitacion")
+                principal = self.db.query(Principal).first()
+                if principal.estado:
 
-            self.respond(response=None, success=True, message='Invitacion Cancelada.')
+                    data['codigoqr'] = resp.codigoautorizacion
+
+                    self.funcion_sincronizar(u,data,"sincronizar_cancelar_invitacion")
+
+                self.respond(response=None, success=True, message='Invitacion Cancelada.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -762,21 +1041,29 @@ class ApiCondominioController(ApiController):
 
     # sincr
     def cancelar_invitacion_rapida(self):
+        print("consulto cancelar_invitacion_rapida")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
-            resp = InvitacionManager(self.db).delete_invitacion_rapida(data['idinvitacion'], data['estado'], data['user'], data['ip'])
+            Respuestausuario = self.verificar_usuario(data)
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
+            if Respuestausuario['success']:
 
-                data['codigoqr'] = resp.codigoautorizacion
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+                resp = InvitacionManager(self.db).delete_invitacion_rapida(data['idinvitacion'], data['estado'], data['user'], data['ip'])
 
-                self.funcion_sincronizar(usuario, data, "sincronizar_cancelar_invitacion_rapida")
+                principal = self.db.query(Principal).first()
+                if principal.estado:
 
-            self.respond(response=None, success=True, message='Invitacion rapida Cancelada.')
+                    data['codigoqr'] = resp.codigoautorizacion
+
+                    self.funcion_sincronizar(usuario, data, "sincronizar_cancelar_invitacion_rapida")
+
+                self.respond(response=None, success=True, message='Invitacion rapida Cancelada.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -784,14 +1071,22 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def actualizar_credenciales(self):
+        print("consulto actualizar_credenciales")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            Respuestausuario = self.verificar_usuario(data)
 
-            resp = UsuarioManager(self.db).actualizar_credenciales(data)
-            self.respond(response=resp['response'], success=resp['success'], message=resp['message'])
+            if Respuestausuario['success']:
+
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+
+                resp = UsuarioManager(self.db).actualizar_credenciales(data)
+                self.respond(response=resp['response'], success=resp['success'], message=resp['message'])
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -799,64 +1094,91 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def actualizar_foto(self):
+        print("consulto actualizar_foto")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            Respuestausuario = self.verificar_usuario(data)
 
-            resp =ResidenteManager(self.db).actualizar_foto(data)
+            if Respuestausuario['success']:
+
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+
+                resp =ResidenteManager(self.db).actualizar_foto(data)
 
 
-            self.respond(response=None, success=resp['success'], message=resp['message'])
-
+                self.respond(response=None, success=resp['success'], message=resp['message'])
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
     def actualizar_invitado(self):
+        print("consulto actualizar_invitado")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
+            Respuestausuario = self.verificar_usuario(data)
 
-            InvitadoManager(self.db).update(data)
-            self.respond(success=True, message='Insertado correctamente.')
+            if Respuestausuario['success']:
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
 
+                InvitadoManager(self.db).update(data)
+                self.respond(success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
     def actualizar_vehiculo(self):
+        print("consulto actualizar_vehiculo")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
-            data['id']= ""
+            Respuestausuario = self.verificar_usuario(data)
 
-            VehiculoManager(self.db).update(data)
-            self.respond(success=True, message='Insertado correctamente.')
+            if Respuestausuario['success']:
 
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+                data['id']= ""
+
+                VehiculoManager(self.db).update(data)
+                self.respond(success=True, message='Insertado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
     def movimiento_salida(self):
+        print("consulto movimiento_salida")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = usuario.id
-            idmovimiento = data['idmovimiento']
-            user = data['user']
-            ip = data['ip']
-            resp = MovimientoManager(self.db).salida(idmovimiento, user, ip)
-            self.respond(response=None, success=True, message='Salida Actualizada Correctamente.')
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = usuario.id
+                idmovimiento = data['idmovimiento']
+                user = data['user']
+                ip = data['ip']
+                resp = MovimientoManager(self.db).salida(idmovimiento, user, ip)
+                self.respond(response=None, success=True, message='Salida Actualizada Correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -864,24 +1186,32 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def actualizar_evento(self):
+        print("consulto actualizar_evento")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
+            Respuestausuario = self.verificar_usuario(data)
 
-            even = EventoManager(self.db).actualizar(data)
+            if Respuestausuario['success']:
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
-                print("principal")
-                data['codigo'] = even.id
-                print(data)
-                self.funcion_sincronizar(u,data,"sincronizar_actualizar_evento")
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+
+                even = EventoManager(self.db).actualizar(data)
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    print("principal")
+                    data['codigo'] = even.id
+                    print(data)
+                    self.funcion_sincronizar(u,data,"sincronizar_actualizar_evento")
 
 
-            # evento = even.get_dict()
-            self.respond(success=True, response=None, message='Evento Actualizado correctamente.')
+                # evento = even.get_dict()
+                self.respond(success=True, response=None, message='Evento Actualizado correctamente.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
 
         except Exception as e:
             print(e)
@@ -931,10 +1261,12 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            x = ast.literal_eval(data)
-            print("ws listar dispositivos " + str(x['idinterprete']))
+            # x = ast.literal_eval(data)
+            x = json.loads(data)
+            # print("ws listar dispositivos " + str(x['idinterprete']))
 
             resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(x)
+            DispositivoManager(self.db).verificar_estado(x)
 
             self.db.close()
 
@@ -1164,6 +1496,77 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    # Funciones de Usuario
+    def verificar_usuario(self, data):
+        with transaction() as session:
+            try:
+                resp_user = UsuarioManager(session).verificar_x_codigo(data['user'])
+
+                if resp_user['respuesta']:
+
+                    try:
+
+                        resp_version = VersionMovilManager(session).verificar_version_actual(data['version'])
+
+                        if resp_version['respuesta']:
+
+                            try:
+
+                                resp_token = UsuarioManager(session).verificar_x_token(data['token'])
+
+                                if resp_token['respuesta']:
+
+                                    return dict(success=True, response="", message="Usuario Correcto")
+
+
+                                else:
+                                    return dict(success=False, response="token",  message=resp_token['mensaje'])
+
+                            except Exception as e:
+                                print(e)
+                                return dict(success=False, response="token",
+                                            message="No se esta enviando el token")
+
+
+                        else:
+                            return dict(success=False, response="version", message=resp_version['mensaje'])
+
+                    except Exception as e:
+                        print(e)
+                        return dict(success=False, response="version", message="No se esta enviando la version")
+
+                else:
+                    return dict(success=False, response="user", message=resp_user['mensaje'])
+
+
+            except Exception as e:
+                print(e)
+                return dict(success=False, response="user", message="No se esta enviando el usuario")
+
+
+    # Funciones de Usuario
+    def consultar_usuario(self, data):
+        with transaction() as session:
+            try:
+                return UsuarioManager(session).verificar_x_codigo(data['user'])
+
+            except Exception as e:
+                print(e)
+
+                return dict(respuesta=True, usuario="No se esta enviando el usuario")
+
+    # Funciones de Version
+    def consultar_version(self, data):
+        with transaction() as session:
+
+            try:
+
+                return VersionMovilManager(session).verificar_version_actual(data['version'])
+
+            except Exception as e:
+                print(e)
+
+                return dict(respuesta=True, version="No se esta enviando la version movil")
 
 
     # Funciones de Bitacora

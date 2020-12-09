@@ -18,12 +18,15 @@ class BitacoraManager(SuperManager):
     def fecha_actual(self):
 
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
-        fecha_str = str(fechaHora)
-        fecha_ = fecha_str[0:19]
-        fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+        principal = self.db.query(Principal).first()
 
-        timezone = pytz.timezone('America/La_Paz')
-        fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+        if principal.estado:
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
 
         return fechaHora
 

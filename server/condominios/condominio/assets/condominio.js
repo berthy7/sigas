@@ -499,6 +499,8 @@ $('#new').click(function () {
     $('#ip_privada').val('')
     $('#puerto').val('')
     document.getElementById('singuardia').checked=false
+    document.getElementById('invitacionpaselibre').checked=false
+    document.getElementById('invitacionmultiple').checked=false
     
     verif_inputs('')
     validationInputSelects("form")
@@ -604,7 +606,9 @@ $('#insert').click(function () {
             'ip_privada': $('#ip_privada').val(),
             'puerto': $('#puerto').val(),
             'entradas': obtener_entradas(),
-            'singuardia':document.getElementById('singuardia').checked
+            'singuardia':document.getElementById('singuardia').checked,
+            'invitacionpaselibre':document.getElementById('invitacionpaselibre').checked,
+            'invitacionmultiple':document.getElementById('invitacionmultiple').checked
 
         })
         ajax_call('condominio_insert', {
@@ -650,6 +654,8 @@ function attach_edit() {
             $('#ip_privada').val(self.ip_privada)
             $('#puerto').val(self.puerto)
             document.getElementById('singuardia').checked=self.singuardia
+             document.getElementById('invitacionpaselibre').checked=self.invitacionpaselibre
+             document.getElementById('invitacionmultiple').checked=self.invitacionmultiple
             
             $('#entradas_div').empty()
             for(i in self.entradas){
@@ -695,7 +701,10 @@ $('#update').click(function () {
             'ip_privada': $('#ip_privada').val(),
             'puerto': $('#puerto').val(),
             'entradas': obtener_entradas(),
-            'singuardia':document.getElementById('singuardia').checked
+            'singuardia':document.getElementById('singuardia').checked,
+            'invitacionpaselibre':document.getElementById('invitacionpaselibre').checked,
+            'invitacionmultiple':document.getElementById('invitacionmultiple').checked
+
         })
         ajax_call('condominio_update', {
             object: objeto,

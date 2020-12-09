@@ -149,6 +149,39 @@
                         </div>
 
                     </div>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <label>Opciones de invitaciones</label>
+                            <div  class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <div><input  type="text" class="form-control" value="Pase Libre" readonly></div>
+                                    </div>
+                                 </div>
+                                <div class="col-md-2">
+                                    <input id="invitacionpaselibre" type="checkbox" class="regular-checkbox big-checkbox" >
+                                    <label for="invitacionpaselibre"></label>
+                                 </div>
+
+                            </div>
+                            <div  class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <div><input  type="text" class="form-control" value="Grupal" readonly></div>
+                                    </div>
+                                 </div>
+                                <div class="col-md-2">
+                                    <input id="invitacionmultiple" type="checkbox" class="regular-checkbox big-checkbox" >
+                                    <label for="invitacionmultiple"></label>
+                                 </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    </br>
+
                     <div class="row clearfix">
                         <div class="col-sm-12">
                             <label>Entrada visitas sin Guardia</label>
@@ -180,10 +213,10 @@
 
                 <div class="modal-footer">
                 {% if 'condominio_insert' in privileges %}
-                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
                 {% end %}
                 {% if 'condominio_update' in privileges %}
-                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
                 {% end %}
                 </div>
             </div>

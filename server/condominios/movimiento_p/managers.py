@@ -57,22 +57,33 @@ class Movimiento_pManager(SuperManager):
 
     def insert(self, diccionary):
 
-
-
-        if diccionary['visita']:
-            if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-                if diccionary['nombre'] != "":
-                    invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
-                    diccionary['fkinvitado'] = invitado.id
-                else:
-                    diccionary['fkinvitado'] = None
-            else:
-                invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
-        else:
-            diccionary['fkinvitado'] = None
-
         if diccionary['fkinvitacion'] == "":
             diccionary['fkinvitacion'] = None
+
+        accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(diccionary['fkinvitacion'])
+
+
+        if accesos_invitacion['paselibre']:
+            diccionary['fkvehiculo'] = None
+            diccionary['fkconductor'] = None
+            diccionary['fkinvitado'] = None
+        else:
+            if diccionary['visita']:
+                if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
+                    if diccionary['nombre'] != "":
+                        invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
+                        diccionary['fkinvitado'] = invitado.id
+                    else:
+                        diccionary['fkinvitado'] = None
+                else:
+                    invitado = InvitadoManager(self.db).actualizar_invitado(diccionary)
+            else:
+                diccionary['fkinvitado'] = None
+
+
+       # if diccionary['fktipodocumento_conductor'] == "":
+        #    diccionary['fktipodocumento_conductor'] = None
+
 
         if diccionary['fkdomicilio'] == "":
             diccionary['fkdomicilio'] = None
@@ -116,8 +127,10 @@ class Movimiento_pManager(SuperManager):
             accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(a.fkinvitacion)
 
             if accesos_invitacion['multiacceso'] is False:
+                if accesos_invitacion['multiple'] is False:
+                    if accesos_invitacion['paselibre'] is False:
 
-                InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+                        InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
         return a

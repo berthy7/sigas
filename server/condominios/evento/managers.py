@@ -100,6 +100,13 @@ class EventoManager(SuperManager):
 
     def insert(self, diccionary):
 
+        if diccionary['multiple'] or diccionary['paselibre'] :
+            print("evento multiple")
+            lista = list()
+            lista.append(dict(fkinvitado=None,fktipopase=diccionary['fktipoevento'],
+                              codigoautorizacion=""))
+            diccionary['invitaciones'] = lista
+
         if diccionary['fkdomicilio'] == "":
             diccionary['fkdomicilio'] = None
         if diccionary['fkareasocial'] == "":
@@ -108,10 +115,13 @@ class EventoManager(SuperManager):
         for dicci in diccionary['invitaciones']:
             dicci['user'] = diccionary['user']
             dicci['ip'] = diccionary['ip']
-            if dicci['fkinvitado'] == "":
 
-                invitado = InvitadoManager(self.db).registrar_invitado(dicci)
-                dicci['fkinvitado'] = invitado.id
+            if dicci['fkinvitado']:
+                if dicci['fkinvitado'] == "":
+
+                    invitado = InvitadoManager(self.db).registrar_invitado(dicci)
+                    dicci['fkinvitado'] = invitado.id
+
 
         objeto = EventoManager(self.db).entity(**diccionary)
 
@@ -128,6 +138,7 @@ class EventoManager(SuperManager):
         else:
             objeto.horaf = datetime.strptime(objeto.horaf, '%H:%M').time()
         fecha = BitacoraManager(self.db).fecha_actual()
+
 
         a = super().insert(objeto)
         print("registro evento: " + str(a.id))
@@ -297,7 +308,6 @@ class EventoManager(SuperManager):
         fechahoy = fecha_hoy_str[0:10]
         horahoy = fecha_hoy_str[11:19]
 
-
         print(str(fechahoy))
 
         try:
@@ -460,9 +470,9 @@ class InvitacionManager(SuperManager):
         i = self.db.query(self.entity).filter(self.entity.id == idinvitacion).first()
 
         if i:
-            return dict(sinregistro=i.evento.sinregistro,multiacceso=i.evento.multiacceso)
+            return dict(paselibre=i.evento.paselibre,multiacceso=i.evento.multiacceso,multiple=i.evento.multiple)
         else:
-            return dict(sinregistro=False, multiacceso=False)
+            return dict(paselibre=False, multiacceso=False, multiple=False)
 
 
     def obtener_x_codigo(self,codigoqr):

@@ -171,7 +171,7 @@ def insertions():
 
         importar_nropase = session.query(Modulo).filter(Modulo.name == 'nropase_importar').first()
         if importar_nropase is None:
-            importar_nropase = Modulo(title='Dar de Baja', route='/nropase_importar',
+            importar_nropase = Modulo(title='Importar', route='/nropase_importar',
                                     name='nropase_importar',
                                     menu=False)
 
@@ -204,23 +204,32 @@ def insertions():
             update_usuarioCondominio = Modulo(title='Actualizar', route='/usuarioCondominio_update',
                                     name='usuarioCondominio_update',
                                     menu=False)
+
+        state_usuarioCondominio = session.query(Modulo).filter(Modulo.name == 'usuarioCondominio_state').first()
+        if state_usuarioCondominio is None:
+            state_usuarioCondominio = Modulo(title='Habilitar', route='/usuarioCondominio_state',
+                                    name='usuarioCondominio_state',
+                                    menu=False)
+
         delete_usuarioCondominio = session.query(Modulo).filter(Modulo.name == 'usuarioCondominio_delete').first()
         if delete_usuarioCondominio is None:
             delete_usuarioCondominio = Modulo(title='Dar de Baja', route='/usuarioCondominio_delete',
                                     name='usuarioCondominio_delete',
                                     menu=False)
 
-        imprimir_usuarioCondominio = session.query(Modulo).filter(Modulo.name == 'usuarioCondominio_imprimir').first()
-        if imprimir_usuarioCondominio is None:
-            imprimir_usuarioCondominio = Modulo(title='Reportes', route='/usuarioCondominio_imprimir',
-                                      name='usuarioCondominio_imprimir',
+        sesion_usuarioCondominio = session.query(Modulo).filter(Modulo.name == 'usuarioCondominio_sesion').first()
+        if sesion_usuarioCondominio is None:
+            sesion_usuarioCondominio = Modulo(title='Session', route='/usuarioCondominio_sesion',
+                                      name='usuarioCondominio_sesion',
                                       menu=False)
+
 
         usuarioCondominio_m.children.append(query_usuarioCondominio)
         usuarioCondominio_m.children.append(insert_usuarioCondominio)
         usuarioCondominio_m.children.append(update_usuarioCondominio)
+        usuarioCondominio_m.children.append(state_usuarioCondominio)
         usuarioCondominio_m.children.append(delete_usuarioCondominio)
-        usuarioCondominio_m.children.append(imprimir_usuarioCondominio)
+        usuarioCondominio_m.children.append(sesion_usuarioCondominio)
 
         query_areasocial = session.query(Modulo).filter(Modulo.name == 'areasocial_query').first()
         if query_areasocial is None:
@@ -620,6 +629,7 @@ def insertions():
             insert_portero_virtual = Modulo(title='Adicionar', route='/portero_virtual_insert',
                                    name='portero_virtual_insert',
                                    menu=False)
+
         update_portero_virtual = session.query(Modulo).filter(Modulo.name == 'portero_virtual_update').first()
         if update_portero_virtual is None:
             update_portero_virtual = Modulo(title='Actualizar', route='/portero_virtual_update',
@@ -798,8 +808,9 @@ def insertions():
         superadmin_role.modulos.append(query_usuarioCondominio)
         superadmin_role.modulos.append(insert_usuarioCondominio)
         superadmin_role.modulos.append(update_usuarioCondominio)
+        superadmin_role.modulos.append(state_usuarioCondominio)
         superadmin_role.modulos.append(delete_usuarioCondominio)
-        superadmin_role.modulos.append(imprimir_usuarioCondominio)
+        superadmin_role.modulos.append(sesion_usuarioCondominio)
 
         superadmin_role.modulos.append(query_areasocial)
         superadmin_role.modulos.append(insert_areasocial)
@@ -896,8 +907,9 @@ def insertions():
         admin_role.modulos.append(query_usuarioCondominio)
         admin_role.modulos.append(insert_usuarioCondominio)
         admin_role.modulos.append(update_usuarioCondominio)
+        admin_role.modulos.append(state_usuarioCondominio)
         admin_role.modulos.append(delete_usuarioCondominio)
-        admin_role.modulos.append(imprimir_usuarioCondominio)
+        admin_role.modulos.append(sesion_usuarioCondominio)
 
         admin_role.modulos.append(query_areasocial)
         admin_role.modulos.append(insert_areasocial)
@@ -994,8 +1006,9 @@ def insertions():
         supervisor_role.modulos.append(query_usuarioCondominio)
         supervisor_role.modulos.append(insert_usuarioCondominio)
         supervisor_role.modulos.append(update_usuarioCondominio)
+        supervisor_role.modulos.append(state_usuarioCondominio)
         supervisor_role.modulos.append(delete_usuarioCondominio)
-        supervisor_role.modulos.append(imprimir_usuarioCondominio)
+        supervisor_role.modulos.append(sesion_usuarioCondominio)
 
         supervisor_role.modulos.append(query_areasocial)
         supervisor_role.modulos.append(insert_areasocial)
@@ -1091,8 +1104,9 @@ def insertions():
         operador_role.modulos.append(query_usuarioCondominio)
         operador_role.modulos.append(insert_usuarioCondominio)
         operador_role.modulos.append(update_usuarioCondominio)
+        operador_role.modulos.append(state_usuarioCondominio)
         operador_role.modulos.append(delete_usuarioCondominio)
-        operador_role.modulos.append(imprimir_usuarioCondominio)
+        operador_role.modulos.append(sesion_usuarioCondominio)
 
         operador_role.modulos.append(query_areasocial)
         operador_role.modulos.append(insert_areasocial)
@@ -1312,7 +1326,7 @@ def insertions():
 def condominio_schedule():
 
     def sincronizar_invitaciones():
-        print("sincronizacion")
+        # print("sincronizacion")
 
         with transaction() as db:
             EventoManager(db).validar_eventos()

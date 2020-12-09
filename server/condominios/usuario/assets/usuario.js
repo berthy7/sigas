@@ -1,4 +1,5 @@
 main_route = '/usuarioCondominio'
+var data_privilegios_js = [];
 
 $(document).ready(function () {
     if ($('#sigas').val() == "True"){
@@ -38,13 +39,6 @@ $('#fkcondominio').selectpicker({
     title: 'Seleccione un Condominio'
 })
 
-$('#fcondominio').selectpicker({
-    size: 10,
-    liveSearch: true,
-    liveSearchPlaceholder: 'Buscar condominio',
-    title: 'Seleccione un Condominio'
-})
-
 $('#fkrol').selectpicker({
     size: 10,
     liveSearch: true,
@@ -61,7 +55,7 @@ $('#expendido').selectpicker({
 
 
 
-function cargar_tabla(data){
+function cargar_tabla2(data){
 
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
@@ -102,6 +96,127 @@ function cargar_tabla(data){
         },
         "pageLength": 50
     });
+}
+
+function cargar_tabla(data,data_privilegios){
+    
+    for (dat in data_privilegios) {
+            data_privilegios_js.push( data_privilegios[dat]);
+    }
+    
+
+    if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
+        var table = $('#data_table').DataTable();
+        table.destroy();
+    }
+
+    $('#data_table').DataTable({
+        data:           data,
+        deferRender:    true,
+        scrollCollapse: true,
+        scroller:       true,
+
+        dom: "Bfrtip" ,
+        buttons: [
+            // {  extend : 'excelHtml5',
+            //    exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7]},
+            //     sheetName: 'Reporte Areas Sociales',
+            //    title: 'reas Sociales'  },
+            // {  extend : 'pdfHtml5',
+            //     orientation: 'landscape',
+            //    customize: function(doc) {
+            //         doc.styles.tableBodyEven.alignment = 'center';
+            //         doc.styles.tableBodyOdd.alignment = 'center';
+            //    },
+            //    exportOptions : {
+            //         columns : [0, 1, 2, 3, 4, 5 ,6 ,7]
+            //     },
+            //    title: 'reas Sociales'
+            // }
+        ],
+        initComplete: function () {
+
+
+        },
+        "order": [[ 0, "asc" ]],
+        language : {
+            'url': '/resources/js/spanish.json',
+        },
+        "pageLength": 50
+    });
+}
+
+function actualizar_data(response){
+
+    var data = [];
+    var id
+    var condominio =""
+    
+    for (var i = 0; i < Object.keys(response.response).length; i++) {
+        var estado = ""
+        var login = ""
+        var acciones = ""
+        id = response['response'][i]['id']
+
+
+        if(data_privilegios_js.includes('usuarioCondominio_state')){
+            if(response['response'][i]['estado']){
+                estado = "<input id='" + id + "' onClick='event.preventDefault();estado(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked /><label for='" + id + "'></label>"
+            }else{
+               estado = "<input id='" + id + "' onClick='event.preventDefault();estado(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' /><label for='" + id + "'></label>"
+            }
+        }else{
+            if(response['response'][i]['estado']){
+                estado = "<input id='" + id + "' onClick='event.preventDefault();estado(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked disabled/><label for='" + id + "'></label>"
+            }else{
+               estado = "<input id='" + id + "' onClick='event.preventDefault();estado(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' disabled/><label for='" + id + "'></label>"
+            }
+
+        }
+
+        if(data_privilegios_js.includes('usuarioCondominio_sesion')){
+            if(response['response'][i]['login']){
+                login = "<input id='se-" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked /><label for='se-" + id + "'></label>"
+            }else{
+               login = "<input id='se-" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' /><label for='se-" + id + "'></label>"
+            }
+        }else{
+            if(response['response'][i]['login']){
+                login = "<input id='" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked disabled/><label for='" + id + "'></label>"
+            }else{
+               login = "<input id='" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' disabled/><label for='" + id + "'></label>"
+            }
+
+        }
+
+        if(data_privilegios_js.includes('usuarioCondominio_update')){
+            acciones += "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light white-own' title='Editar'><i class='material-icons'>create</i></button> "
+        }
+
+        if(data_privilegios_js.includes('usuarioCondominio_delete')){
+            acciones += "<button id='delete' onClick='eliminar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light white-own' title='Eliminar'><i class='material-icons'>delete</i></button> "
+        }
+        
+        
+        if(response['response'][i]['fkcondominio']){
+            condominio = response['response'][i]['condominio']['nombre']
+        }else{
+            condominio  = "------"
+        }
+
+
+        data.push( [
+            response['response'][i]['id'],
+            response['response'][i]['fullname'],
+            response['response'][i]['username'],
+            response['response'][i]['rol']['nombre'],
+            condominio,
+            estado,
+            login,
+            acciones
+        ]);
+    }
+    return data
 }
 
 $('#new').click(function () {
@@ -193,93 +308,75 @@ $('#generar').click(function () {
 
 
 $('#insert').click(function () {
-    notvalid = validationInputSelectsWithReturn("form");
-    if (notvalid===false) {
-        objeto = JSON.stringify({
-            'nombre': $('#nombre_usuario').val(),
-            'apellidop': $('#apellidop').val(),
-            'apellidom': $('#apellidom').val(),
-            'telefono': $('#telefono').val(),
-                
-            'username': $('#username').val(),
-            'password': $('#password').val(),
-            'fkrol': parseInt($('#fkrol').val()),
-            'ci': $('#ci').val(),
-            'correo': $('#correo').val(),
-            'expendido': $('#expendido').val(),
-            'fkcondominio': parseInt($('#fkcondominio').val())
-            
-        })
 
-        objeto_verificar = JSON.stringify({
-            'username': $('#correo').val(),
-
-        })
-        ajax_call_post("usuario_verificar_username", {
-            _xsrf: getCookie("_xsrf"),
-            object: objeto_verificar
-        }, function (response) {
-            console.log(response)
-            if(response.success === true){
-                ajax_call_asincrono('usuarioCondominio_insert', {
-                    object: objeto,
-                    _xsrf: getCookie("_xsrf")
-                }, null, function (response) {
-                    response = JSON.parse(response);
-                    var data = [];
-                    var id
-                    var condominio =""
-                    var estado
-                    for (var i = 0; i < Object.keys(response.response).length; i++) {
-                        id = response['response'][i]['id']
-
-                            if(response['response'][i]['fkcondominio']){
-                                condominio = response['response'][i]['condominio']['nombre']
-                            }else{
-                                condominio  = "------"
-                            }
-                        estado = response['response'][i]['enabled']
-                            if(estado == true){
-                                estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo 'checked disabled/><label for='" + id + "'></label>" +" "+ "Habilitado"
-
-                            }else{
-                                estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)'data-id='" + id + "' type='checkbox' class='chk-col-indigo ' disabled/><label for='" + id + "'></label>" + " " + "Deshabilitado"
-
-                            }
-                        data.push( [
-                            response['response'][i]['id'],
-                            response['response'][i]['fullname'],
-                            response['response'][i]['username'],
-                            response['response'][i]['rol']['nombre'],
-                            condominio,
-                            estado,
-                            "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
-                        ]);
-                    }
-
-                    cargar_tabla(data)
-                })
-                showMessage("Insertado Correctamente", "success", "ok")
-                $('#form').modal('hide')
-
-
-            }else{
-                swal(
-                    'Correo en uso',
-                    'El correo ya se encuentra, en uso porfavor, ingrese otro correo electronico',
-                    'warning' )
-            }
-        });
-
-        
-
-    } else {
+    if (parseInt($('#fkrol').val())===7) {
         swal(
-            'Error de datos.',
-             notvalid,
-            'error'
+            'El registro de usuarios para residentes, se debe realizar en el modulo de Residentes',
+             '',
+            'warning'
         )
-    }
+
+    }else{
+        notvalid = validationInputSelectsWithReturn("form");
+        if (notvalid===false) {
+            objeto = JSON.stringify({
+                'nombre': $('#nombre_usuario').val(),
+                'apellidop': $('#apellidop').val(),
+                'apellidom': $('#apellidom').val(),
+                'telefono': $('#telefono').val(),
+
+                'username': $('#username').val(),
+                'password': $('#password').val(),
+                'fkrol': parseInt($('#fkrol').val()),
+                'ci': $('#ci').val(),
+                'correo': $('#correo').val(),
+                'expendido': $('#expendido').val(),
+                'fkcondominio': parseInt($('#fkcondominio').val())
+
+            })
+
+            objeto_verificar = JSON.stringify({
+                'username': $('#correo').val(),
+
+            })
+            ajax_call_post("usuario_verificar_username", {
+                _xsrf: getCookie("_xsrf"),
+                object: objeto_verificar
+            }, function (response) {
+                console.log(response)
+                if(response.success === true){
+                    
+                    ajax_call('usuarioCondominio_insert', {
+                        object: objeto,
+                        _xsrf: getCookie("_xsrf")
+                    }, null, function (response) {
+                        response = JSON.parse(response);
+                        
+                        var data = actualizar_data(response);
+
+                        cargar_tabla(data)
+                    })
+                    $('#form').modal('hide')
+
+
+                }else{
+                    swal(
+                        'Correo en uso',
+                        'El correo ya se encuentra, en uso porfavor, ingrese otro correo electronico',
+                        'warning' )
+                }
+            });
+
+
+
+        } else {
+            swal(
+                'Error de datos.',
+                 notvalid,
+                'error'
+            )
+        }
+        }
 })
 
 
@@ -366,36 +463,8 @@ $('#update').click(function () {
                     _xsrf: getCookie("_xsrf")
                 }, null, function (response) {
                     response = JSON.parse(response);
-                    var data = [];
-                    var id
-                    var condominio =""
-                    var estado
-                    for (var i = 0; i < Object.keys(response.response).length; i++) {
-                        id = response['response'][i]['id']
-
-                            if(response['response'][i]['fkcondominio']){
-                                condominio = response['response'][i]['condominio']['nombre']
-                            }else{
-                                condominio  = "------"
-                            }
-                        estado = response['response'][i]['enabled']
-                            if(estado == true){
-                                estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo 'checked disabled/><label for='" + id + "'></label>" +" "+ "Habilitado"
-
-                            }else{
-                                estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)'data-id='" + id + "' type='checkbox' class='chk-col-indigo ' disabled/><label for='" + id + "'></label>" + " " + "Deshabilitado"
-
-                            }
-                        data.push( [
-                            response['response'][i]['id'],
-                            response['response'][i]['fullname'],
-                            response['response'][i]['username'],
-                            response['response'][i]['rol']['nombre'],
-                            condominio,
-                            estado,
-                            "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
-                        ]);
-                    }
+                    
+                    var data = actualizar_data(response);
 
                     cargar_tabla(data)
 
@@ -422,7 +491,8 @@ $('#update').click(function () {
 })
 reload_form()
 
-function eliminar(elemento){
+function estado(elemento){
+    console.log("estado")
     cb_delete = elemento
     b = $(elemento).prop('checked')
     if (!b) {
@@ -445,6 +515,37 @@ function eliminar(elemento){
             id: parseInt($(cb_delete).attr('data-id')),
             enabled: $(cb_delete).is(':checked')
         })
+        ajax_call('usuarioCondominio_state', {
+            object: objeto,
+            _xsrf: getCookie("_xsrf")
+        }, null, function (response) {
+            
+            response = JSON.parse(response);
+            
+            var data = actualizar_data(response);
+
+            cargar_tabla(data)
+            
+        })
+        $('#form').modal('hide')
+    })
+}
+
+function eliminar(elemento){
+
+    cb_title = "¿Eliminar Usuario?"
+    swal({
+        title: cb_title,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#393939",
+        cancelButtonColor: "#F44336",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar"
+    }).then(function () {
+        objeto = JSON.stringify({
+            id: parseInt(JSON.parse($(elemento).attr('data-json')))
+        })
         ajax_call('usuarioCondominio_delete', {
             object: objeto,
             _xsrf: getCookie("_xsrf")
@@ -452,6 +553,46 @@ function eliminar(elemento){
             setTimeout(function () {
                 window.location = main_route
             }, 2000);
+        })
+        $('#form').modal('hide')
+    })
+}
+
+function sesion(elemento){
+    console.log("Sesion")
+    cb_delete = elemento
+    b = $(elemento).prop('checked')
+    if (!b) {
+        cb_title = "¿Cerrar Session del Usuario?"
+
+    } else {
+        cb_title = "¿Iniciar Session del Usuario?"
+    }
+    swal({
+        title: cb_title,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#393939",
+        cancelButtonColor: "#F44336",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar"
+    }).then(function () {
+        $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
+        objeto = JSON.stringify({
+            id: parseInt($(cb_delete).attr('data-id')),
+            enabled: $(cb_delete).is(':checked')
+        })
+        ajax_call('usuarioCondominio_sesion', {
+            object: objeto,
+            _xsrf: getCookie("_xsrf")
+        }, null, function (response) {
+
+            response = JSON.parse(response);
+
+            var data = actualizar_data(response);
+
+            cargar_tabla(data)
+
         })
         $('#form').modal('hide')
     })

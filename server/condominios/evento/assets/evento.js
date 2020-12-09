@@ -1,7 +1,8 @@
 main_route = '/evento'
 
 var multiacceso = false;
-var sinregistro = false;
+var paselibre = false;
+var multiple = false;
 
 $(document).ready(function () {
    
@@ -75,8 +76,13 @@ $('#switch_multiacceso').change(function() {
 
 })
 
-$('#switch_sinregistro').change(function() {
-   sinregistro = $(this).prop('checked')
+$('#switch_paselibre').change(function() {
+   paselibre = $(this).prop('checked')
+
+})
+
+$('#switch_multiple').change(function() {
+   multiple = $(this).prop('checked')
 
 })
 
@@ -417,7 +423,8 @@ $('#new').click(function () {
     $('#fechaf').val('')
     $('#horaf').val('')
     document.getElementById('switch_multiacceso').checked=false
-    document.getElementById('switch_sinregistro').checked=false
+    document.getElementById('switch_paselibre').checked=false
+    document.getElementById('switch_multiple').checked=false
     $('#integrante_div').empty()
 
     validationInputSelects("form")
@@ -443,7 +450,8 @@ $('#insert').click(function () {
             'fechaf': $('#fechaf').val(),
             'horaf': $('#horaf').val(),
             'multiacceso':multiacceso,
-            'sinregistro': sinregistro,
+            'paselibre': paselibre,
+            'multiple': multiple,
             'invitaciones': get_invitado()
         })
         ajax_call('evento_insert', {
@@ -491,7 +499,8 @@ function editar(elemento){
             $('#fechaf').val(self.fechaf)
             $('#horaf').val(self.horaf)
             document.getElementById('switch_multiacceso').checked=self.multiacceso
-            document.getElementById('switch_sinregistro').checked=self.sinregistro
+            document.getElementById('switch_paselibre').checked=self.paselibre
+            document.getElementById('switch_multiple').checked=self.multiple
 
 
             $('#integrante_div').empty()
@@ -539,7 +548,7 @@ $('#update').click(function () {
             'fechaf': $('#fechaf').val(),
             'horaf': $('#horaf').val(),
             'multiacceso':multiacceso,
-            'sinregistro': sinregistro,
+            'paselibre': paselibre,
             'invitaciones': get_invitado()
         })
         ajax_call('evento_update', {

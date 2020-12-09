@@ -384,11 +384,8 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
         for (var i = 0; i < Object.keys(response.response).length; i++) {
 
             if(i == 0){
-
-
                 ult_registro = response['response'][i]["id"]
                 // console.log("i = 0 : "+ult_registro)
-
             }
 
             if (response['response'][i]["evento"] == 6 && response['response'][i]['alertado'] == false){

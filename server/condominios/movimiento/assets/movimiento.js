@@ -46,11 +46,18 @@ function verificar_qr() {
 
                 if (response.success) {
                     $('#fkinvitacion').val(response.response.id)
-                    $('#fkinvitado').selectpicker('refresh')
-                    $('#fkinvitado').val(response.response.fkinvitado)
-                    $('#fkinvitado').selectpicker('refresh')
-                    cargar_invitado(response.response.fkinvitado)
 
+                    if(!response.response.evento.multiple ){
+                        if(!response.response.evento.paselibre){
+
+                                console.log("entro invitado")
+                                $('#fkinvitado').selectpicker('refresh')
+                                $('#fkinvitado').val(response.response.fkinvitado)
+                                $('#fkinvitado').selectpicker('refresh')
+                                cargar_invitado(response.response.fkinvitado)
+                            }
+                    }
+                    
                     $('#fkdomicilio').val(response.response.evento.fkdomicilio)
                     $('#fkdomicilio').selectpicker('refresh')
 
@@ -66,17 +73,17 @@ function verificar_qr() {
                     
                     $('#fkresidente').val(response.response.evento.fkresidente)
                     $('#fkresidente').selectpicker('refresh')
-
-
+                    
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
 
                     document.getElementById('switch_multiacceso').checked=response.response.evento.multiacceso
-                    document.getElementById('switch_sinregistro').checked=response.response.evento.sinregistro
+                    document.getElementById('switch_paselibre').checked=response.response.evento.paselibre
+                    document.getElementById('switch_multiple').checked=response.response.evento.multiple
 
                     $('#div_accesos').show()
 
-                    if (!response.response.evento.sinregistro) {
+                    if (!response.response.evento.paselibre) {
                         $('#nombre').prop("required", true);
                         $('#apellidop').prop("required", true);
                         $('#ci').prop("required", true);
@@ -89,6 +96,7 @@ function verificar_qr() {
                         $('#fktipodocumento').selectpicker("refresh")
 
                         $('.div_vehiculo').show()
+                        $('.div_visita').show()
 
                     } else {
                         $('#nombre').removeAttr("required");
@@ -109,6 +117,7 @@ function verificar_qr() {
                         $('#fktipodocumento').selectpicker("refresh")
 
 
+                        $('.div_visita').hide()
                         $('.div_vehiculo').hide()
 
 
@@ -121,7 +130,8 @@ function verificar_qr() {
                     document.getElementById("imagen_mensaje").src = response.message;
 
                     document.getElementById('switch_multiacceso').checked=false
-                    document.getElementById('switch_sinregistro').checked=false
+                    document.getElementById('switch_paselibre').checked=false
+                    document.getElementById('switch_multiple').checked=false
                     $('#div_accesos').hide()
 
                     limpiar_formulario()
@@ -362,7 +372,8 @@ $('#switch_visita').change(function() {
         $('#fkresidente').prop("required", true);
         $('#div_accesos').hide()
         document.getElementById('switch_multiacceso').checked=false
-        document.getElementById('switch_sinregistro').checked=false
+        document.getElementById('switch_paselibre').checked=false
+        document.getElementById('switch_multiple').checked=false
 
 
     }
@@ -990,7 +1001,8 @@ function limpiar_formulario() {
 
     $('#div_accesos').hide()
     document.getElementById('switch_multiacceso').checked=false
-    document.getElementById('switch_sinregistro').checked=false
+    document.getElementById('switch_paselibre').checked=false
+    document.getElementById('switch_multiple').checked=false
 }
 
 $('#new').click(function () {
@@ -1049,7 +1061,8 @@ $('#new').click(function () {
     $('#switch_visita').change()
     $('#div_accesos').hide()
     document.getElementById('switch_multiacceso').checked=false
-    document.getElementById('switch_sinregistro').checked=false
+    document.getElementById('switch_paselibre').checked=false
+    document.getElementById('switch_multiple').checked=false
 
     $('.div_vehiculo').show()
 
@@ -1074,7 +1087,7 @@ $('#insert').click(function () {
         )
     }else{
         
-        if($('#switch_sinregistro').prop('checked')){
+        if($('#switch_paselibre').prop('checked')){
             
             notvalid = validationInputSelectsWithReturn("form");
             if (notvalid===false) {
@@ -1132,7 +1145,7 @@ $('#insert').click(function () {
             
             
             
-        }else{
+        }else{ 
             
             if($('#fkmarca').val() == 0 && $('#nombre_marca').val() == ""){
     
