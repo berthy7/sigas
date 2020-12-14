@@ -80,7 +80,7 @@ class MovimientoController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
 
         cname = self.manager(self.db).movimiento_excel()
-        self.respond({'nombre': cname, 'url': 'resources/downloads/movimiento/' + cname}, True)
+        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
         self.db.close()
 
     def salida(self):
