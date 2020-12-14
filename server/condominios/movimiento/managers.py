@@ -357,7 +357,16 @@ class MovimientoManager(SuperManager):
                     ws['T' + str(indice)] = None
 
 
-                ws['U' + str(indice)] = i.domicilio.codigo
+                if i.fkdomicilio:
+
+                    ws['U' + str(indice)] = i.domicilio.codigo
+                elif i.fkareasocial:
+                    ws['U' + str(indice)] = i.areasocial.codigo
+
+                else:
+                    ws['U' + str(indice)] = ''
+
+
                 ws['V' + str(indice)] = i.autorizacion.nombre
                 ws['W' + str(indice)] = i.tipopase.nombre
                 ws['X' + str(indice)] = i.observacion
@@ -471,6 +480,22 @@ class MovimientoManager(SuperManager):
 
                         query_domicilio = self.db.query(Domicilio).filter(Domicilio.codigo == row[indices['Destino']].value).first()
 
+                        if query_domicilio:
+                            result_domicilio =query_domicilio.id
+                            result_areasocial = None
+                        else:
+                            query_areasocial = self.db.query(Areasocial).filter(Areasocial.codigo == row[indices['Destino']].value).first()
+
+                            if query_areasocial:
+                                result_domicilio = None
+                                result_areasocial = query_areasocial.id
+
+                            else:
+                                result_domicilio = None
+                                result_areasocial = None
+
+
+
                         query_tipo_pase = self.db.query(Tipopase).filter(Tipopase.nombre == row[indices['Tipo de pase']].value).first()
 
                         query_autorizacion = self.db.query(Autorizacion).filter(Autorizacion.nombre == row[indices['Autorizacion']].value).first()
@@ -478,7 +503,7 @@ class MovimientoManager(SuperManager):
                         movi = Movimiento(fktipodocumento=row[indices['Tipo documento']].value,
                                           fkinvitado=fkinvitado, fkvehiculo=fkvehiculo,
                                           fechai=row[indices['Fecha Ingreso']].value, fechaf=row[indices['Fecha Salida']].value, fechar=row[indices['Fecha Registro']].value, fkautorizacion=query_autorizacion.id,
-                                          fkdomicilio=query_domicilio.id, fkareasocial=None, fktipopase=query_tipo_pase.id, observacion=row[indices['Observacion']].value, tipo=row[indices['Tipo']].value,
+                                          fkdomicilio=result_domicilio, fkareasocial=result_areasocial, fktipopase=query_tipo_pase.id, observacion=row[indices['Observacion']].value, tipo=row[indices['Tipo']].value,
                                           cantpasajeros=row[indices['Cant. Pasajeros']].value,fktipodocumento_conductor=None,fkconductor=fkconductor)
 
                         self.db.merge(movi)
