@@ -7,6 +7,10 @@ from dateutil.relativedelta import relativedelta
 import pytz
 import calendar
 
+from random import *
+import random
+import requests
+
 class BitacoraManager(SuperManager):
 
     def __init__(self, db):
@@ -74,3 +78,12 @@ class BitacoraManager(SuperManager):
             fecha = fechai + relativedelta(days=days)
             rango.append(fecha)
         return rango
+
+
+    def generar_codigo(self):
+        longitud = 5
+        valores = "0123456789"
+
+        p = ""
+        p = p.join([choice(valores) for i in range(longitud)])
+        return p
