@@ -270,6 +270,236 @@ class MovimientoManager(SuperManager):
 
         return marcacion
 
+    def movimiento_excel(self):
+
+        codigo = BitacoraManager(self.db).generar_codigo()
+
+        cname = "movimiento_"+codigo+".xlsx"
+
+        movimientos = self.db.query(self.entity).order_by(self.entity.id.asc()).all()
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'a'
+
+        indice = 1
+
+        ws['A' + str(indice)] = 'ID'
+        ws['B' + str(indice)] = 'Fecha Registro'
+        ws['C' + str(indice)] = 'Fecha Ingreso'
+        ws['D' + str(indice)] = 'Fecha Salida'
+        ws['E' + str(indice)] = 'Tipo documento'
+        ws['F' + str(indice)] = 'Nº documento'
+        ws['G' + str(indice)] = 'Expedido documento'
+        ws['H' + str(indice)] = 'Nombre Invitado'
+        ws['I' + str(indice)] = 'Apellidop Invitado'
+        ws['J' + str(indice)] = 'Apellidom Invitado'
+        ws['K' + str(indice)] = 'Nº documento conductor'
+        ws['L' + str(indice)] = 'Nombre Conductor'
+        ws['M' + str(indice)] = 'Apellidop Conductor'
+        ws['N' + str(indice)] = 'Apellidom Conductor'
+        ws['O' + str(indice)] = 'Cant. Pasajeros'
+        ws['P' + str(indice)] = 'Placa'
+        ws['Q' + str(indice)] = 'Tipo vehiculo'
+        ws['R' + str(indice)] = 'Marca'
+        ws['S' + str(indice)] = 'Modelo'
+        ws['T' + str(indice)] = 'Color'
+        ws['U' + str(indice)] = 'Destino'
+        ws['V' + str(indice)] = 'Autorizacion'
+        ws['W' + str(indice)] = 'Tipo de pase'
+        ws['X' + str(indice)] = 'Observacion'
+        ws['Y' + str(indice)] = 'Tipo'
+
+        for i in movimientos:
+
+            if i.fkinvitado:
+                print("movimiento exportar: "+ str(i.id))
+
+                indice = indice + 1
+                ws['A' + str(indice)] = i.id
+                ws['B' + str(indice)] = i.fechar
+                ws['C' + str(indice)] = i.fechai
+                ws['D' + str(indice)] = i.fechaf
+                ws['E' + str(indice)] = i.fktipodocumento
+
+                ws['F' + str(indice)] = i.invitado.ci
+                ws['G' + str(indice)] = i.invitado.expendido
+                ws['H' + str(indice)] = i.invitado.nombre
+                ws['I' + str(indice)] = i.invitado.apellidop
+                ws['J' + str(indice)] = i.invitado.apellidom
+
+                if i.fkconductor:
+
+                    ws['K' + str(indice)] = i.conductor.ci
+                    ws['L' + str(indice)] = i.conductor.nombre
+                    ws['M' + str(indice)] = i.conductor.apellidop
+                    ws['N' + str(indice)] = i.conductor.apellidom
+
+                else:
+                    ws['K' + str(indice)] = None
+                    ws['L' + str(indice)] = None
+                    ws['M' + str(indice)] = None
+                    ws['N' + str(indice)] = None
+
+                ws['O' + str(indice)] = i.cantpasajeros
+                if i.tipo == "Vehicular":
+
+                    ws['P' + str(indice)] = i.vehiculo.placa
+                    ws['Q' + str(indice)] = i.vehiculo.tipo.nombre
+                    ws['R' + str(indice)] = i.vehiculo.marca.nombre
+                    ws['S' + str(indice)] = None
+                    ws['T' + str(indice)] = i.vehiculo.color.nombre
+                else:
+                    ws['P' + str(indice)] = None
+                    ws['Q' + str(indice)] = None
+                    ws['R' + str(indice)] = None
+                    ws['S' + str(indice)] = None
+                    ws['T' + str(indice)] = None
+
+
+                ws['U' + str(indice)] = i.domicilio.codigo
+                ws['V' + str(indice)] = i.autorizacion.nombre
+                ws['W' + str(indice)] = i.tipopase.nombre
+                ws['X' + str(indice)] = i.observacion
+                ws['Y' + str(indice)] = i.tipo
+
+
+        wb.save("server/common/resources/downloads/" + cname)
+        return cname
+
+    def importar_excel(self, cname, user, ip):
+        try:
+            wb = load_workbook(filename="server/common/resources/uploads/" + cname)
+            ws = wb.active
+            colnames = ['ID', 'Fecha Registro', 'Fecha Ingreso', 'Fecha Salida', 'Tipo documento', 'Nº documento', 'Expedido documento', 'Nombre Invitado', 'Apellidop Invitado',
+                        'Apellidom Invitado',
+                        'Nº documento conductor',
+                        'Nombre Conductor',
+                        'Apellidop Conductor',
+                        'Apellidom Conductor',
+                        'Cant. Pasajeros',
+                        'Placa',
+                        'Tipo vehiculo',
+                        'Marca',
+                        'Modelo',
+                        'Color',
+                        'Destino',
+                        'Autorizacion',
+                        'Tipo de pase',
+                        'Observacion',
+                        'Tipo']
+            indices = {cell[0].value: n - 1 for n, cell in enumerate(ws.iter_cols(min_row=1, max_row=1), start=1) if
+                       cell[0].value in colnames}
+            if len(indices) == len(colnames):
+                for row in ws.iter_rows(min_row=2):
+
+                    id = row[indices['ID']].value
+
+                    ci = row[indices['Nº documento']].value
+                    expedido = row[indices['Expedido documento']].value
+                    nombre = row[indices['Nombre Invitado']].value
+                    apellidop = row[indices['Apellidop Invitado']].value
+                    apellidom = row[indices['Apellidom Invitado']].value
+
+                    ci_conductor = row[indices['Nº documento conductor']].value
+                    nombre_conductor = row[indices['Nombre Conductor']].value
+                    apellidop_conductor = row[indices['Apellidop Conductor']].value
+                    apellidom_conductor = row[indices['Apellidom Conductor']].value
+
+
+                    if row[indices['ID']].value is not None:
+
+                        print("movimiento import: " + str(row[indices['ID']].value))
+
+                        fkinvitado = None
+                        fkconductor = None
+                        fkvehiculo = None
+
+
+                        query_invitado = self.db.query(Invitado).filter(and_(Invitado.ci == ci,Invitado.nombre == nombre,Invitado.apellidop== apellidop,Invitado.apellidom == apellidom)).first()
+
+                        if query_invitado :
+                            print("existe invitado")
+                            fkinvitado = query_invitado.id
+
+                        else:
+                            invi = Invitado(nombre=nombre, apellidop=apellidop, apellidom=apellidom,
+                                            ci=ci, expendido=expedido)
+
+                            self.db.add(invi)
+                            self.db.flush()
+
+                            fkinvitado = invi.id
+
+
+                        if nombre_conductor:
+                            query_conductor = self.db.query(Invitado).filter(and_(Invitado.ci == ci_conductor,Invitado.nombre == nombre_conductor,Invitado.apellidop== apellidop_conductor,
+                                                                                  Invitado.apellidom == apellidom_conductor)).first()
+
+                            if query_conductor :
+                                print("existe invitado")
+                                fkconductor = query_conductor.id
+
+                            else:
+                                condu = Invitado(nombre=nombre_conductor, apellidop=apellidop_conductor, apellidom=apellidom_conductor,
+                                                ci=ci_conductor, expendido=expedido)
+
+                                self.db.add(condu)
+                                self.db.flush()
+
+                                fkconductor = condu.id
+
+                        if row[indices['Placa']].value:
+
+                            dict_vehiculo = VehiculoManager(self.db).obtener_vehiculo(row[indices['Placa']].value, row[indices['Color']].value, row[indices['Tipo vehiculo']].value, row[indices['Marca']].value,
+                                                                                      row[indices['Modelo']].value, '')
+
+                            if dict_vehiculo['id'] != "":
+                                print("existe invitado")
+                                fkvehiculo = dict_vehiculo.id
+
+                            else:
+                                dict_vehiculo['id'] = None
+
+                                vehi = Vehiculo(placa=dict_vehiculo['placa'], fkcolor=dict_vehiculo['fkcolor'], fktipo=dict_vehiculo['fktipo'], fkmarca=dict_vehiculo['fkmarca'], fkmodelo=dict_vehiculo['fkmodelo'])
+
+                                self.db.add(vehi)
+                                self.db.flush()
+
+                                fkvehiculo = vehi.id
+
+
+                        query_domicilio = self.db.query(Domicilio).filter(Domicilio.codigo == row[indices['Destino']].value).first()
+
+                        query_tipo_pase = self.db.query(Tipopase).filter(Tipopase.nombre == row[indices['Tipo de pase']].value).first()
+
+                        query_autorizacion = self.db.query(Autorizacion).filter(Autorizacion.nombre == row[indices['Autorizacion']].value).first()
+
+                        movi = Movimiento(fktipodocumento=row[indices['Tipo documento']].value,
+                                          fkinvitado=fkinvitado, fkvehiculo=fkvehiculo,
+                                          fechai=row[indices['Fecha Ingreso']].value, fechaf=row[indices['Fecha Salida']].value, fechar=row[indices['Fecha Registro']].value, fkautorizacion=query_autorizacion.id,
+                                          fkdomicilio=query_domicilio.id, fkareasocial=None, fktipopase=query_tipo_pase.id, observacion=row[indices['Observacion']].value, tipo=row[indices['Tipo']].value,
+                                          cantpasajeros=row[indices['Cant. Pasajeros']].value,fktipodocumento_conductor=None,fkconductor=fkconductor)
+
+                        self.db.merge(movi)
+                        self.db.flush()
+
+                    else:
+
+                        self.db.rollback()
+                        return {'message': 'Hay Columnas vacias', 'success': False}
+
+                self.db.commit()
+                return {'message': 'Importado Todos Correctamente.', 'success': True}
+            else:
+                return {'message': 'Columnas Faltantes', 'success': False}
+        except IntegrityError as e:
+            self.db.rollback()
+            if 'UNIQUE constraint' in str(e):
+                return {'message': 'duplicado', 'success': False}
+            if 'UNIQUE constraint failed' in str(e):
+                return {'message': 'codigo duplicado', 'success': False}
+            return {'message': str(e), 'success': False}
 
 class TipopaseManager(SuperManager):
     def __init__(self, db):
