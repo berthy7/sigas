@@ -996,7 +996,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-            # user = UsuarioManager(self.db).insert(data)
+            user = UsuarioManager(self.db).insert(data)
             # user = user.get_dict()
             self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
 
