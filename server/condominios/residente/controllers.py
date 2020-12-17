@@ -54,6 +54,8 @@ class ResidenteController(CrudController):
         aux['viviendas'] = DomicilioManager(self.db).listar_domicilios(us)
         aux['residentes'] = ResidenteManager(self.db).listar_residentes(us)
         aux['vehiculos'] = VehiculoManager(self.db).listar_disponibles()
+        aux['tipovehiculos'] = TipovehiculoManager(self.db).listar_todo()
+        aux['colores'] = ColorManager(self.db).listar_todo()
         aux['marcas'] = MarcaManager(self.db).listar_todo()
         aux['modelos'] = ModeloManager(self.db).listar_todo()
         aux['nropases_residente'] = NropaseManager(self.db).listar_numero_pases_residente(us)

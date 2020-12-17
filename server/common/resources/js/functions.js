@@ -134,11 +134,11 @@ function ajax_call_post(url, data, callback) {
     }).done(function (response) {
         if(callback != null){
             dictionary = JSON.parse(response)
-            if (dictionary.success) {
-                showMessage(dictionary.message, "success", "ok")
-            } else {
-                showMessage(dictionary.message, "danger", "remove")
-            }
+            // if (dictionary.success) {
+            //     showMessage(dictionary.message, "success", "ok")
+            // } else {
+            //     showMessage(dictionary.message, "danger", "remove")
+            // }
             callback(dictionary)
         }
     })

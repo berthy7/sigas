@@ -25,7 +25,8 @@ class Evento(Serializable, Base):
     fkareasocial = Column(Integer, ForeignKey('areasocial.id'), nullable=True)
     situacion = Column(String(100), nullable=True, default="")
     multiacceso = Column(Boolean, default=False, nullable=True)
-    sinregistro = Column(Boolean, default=False, nullable=True)
+    paselibre = Column(Boolean, default=False, nullable=True)
+    multiple = Column(Boolean, default=False, nullable=True)
 
     estado = Column(Boolean, default=True)
 
@@ -90,12 +91,16 @@ class Invitacion(Serializable, Base):
     tipopase = relationship('Tipopase')
 
     def get_dict(self, way=None):
-        aux = super().get_dict(way)
-        aux['nombre']= self.invitado.nombre
-        aux['apellidop'] = self.invitado.apellidop
-        aux['apellidom']= self.invitado.apellidom
-        aux['ci'] = self.invitado.ci
 
+        if self.fkinvitado:
+            aux = super().get_dict(way)
+            aux['nombre']= self.invitado.nombre
+            aux['apellidop'] = self.invitado.apellidop
+            aux['apellidom']= self.invitado.apellidom
+            aux['ci'] = self.invitado.ci
+        else:
+
+            aux = super().get_dict(way)
         return aux
 
 class Codigoqr(Serializable, Base):

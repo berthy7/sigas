@@ -23,12 +23,15 @@ class Usuario(Serializable, Base):
     expendido = Column(String(20), nullable=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(150), nullable=False)
+    default = Column(String(150), nullable=True)
     token = Column(String(2000), nullable=True, default='Sin Token')
     fkrol = Column(Integer, ForeignKey('rol.id'), nullable=False)
     fkcondominio = Column(Integer, ForeignKey('condominio.id'), nullable=True)
     fkresidente = Column(Integer, ForeignKey('residente.id'), nullable=True)
     sigas =  Column(Boolean, default=False)
+    estado = Column(Boolean, default=True)
     enabled = Column(Boolean, default=True)
+    login = Column(Boolean, default=False)
 
     rol = relationship('Rol')
     condominio = relationship('Condominio')
@@ -108,3 +111,13 @@ class Principal(Serializable, Base):
 
     id = Column(Integer, primary_key=True)
     estado = Column(Boolean, default=False)
+
+
+class VersionMovil(Serializable, Base):
+    way = {}
+
+    __tablename__ = 'versionmovil'
+
+    id = Column(Integer, primary_key=True)
+    version = Column(String(50), default='')
+    estado = Column(Boolean, default=True)

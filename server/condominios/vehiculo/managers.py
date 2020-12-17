@@ -290,31 +290,34 @@ class VehiculoManager(SuperManager):
                     if id is not None:
                         idmarca = ""
                         idtarjeta = ""
-                        query = self.db.query(Vehiculo).filter(Vehiculo.placa == placa).first()
 
-                        if not query:
+                        if fkresidente is None:
+                            query = self.db.query(Vehiculo).filter(Vehiculo.placa == placa).first()
 
-                            query_marca = self.db.query(Marca).filter(Marca.nombre == str(marca)).first()
-                            if query_marca:
-                                idmarca = query_marca.id
-                            else:
-                                marc = Marca(nombre=marca)
-                                obj_marca = super().insert(marc)
-                                idmarca = obj_marca.id
+                            if not query:
 
-                            query_tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == str(tarjeta)).first()
 
-                            if query_tarjeta:
-                                idtarjeta = query_tarjeta.id
-                            else:
-                                idtarjeta = None
+                                query_marca = self.db.query(Marca).filter(Marca.nombre == str(marca)).first()
+                                if query_marca:
+                                    idmarca = query_marca.id
+                                else:
+                                    marc = Marca(nombre=marca)
+                                    obj_marca = super().insert(marc)
+                                    idmarca = obj_marca.id
 
-                            invi = Vehiculo(placa=placa, fktipo=fktipo, fkcolor=fkcolor,
-                                            fkmarca=idmarca, fkmodelo=fkmodelo, fkresidente=fkresidente, fkinvitado=fkinvitado,
-                                            fknropase=idtarjeta, estado=estado)
+                                query_tarjeta = self.db.query(Nropase).filter(Nropase.tarjeta == str(tarjeta)).first()
 
-                            self.db.merge(invi)
-                            self.db.flush()
+                                if query_tarjeta:
+                                    idtarjeta = query_tarjeta.id
+                                else:
+                                    idtarjeta = None
+
+                                invi = Vehiculo(placa=placa, fktipo=fktipo, fkcolor=fkcolor,
+                                                fkmarca=idmarca, fkmodelo=fkmodelo, fkresidente=fkresidente, fkinvitado=None,
+                                                fknropase=idtarjeta, estado=estado)
+
+                                self.db.merge(invi)
+                                self.db.flush()
 
                     else:
 

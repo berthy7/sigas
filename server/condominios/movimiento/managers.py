@@ -5,7 +5,7 @@ from ..evento.managers import *
 from ..areasocial.managers import *
 from ..nropase.managers import *
 from ..vehiculo.managers import *
-from sqlalchemy import or_
+from sqlalchemy import or_,and_
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 
@@ -36,14 +36,14 @@ class MovimientoManager(SuperManager):
 
         if usuario.sigas:
             return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
-                self.entity.tipo == "Vehicular").all()
+                self.entity.tipo == "Vehicular").order_by(self.entity.id.desc()).all()
         else:
 
             domicilio = self.db.query(self.entity).filter(self.entity.estado == True).join(Domicilio).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
-                self.entity.tipo == "Vehicular").all()
+                self.entity.tipo == "Vehicular").order_by(self.entity.id.desc()).all()
 
             areasocial = self.db.query(self.entity).filter(self.entity.estado == True).join(Areasocial).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(self.entity.fechar.cast(Date) == fechahoy).filter(
-                self.entity.tipo == "Vehicular").all()
+                self.entity.tipo == "Vehicular").order_by(self.entity.id.desc()).all()
 
             for area in areasocial:
                 domicilio.append(area)
@@ -58,6 +58,7 @@ class MovimientoManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
     def insert(self, diccionary):
+
         diccionary['cantpasajeros'] = abs(int(diccionary['cantpasajeros']))
 
         diccionary['placa'] = diccionary['placa'].replace(" ", "")
@@ -67,9 +68,10 @@ class MovimientoManager(SuperManager):
 
         accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(diccionary['fkinvitacion'])
 
-        if accesos_invitacion['sinregistro']:
+        if accesos_invitacion['paselibre']:
             diccionary['fkvehiculo'] = None
             diccionary['fkconductor'] = None
+            diccionary['fkinvitado'] = None
         else:
 
             if diccionary['visita']:
@@ -154,7 +156,9 @@ class MovimientoManager(SuperManager):
         if a.fkinvitacion:
 
             if accesos_invitacion['multiacceso'] is False:
-                InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+                if accesos_invitacion['multiple'] is False:
+                    if accesos_invitacion['paselibre'] is False:
+                        InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
         return a
@@ -357,16 +361,7 @@ class MovimientoManager(SuperManager):
                     ws['T' + str(indice)] = None
 
 
-                if i.fkdomicilio:
-
-                    ws['U' + str(indice)] = i.domicilio.codigo
-                elif i.fkareasocial:
-                    ws['U' + str(indice)] = i.areasocial.codigo
-
-                else:
-                    ws['U' + str(indice)] = ''
-
-
+                ws['U' + str(indice)] = i.domicilio.codigo
                 ws['V' + str(indice)] = i.autorizacion.nombre
                 ws['W' + str(indice)] = i.tipopase.nombre
                 ws['X' + str(indice)] = i.observacion
@@ -446,7 +441,7 @@ class MovimientoManager(SuperManager):
                                                                                   Invitado.apellidom == apellidom_conductor)).first()
 
                             if query_conductor :
-                                print("existe invitado")
+                                print("existe conductor")
                                 fkconductor = query_conductor.id
 
                             else:
@@ -464,8 +459,8 @@ class MovimientoManager(SuperManager):
                                                                                       row[indices['Modelo']].value, '')
 
                             if dict_vehiculo['id'] != "":
-                                print("existe invitado")
-                                fkvehiculo = dict_vehiculo.id
+                                print("existe vehiculo")
+                                fkvehiculo = dict_vehiculo['id']
 
                             else:
                                 dict_vehiculo['id'] = None
@@ -495,6 +490,7 @@ class MovimientoManager(SuperManager):
                                 result_areasocial = None
 
 
+                        query_domicilio = self.db.query(Domicilio).filter(Domicilio.codigo == row[indices['Destino']].value).first()
 
                         query_tipo_pase = self.db.query(Tipopase).filter(Tipopase.nombre == row[indices['Tipo de pase']].value).first()
 
@@ -525,6 +521,28 @@ class MovimientoManager(SuperManager):
             if 'UNIQUE constraint failed' in str(e):
                 return {'message': 'codigo duplicado', 'success': False}
             return {'message': str(e), 'success': False}
+
+
+    def recargar(self, fechainicio, fechafin,usuario,ult_registro):
+
+        list = {}
+        c = 0
+
+        if usuario.sigas:
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.id > ult_registro).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+                self.entity.tipo == "Vehicular").order_by(self.entity.id.desc()).all()
+        else:
+            domicilio = self.db.query(self.entity).join(Domicilio).filter(self.entity.id > ult_registro).filter(Domicilio.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).order_by(self.entity.id.desc()).all()
+
+            areasocial = self.db.query(self.entity).join(Areasocial).filter(self.entity.id > ult_registro).filter(Areasocial.fkcondominio== usuario.fkcondominio).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).order_by(self.entity.id.desc()).all()
+
+            for area in areasocial:
+                domicilio.append(area)
+
+            return domicilio
+
 
 class TipopaseManager(SuperManager):
     def __init__(self, db):

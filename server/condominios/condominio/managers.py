@@ -5,12 +5,23 @@ from ..movimiento.managers import *
 from ..areasocial.models import *
 from server.common.managers import SuperManager
 from .models import *
+# import pyautogui as pg, webbrowser as web, time as tn
 
 
 class CondominioManager(SuperManager):
 
     def __init__(self, db):
         super().__init__(Condominio, db)
+
+
+    # def prueba(self):
+    #     phone_no = "+59171331313"
+    #     parsedMessage = "Hola"
+    #     web.open('https://web.whatsapp.com/send?phone=' + phone_no + '&text=' + parsedMessage)
+    #     tn.sleep(5)
+    #
+    #     pg.write("")
+    #     pg.press('enter')
 
     def obtener_departamentos(self, idcondominio):
         x = self.db.query(Domicilio).filter(Domicilio.fkcondominio == idcondominio).filter(Domicilio.estado == True).order_by(Domicilio.tipo.desc(),Domicilio.ubicacion.asc()).all()

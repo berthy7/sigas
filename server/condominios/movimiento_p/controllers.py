@@ -29,7 +29,8 @@ class Movimiento_pController(CrudController):
         '/movimiento_p_salida': {'POST': 'salida'},
         '/movimiento_p_reporte_xls': {'POST': 'imprimirxls'},
         '/movimiento_p_actualizar': {'POST': 'actualizar'},
-        '/movimiento_p_filtrar': {'POST': 'filtrar'}
+        '/movimiento_p_filtrar': {'POST': 'filtrar'},
+        '/movimiento_p_recargar': {'POST': 'recargar'}
     }
 
     def get_extra_data(self):
@@ -119,4 +120,21 @@ class Movimiento_pController(CrudController):
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='actualizado correctamente.')
 
+
+    def recargar(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+        us = self.get_user()
+        ins_manager = self.manager(self.db)
+        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
+        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
+        ult_registro = data['ult_registro']
+        # indicted_object = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
+        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
+        if len(ins_manager.errors) == 0:
+            self.respond([objeto.get_dict() for objeto in arraT['datos']], message='Operacion exitosa!')
+        else:
+            self.respond([item.__dict__ for item in ins_manager.errors], False, 'Ocurrió un error al insertar')
+        self.db.close()
 

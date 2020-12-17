@@ -75,7 +75,7 @@
                         </div>
                         <div class="col-sm-2">
                             <label>Expedido</label>
-                             <select id="expendido" class="form-control" required>
+                             <select id="expendido" class="form-control">
                                 <option value="BN">BN</option>
                                 <option value="CH">CH</option>
                                  <option value="CB">CB</option>
@@ -118,8 +118,8 @@
                         <div class="col-sm-3">
                             <label>Contraseña</label>
                                 <div class="form-line">
-                                    <input id="password" name="Contraseña" type="password" class="form-control txta-own" >
-                                    <button id="generar" type="button" class="btn bg-indigo waves-effect">Generar<i class="material-icons"></i></button>
+                                    <input id="password" name="Contraseña" type="text" class="form-control txta-own" >
+                                    <button id="generar" type="button" class="btn bg-indigo waves-effect white-own">Generar<i class="material-icons"></i></button>
                                 </div>
                         </div>
 
@@ -129,10 +129,10 @@
                     </div>
                     <div class="modal-footer">
                     {% if 'usuarioCondominio_insert' in privileges %}
-                        <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                        <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
                     {% end %}
                     {% if 'usuarioCondominio_update' in privileges %}
-                        <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                        <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
                     {% end %}
                     </div>
                 </div>

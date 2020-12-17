@@ -14,7 +14,7 @@
         <div class="row clearfix">
             <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
                 {% if 'movimiento_p_insert' in privileges %}
-                    <button id="new" type="button" class="btn bg-indigo waves-effect">
+                    <button id="new" type="button" class="btn bg-indigo waves-effect white-own">
                     <i class="material-icons">add</i>
                     </button>
                 {% end %}
@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="col-sm-1">
-                    <button id="filtrar" type="button" class="btn bg-indigo waves-effect">
+                    <button id="filtrar" type="button" class="btn bg-indigo waves-effect white-own">
                     <i class="material-icons">youtube_searched_for</i>
                     </button>
             </div>
@@ -104,7 +104,7 @@
         $(document).ready(function () {
 
             var data = [];
-            {% set cont = 0 %}
+
             {% for c in movimientos_peatonal %}
                 data.push( [
                     '{{ c.id }}',
@@ -159,8 +159,10 @@
                     {% end %}
 
                 ]);
-            {% set cont = cont + 1 %}
+
             {% end %}
+
+            ult_registro = data[0][00]
             cargar_tabla(data)
         });
 

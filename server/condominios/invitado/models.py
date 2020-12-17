@@ -25,6 +25,8 @@ class Invitado(Serializable, Base):
     descripcion = Column(Text, nullable=True)
     permanente = Column(Boolean, default=False)
     fknropase = Column(Integer, ForeignKey('nropase.id'), nullable=True)
+    huella = Column(Text, nullable=True)
+    rostro = Column(Text, nullable=True)
     estado = Column(Boolean, default=True)
 
     vehiculos = relationship('Vehiculo')

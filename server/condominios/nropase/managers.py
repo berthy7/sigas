@@ -70,7 +70,6 @@ class NropaseManager(SuperManager):
         else:
             return None
 
-
     def listar_numero_pases(self,usuario):
 
         if usuario.sigas:
@@ -78,7 +77,7 @@ class NropaseManager(SuperManager):
                 self.entity.numero.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(and_(self.entity.tipo != "Residente",self.entity.tipo != "Provper")).filter(Nropase.estado == True).filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(and_(Nropase.tipo != "Residente",Nropase.tipo != "Provper")).filter(Nropase.estado == True).filter(Nropase.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
         else:
             return None
@@ -177,6 +176,7 @@ class NropaseManager(SuperManager):
                        cell[0].value in colnames}
             if len(indices) == len(colnames):
                 for row in ws.iter_rows(min_row=2):
+
                     nropase = row[indices['NUMERO_DE_PASE']].value
                     tarjeta = row[indices['TARJETA']].value
                     tipo = row[indices['TIPO']].value
@@ -187,7 +187,6 @@ class NropaseManager(SuperManager):
                             cod_condominio = cod_condominio.replace(" ", "")
 
                         list_condominio = list()
-
 
                         query = self.db.query(Nropase).filter(Nropase.tarjeta == str(tarjeta)).first()
                         query_condominio = self.db.query(Condominio).filter(
@@ -204,8 +203,6 @@ class NropaseManager(SuperManager):
 
                             if nropase is None or nropase == "":
                                 nropase = " "
-
-
 
 
                             if query_condominio:

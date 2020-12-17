@@ -14,9 +14,9 @@
         <div class="row clearfix">
             <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
                 {% if 'residente_insert' in privileges %}
-                    <button id="new" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                    <button id="new" type="button" class="btn bg-indigo waves-effect white-own">Nuevo <i class="material-icons"></i></button>
                 {% end %}
-                    <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect">
+                    <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
                     <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
                     </button>
             </div>
@@ -69,7 +69,7 @@
                     '{{ c.fullname }}',
                     '{{ c.telefono}}',
                     '<input id="{{ c.id }}" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo delete" {% if c.estado %} {{"checked"}} {% end %} disabled/><label for="{{c.id}}"></label>' + ' ' + '{% if c.estado %} Habilitado {% else %} Deshabilitado {% end %}',
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
 
                 ]);
             {% set cont = cont + 1 %}
@@ -170,8 +170,8 @@
 
             $('#idvehiculo').val($('#id'+id_in).val())
             $('#placa').val($('#placa'+id_in).val())
-            $('#tipovehiculo').val($('#fktipo'+id_in).val())
-            $('#tipovehiculo').selectpicker('refresh')
+            $('#fktipo').val($('#fktipo'+id_in).val())
+            $('#fktipo').selectpicker('refresh')
 
             $('#fkcolor').val($('#fkcolor'+id_in).val())
             $('#fkcolor').selectpicker('refresh')

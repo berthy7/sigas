@@ -110,7 +110,7 @@
                                     </br>
                                 </div>
                             </div>
-                            <div class="row clearfix" hidden>
+                            <div class="row clearfix" >
                                 <div class="col-sm-1">
 
                                 </div>
@@ -118,8 +118,24 @@
                                     <div class="switch p-l-own" >
 
                                        <label>
-                                           Sin registro
-                                           <input id="switch_sinregistro" type="checkbox" disabled>
+                                           Pase Libre
+                                           <input id="switch_paselibre" type="checkbox" disabled>
+                                           <span class="lever" ></span>
+                                       </label>
+                                    </div>
+                                    </br>
+                                </div>
+                            </div>
+                            <div class="row clearfix" >
+                                <div class="col-sm-1">
+
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="switch p-l-own" >
+
+                                       <label>
+                                           Grupal
+                                           <input id="switch_multiple" type="checkbox" disabled>
                                            <span class="lever" ></span>
                                        </label>
                                     </div>
@@ -220,7 +236,7 @@
                         </br>
                     </div>
                     </br>
-                    <div class="bordesdiv">
+                    <div class="bordesdiv div_visita">
                         <div id="div_datos_visita">
                             <div class="modal-header header-own">
                                 <h4  class="modal-title">Datos Visita</h4>
@@ -497,10 +513,10 @@
 
                 <div class="modal-footer">
                 {% if 'movimiento_insert' in privileges %}
-                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
                 {% end %}
                 {% if 'movimiento_update' in privileges %}
-                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
                 {% end %}
                 </div>
             </div>

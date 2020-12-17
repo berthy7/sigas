@@ -18,7 +18,6 @@ class EventoManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity)
 
-
     def obtener_x_codigo(self,idevento):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.codigo == idevento).first()
 
@@ -31,11 +30,14 @@ class EventoManager(SuperManager):
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
             Evento.fechaf >= fechahoy).filter(Evento.situacion != "Acceso").filter(Evento.situacion != "Denegado").all()
 
+        # x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fechahoy).filter(
+        #     Evento.fechaf >= fechahoy).all()
+
         for invi in x:
             respuesta = EventoManager(self.db).validar_invitacion(invi.codigoautorizacion)
 
             if respuesta:
-                diccionary = dict(codigo=invi.id, tarjeta=invi.codigoautorizacion, situacion="Acceso")
+                diccionary = dict(codigo=invi.codigoautorizacion, tarjeta=invi.codigoautorizacion, situacion="Acceso")
 
                 ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
 
@@ -58,7 +60,7 @@ class EventoManager(SuperManager):
 
         for even in list_evento:
             if even.horaf:
-                if even.horaf < horahoy:
+                if even.horaf <= horahoy:
 
                     for invi in even.invitaciones:
                             diccionary = dict(codigo=invi.id, tarjeta=invi.codigoautorizacion, situacion="Denegado")
@@ -98,6 +100,13 @@ class EventoManager(SuperManager):
 
     def insert(self, diccionary):
 
+        if diccionary['multiple'] or diccionary['paselibre'] :
+            print("evento multiple")
+            lista = list()
+            lista.append(dict(fkinvitado=None,fktipopase=diccionary['fktipoevento'],
+                              codigoautorizacion=""))
+            diccionary['invitaciones'] = lista
+
         if diccionary['fkdomicilio'] == "":
             diccionary['fkdomicilio'] = None
         if diccionary['fkareasocial'] == "":
@@ -106,10 +115,13 @@ class EventoManager(SuperManager):
         for dicci in diccionary['invitaciones']:
             dicci['user'] = diccionary['user']
             dicci['ip'] = diccionary['ip']
+
+
             if dicci['fkinvitado'] == "":
 
                 invitado = InvitadoManager(self.db).registrar_invitado(dicci)
                 dicci['fkinvitado'] = invitado.id
+
 
         objeto = EventoManager(self.db).entity(**diccionary)
 
@@ -126,6 +138,7 @@ class EventoManager(SuperManager):
         else:
             objeto.horaf = datetime.strptime(objeto.horaf, '%H:%M').time()
         fecha = BitacoraManager(self.db).fecha_actual()
+
 
         a = super().insert(objeto)
         print("registro evento: " + str(a.id))
@@ -237,7 +250,7 @@ class EventoManager(SuperManager):
 
             if sin_guardia:
 
-                diccionary = dict(codigo=invitacion.id, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
+                diccionary = dict(codigo=invitacion.codigoautorizacion, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
                 ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         x.estado = state
@@ -257,10 +270,11 @@ class EventoManager(SuperManager):
     def generar_codigo_autorizacion(self, objeto):
 
         if objeto.codigoautorizacion == "":
+            inicial_cod = 400000
             # codigoqr = random.randrange(9999)
             # obj.codigoautorizacion = "EVEN" +str(objeto.id) + "INVI" +str(obj.id)
             #obj.codigoautorizacion = str(objeto.id) + str(obj.id) + str(codigoqr)
-            objeto.codigoautorizacion = str(objeto.id)
+            objeto.codigoautorizacion = str(objeto.id + inicial_cod)
 
             objeto = super().update(objeto)
 
@@ -276,7 +290,7 @@ class EventoManager(SuperManager):
             if respuesta:
 
 
-                diccionary = dict(codigo=objeto.id, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
+                diccionary = dict(codigo=objeto.codigoautorizacion, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
 
                 ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
 
@@ -294,7 +308,6 @@ class EventoManager(SuperManager):
         fecha_hoy_str = fechadate.strftime('%Y-%m-%d %H:%M:%S')
         fechahoy = fecha_hoy_str[0:10]
         horahoy = fecha_hoy_str[11:19]
-
 
         print(str(fechahoy))
 
@@ -458,9 +471,9 @@ class InvitacionManager(SuperManager):
         i = self.db.query(self.entity).filter(self.entity.id == idinvitacion).first()
 
         if i:
-            return dict(sinregistro=i.evento.sinregistro,multiacceso=i.evento.multiacceso)
+            return dict(paselibre=i.evento.paselibre,multiacceso=i.evento.multiacceso,multiple=i.evento.multiple)
         else:
-            return dict(sinregistro=False, multiacceso=False)
+            return dict(paselibre=False, multiacceso=False, multiple=False)
 
 
     def obtener_x_codigo(self,codigoqr):
@@ -510,7 +523,7 @@ class InvitacionManager(SuperManager):
             sin_guardia = x.evento.areasocial.condominio.singuardia
 
         if sin_guardia:
-            diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+            diccionary = dict(codigo=x.codigoautorizacion, tarjeta=x.codigoautorizacion, situacion="Denegado")
             ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         return x
@@ -541,7 +554,7 @@ class InvitacionManager(SuperManager):
             sin_guardia = x.evento.areasocial.condominio.singuardia
 
         if sin_guardia:
-            diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+            diccionary = dict(codigo=x.codigoautorizacion, tarjeta=x.codigoautorizacion, situacion="Denegado")
             ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         return x

@@ -33,6 +33,8 @@ class CondominioController(CrudController):
         diccionary['user'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
 
+        # CondominioManager(self.db).prueba()
+
         CondominioManager(self.db).insert(diccionary)
         self.respond(success=True, message='Insertado correctamente.')
 

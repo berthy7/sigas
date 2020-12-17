@@ -15,6 +15,7 @@ class RegistrosController(CrudController):
     routes = {
         '/registros': {'GET': 'index', 'POST': 'table'},
         '/registros_filtrar': {'POST': 'filtrar'},
+        '/registros_recargar': {'POST': 'recargar'},
         '/registros_alerta': {'POST': 'alerta'},
         '/registros_obtener_cerradura': {'PUT': 'obtener_cerradura'}
     }
@@ -54,6 +55,21 @@ class RegistrosController(CrudController):
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         indicted_object = ins_manager.filtrar(fechainicio, fechafin,us)
+        if len(ins_manager.errors) == 0:
+            self.respond(indicted_object, message='Operacion exitosa!')
+        else:
+            self.respond([item.__dict__ for item in ins_manager.errors], False, 'Ocurrió un error al insertar')
+        self.db.close()
+
+    def recargar(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+        us = self.get_user()
+        ins_manager = self.manager(self.db)
+        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
+        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
+        ult_registro = data['ult_registro']
+        indicted_object = ins_manager.recargar(fechainicio, fechafin,us,ult_registro)
         if len(ins_manager.errors) == 0:
             self.respond(indicted_object, message='Operacion exitosa!')
         else:

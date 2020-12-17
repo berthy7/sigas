@@ -1,6 +1,10 @@
 main_route = '/registros'
 var refrescar = false;
 
+var data_lista = []
+
+var ult_registro = 0
+
 
 $(document).ready(function () {
    auxiliar_method()
@@ -28,8 +32,14 @@ function auxiliar_method() {
         }else{
             console.log(refrescar)
             if(refrescar == false){
+                // console.log("datos= "+data_lista)
 
-                actualizar_tabla_x_fechas(hoy,hoy)
+
+                // console.log("ultimo id = "+ult_registro)
+                actualizar_tabla_x_fechas(hoy,hoy,ult_registro)
+
+
+
 
                 // window.location = main_route
 
@@ -46,6 +56,7 @@ $('#switch_refrescar').change(function() {
 
     }else{
         refrescar = false;
+        window.location = main_route
     }
 
 })
@@ -93,6 +104,9 @@ function activar_alarma(id_registro) {
 }
 
 function cargar_tabla(data){
+    data_lista = data
+    
+    // console.log("longitud data lista= "+ ult_registro)
 
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
@@ -328,7 +342,7 @@ function actualizar_tabla_filtrar(fechainicio,fechafin) {
         var data = [];
         for (var i = 0; i < Object.keys(response.response).length; i++) {
 
-            console.log(response['response'][i]["autorizacion"])
+            // console.log(response['response'][i]["autorizacion"])
 
             data.push( [
                 response['response'][i]["id"],
@@ -349,13 +363,14 @@ function actualizar_tabla_filtrar(fechainicio,fechafin) {
     })
 }
 
-function actualizar_tabla_x_fechas(fechainicio,fechafin) {
+function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) {
         obj = JSON.stringify({
         'fechainicio': fechainicio,
-        'fechafin': fechafin,
+        'fechafin': fechafin, 
+        'ult_registro': ult_registro_parametro,
         '_xsrf': getCookie("_xsrf")
     })
-    ruta = "registros_filtrar";
+    ruta = "registros_recargar";
     $.ajax({
         method: "POST",
         url: ruta,
@@ -368,11 +383,16 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin) {
         var data = [];
         for (var i = 0; i < Object.keys(response.response).length; i++) {
 
+            if(i == 0){
+                ult_registro = response['response'][i]["id"]
+                // console.log("i = 0 : "+ult_registro)
+            }
+
             if (response['response'][i]["evento"] == 6 && response['response'][i]['alertado'] == false){
                 activar_alarma(response['response'][i]["id"])
             }
 
-            data.push( [
+            data_lista.push( [
                 response['response'][i]["id"],
                 response['response'][i]["tarjeta"],
                 response['response'][i]["codigo"],
@@ -387,7 +407,13 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin) {
             ]);
         }
 
-        cargar_tabla(data)
+        // console.log("data_lista_push_longitud= "+data_lista.length)
+        // console.log("data_lista_push_ultimo_valor= "+ult_registro)
+
+
+
+
+        cargar_tabla(data_lista)
     })
 }
 

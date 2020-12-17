@@ -2,6 +2,10 @@ main_route = '/movimiento_p'
 var refrescar = false;
 var sw_visita = false;
 
+var data_lista = []
+
+var ult_registro = 0
+
 $(document).ready(function () {
 
     auxiliar_method()
@@ -9,6 +13,13 @@ $(document).ready(function () {
     verificar_qr_residente()
 
 });
+
+var fechahoy = new Date();
+var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+
+
+document.getElementById("fechai").value=hoy
+document.getElementById("fechaf").value=hoy
 
 function auxiliar_method() {
     //main_method()
@@ -19,7 +30,8 @@ function auxiliar_method() {
         }else{
             console.log(refrescar)
             if(refrescar == false){
-                window.location = main_route
+                actualizar_tabla_x_fechas(hoy,hoy,ult_registro)
+
             }
         }
     }, 5000);
@@ -45,10 +57,16 @@ function verificar_qr() {
 
                 if (response.success) {
                     $('#fkinvitacion').val(response.response.id)
-                    $('#fkinvitado').selectpicker('refresh')
-                    $('#fkinvitado').val(response.response.fkinvitado)
-                    $('#fkinvitado').selectpicker('refresh')
-                    cargar_invitado(response.response.fkinvitado)
+                    if(!response.response.evento.multiple ){
+                        if(!response.response.evento.paselibre){
+
+                                console.log("entro invitado")
+                                $('#fkinvitado').selectpicker('refresh')
+                                $('#fkinvitado').val(response.response.fkinvitado)
+                                $('#fkinvitado').selectpicker('refresh')
+                                cargar_invitado(response.response.fkinvitado)
+                            }
+                    }
 
                     $('#fkdomicilio').val(response.response.evento.fkdomicilio)
                     $('#fkdomicilio').selectpicker('refresh')
@@ -61,22 +79,21 @@ function verificar_qr() {
 
                     $('#fkautorizacion').val(1)
                     $('#fkautorizacion').selectpicker('refresh')
-
                     cargar_nropase($( "#fktipopase option:selected" ).text())
                     
                     $('#fkresidente').val(response.response.evento.fkresidente)
                     $('#fkresidente').selectpicker('refresh')
 
-
                     document.getElementById("imagen_mensaje").src = response.message;
                     $('#codigoautorizacion').val('')
                     
                     document.getElementById('switch_multiacceso').checked=response.response.evento.multiacceso
-                    document.getElementById('switch_sinregistro').checked=response.response.evento.sinregistro
+                    document.getElementById('switch_paselibre').checked=response.response.evento.paselibre
+                    document.getElementById('switch_multiple').checked=response.response.evento.multiple
 
                     $('#div_accesos').show()
                     
-                    if (!response.response.evento.sinregistro) {
+                    if (!response.response.evento.paselibre) {
                         $('#nombre').prop("required", true);
                         $('#apellidop').prop("required", true);
                         $('#ci').prop("required", true);
@@ -108,7 +125,7 @@ function verificar_qr() {
                         $('#fktipodocumento').val(4)
                         $('#fktipodocumento').selectpicker("refresh")
 
-
+                        $('.div_visita').hide()
                         $('.div_vehiculo').hide()
                         
                     }
@@ -118,8 +135,10 @@ function verificar_qr() {
                     $('#fktipodocumento').selectpicker("refresh")
                     
                     document.getElementById("imagen_mensaje").src = response.message;
+
                     document.getElementById('switch_multiacceso').checked=false
-                    document.getElementById('switch_sinregistro').checked=false
+                    document.getElementById('switch_paselibre').checked=false
+                    document.getElementById('switch_multiple').checked=false
                     $('#div_accesos').hide()
                     
                     limpiar_formulario()
@@ -206,12 +225,101 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
-var fechahoy = new Date();
-var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
+        'ult_registro': ult_registro_parametro,
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "movimiento_p_recargar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
 
+    }).done(function (response) {
+        response = JSON.parse(response)
 
-document.getElementById("fechai").value=hoy
-document.getElementById("fechaf").value=hoy
+        var data = [];
+        var id;
+        var fechai;
+        var fechaf;
+        var tipodocumento;
+        var ci;
+        var nombre;
+
+        var destino;
+        var nropase;
+        var salida;
+
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+            id = response['response'][i].id
+
+            if(response['response'][i].fechai){
+                fechai= response['response'][i].fechai
+            }else{
+                fechai =response['response'][i].fechar
+                // fechai = '-----'
+            }
+
+            if(response['response'][i].fechaf){
+                fechaf = response['response'][i].fechaf
+                salida= '✓'
+            }else{
+                fechaf = '-----'
+                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
+
+            }
+
+            if(response['response'][i].fktipodocumento){
+                    tipodocumento= response['response'][i].tipodocumento.nombre
+                }else{
+                    tipodocumento = '-----'
+                }
+
+            if(response['response'][i].fkinvitado != "None"){
+                ci = response['response'][i].invitado.ci,
+                nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
+
+            }else{
+                ci ='Residente'
+                nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
+            }
+
+            if(response['response'][i].fkdomicilio != "None"){
+                destino = response['response'][i].domicilio.ubicacion
+            }else if(response['response'][i].fkareasocial != "None"){
+                destino = response['response'][i].areasocial.nombre
+            }else{
+                destino = '-----'
+            }
+
+            if(response['response'][i].fknropase != "None"){
+                nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
+            }else{
+                nropase = '-----'
+            }
+
+            data.push( [
+                id,
+                fechai,
+                fechaf,
+                tipodocumento,
+                ci,
+                nombre,
+                destino,
+                response['response'][i].autorizacion.nombre,
+                nropase,
+                response['response'][i].tipopase.nombre,
+                salida
+            ]);
+        }
+
+        cargar_tabla(data_lista)
+    })
+}
 
 $('#fkinvitado').selectpicker({
     size: 10,
@@ -334,6 +442,10 @@ $('#switch_visita').change(function() {
 
 
         $('#fkresidente').prop("required", true);
+        $('#div_accesos').hide()
+        document.getElementById('switch_multiacceso').checked=false
+        document.getElementById('switch_paselibre').checked=false
+        document.getElementById('switch_multiple').checked=false
 
 
     }
@@ -355,6 +467,8 @@ $('#switch_refrescar').change(function() {
 })
 
 function cargar_tabla(data){
+    data_lista = data
+
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
         table.destroy();
@@ -481,45 +595,7 @@ function actualizar_tabla(response){
     }
 
 
-    if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
-        var table = $('#data_table').DataTable();
-        table.destroy();
-    }
-
-    $('#data_table').DataTable({
-        data:           data,
-        deferRender:    true,
-        scrollCollapse: true,
-        scroller:       true,
-
-        dom: "Bfrtip" ,
-        buttons: [
-            {  extend : 'excelHtml5',
-               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10]},
-                sheetName: 'Reporte Control y Registro Peaonal',
-               title: 'Control y Registro Peaonal'  },
-            {  extend : 'pdfHtml5',
-                orientation: 'landscape',
-               customize: function(doc) {
-                    doc.styles.tableBodyEven.alignment = 'center';
-                    doc.styles.tableBodyOdd.alignment = 'center';
-               },
-               exportOptions : {
-                    columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10]
-                },
-               title: 'Control y Registro Peaonal'
-            }
-        ],
-        initComplete: function () {
-
-
-        },
-        "order": [[ 1, "desc" ]],
-        language : {
-            'url': '/resources/js/spanish.json',
-        },
-        "pageLength": 50
-    });
+    cargar_tabla(data)
 
 
 }
@@ -740,6 +816,11 @@ function limpiar_formulario() {
     $('#ci_conductor').val('')
     $('#expendido_conductor').val('')
     $('#expendido_conductor').selectpicker("refresh")
+
+    $('#div_accesos').hide()
+    document.getElementById('switch_multiacceso').checked=false
+    document.getElementById('switch_paselibre').checked=false
+    document.getElementById('switch_multiple').checked=false
 }
 
 $('#new').click(function () {
@@ -772,6 +853,10 @@ $('#new').click(function () {
     
     document.getElementById('switch_visita').checked=true
     $('#switch_visita').change()
+        $('#div_accesos').hide()
+    document.getElementById('switch_multiacceso').checked=false
+    document.getElementById('switch_paselibre').checked=false
+    document.getElementById('switch_multiple').checked=false
 
     verif_inputs('')
     validationInputSelects("form")
@@ -791,44 +876,95 @@ $('#insert').click(function () {
             'warning'
         )
     }else{
+        if($('#switch_paselibre').prop('checked')){
+                    notvalid = validationInputSelectsWithReturn("form");
+                    if (notvalid===false) {
+                        objeto = JSON.stringify({
+                            'fkinvitacion': $('#fkinvitacion').val(),
+                            'codigoautorizacion': $('#codigoautorizacion').val(),
+                            'fktipodocumento': $('#fktipodocumento').val(),
+                            'fkinvitado': $('#fkinvitado').val(),
+                            'nombre': $('#nombre').val(),
+                            'apellidop': $('#apellidop').val(),
+                            'apellidom': $('#apellidom').val(),
+                            'ci': $('#ci').val(),
+                            'expendido': $('#expendido').val(),
+                            'fkdomicilio': $('#fkdomicilio').val(),
+                            'fkareasocial': $('#fkareasocial').val(),
+                            'fktipopase': $('#fktipopase').val(),
+                            'fkautorizacion': $('#fkautorizacion').val(),
+                            'fkresidente': $('#fkresidente').val(),
+                            'fknropase': $('#nropase').val(),
+                            'observacion': $('#observacion').val(),
+                            'visita': sw_visita,
 
-        notvalid = validationInputSelectsWithReturn("form");
-        if (notvalid===false) {
-            objeto = JSON.stringify({
-                'fkinvitacion': $('#fkinvitacion').val(),
-                'codigoautorizacion': $('#codigoautorizacion').val(),
-                'fktipodocumento': $('#fktipodocumento').val(),
-                'fkinvitado': $('#fkinvitado').val(),
-                'nombre': $('#nombre').val(),
-                'apellidop': $('#apellidop').val(),
-                'apellidom': $('#apellidom').val(),
-                'ci': $('#ci').val(),
-                'expendido': $('#expendido').val(),
-                'fkdomicilio': $('#fkdomicilio').val(),
-                'fkareasocial': $('#fkareasocial').val(),
-                'fktipopase': $('#fktipopase').val(),
-                'fkautorizacion': $('#fkautorizacion').val(),
-                'fkresidente': $('#fkresidente').val(),
-                'fknropase': $('#nropase').val(),
-                'observacion': $('#observacion').val(),
-                'visita': sw_visita,
+                        })
+                        ajax_call('movimiento_p_insert', {
+                            object: objeto,
+                            _xsrf: getCookie("_xsrf")
+                        }, null, function () {
+                            setTimeout(function () {
+                                window.location = main_route
+                            }, 2000);
+                        })
+                        $('#form').modal('hide')
+                    } else {
+                        swal(
+                            'Error de datos.',
+                             notvalid,
+                            'error'
+                        )
+                    }
+            }else{
 
-            })
-            ajax_call('movimiento_p_insert', {
-                object: objeto,
-                _xsrf: getCookie("_xsrf")
-            }, null, function () {
-                setTimeout(function () {
-                    window.location = main_route
-                }, 2000);
-            })
-            $('#form').modal('hide')
-        } else {
-            swal(
-                'Error de datos.',
-                 notvalid,
-                'error'
-            )
+            if($('#fkmarca').val() == 0 && $('#nombre_marca').val() == ""){
+
+                swal(
+                    'Error de datos.',
+                     'Ingrese Marca del vehiculo',
+                    'warning'
+                )
+            }else{
+                notvalid = validationInputSelectsWithReturn("form");
+                if (notvalid===false) {
+                    objeto = JSON.stringify({
+                        'fkinvitacion': $('#fkinvitacion').val(),
+                        'codigoautorizacion': $('#codigoautorizacion').val(),
+                        'fktipodocumento': $('#fktipodocumento').val(),
+                        'fkinvitado': $('#fkinvitado').val(),
+                        'nombre': $('#nombre').val(),
+                        'apellidop': $('#apellidop').val(),
+                        'apellidom': $('#apellidom').val(),
+                        'ci': $('#ci').val(),
+                        'expendido': $('#expendido').val(),
+                        'fkdomicilio': $('#fkdomicilio').val(),
+                        'fkareasocial': $('#fkareasocial').val(),
+                        'fktipopase': $('#fktipopase').val(),
+                        'fkautorizacion': $('#fkautorizacion').val(),
+                        'fkresidente': $('#fkresidente').val(),
+                        'fknropase': $('#nropase').val(),
+                        'observacion': $('#observacion').val(),
+                        'visita': sw_visita,
+
+                    })
+                    ajax_call('movimiento_p_insert', {
+                        object: objeto,
+                        _xsrf: getCookie("_xsrf")
+                    }, null, function () {
+                        setTimeout(function () {
+                            window.location = main_route
+                        }, 2000);
+                    })
+                    $('#form').modal('hide')
+                } else {
+                    swal(
+                        'Error de datos.',
+                         notvalid,
+                        'error'
+                    )
+                }
+
+            }
         }
     }
     

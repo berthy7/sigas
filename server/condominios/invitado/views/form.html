@@ -26,7 +26,7 @@
                         <div class="col-sm-3">
                             <label>Apellido Paterno</label>
                                 <div class="form-line">
-                                    <input id="apellidop" name="Apellido Paterno" type="text" class="form-control txta-own" required >
+                                    <input id="apellidop" name="Apellido Paterno" type="text" class="form-control txta-own" >
                                 </div>
                         </div>
                         <div class="col-sm-3">
@@ -42,7 +42,7 @@
                         <div class="col-sm-3">
                             <label>Carnet de Identidad</label>
                                 <div class="form-line">
-                                    <input id="ci" name="Carnet de Identidad" type="text" class="form-control txta-own" required>
+                                    <input id="ci" name="Carnet de Identidad" type="text" class="form-control txta-own" >
                                 </div>
                         </div>
                         <div class="col-sm-3">
@@ -86,7 +86,7 @@
 
                     <div class="row clearfix">
                         <div id="div_agregar_vehiculo" class="col-sm-2">
-                            <button id="agregar_vehiculo" type="button" class="btn bg-indigo waves-effect waves-light"
+                            <button id="agregar_vehiculo" type="button" class="btn bg-indigo waves-effect white-own waves-light"
                                     title="Agregar Vehiculo">Agregar <i class="material-icons">add</i></button>
                             </br>
                         </div>
@@ -163,7 +163,7 @@
                             </div>
 
                             <div class="col-sm-1">
-                                <button id="insertar_vehiculo" type="button" class="btn bg-indigo waves-effect agregar_vehiculo" title="Agregar">
+                                <button id="insertar_vehiculo" type="button" class="btn bg-indigo waves-effect white-own agregar_vehiculo" title="Agregar">
                                     <i class="material-icons">add</i>
                                 </button>
                             </div>
@@ -208,10 +208,10 @@
 
                 <div class="modal-footer">
                 {% if 'invitado_insert' in privileges %}
-                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar <i class="material-icons">save</i></button>
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
                 {% end %}
                 {% if 'invitado_update' in privileges %}
-                    <button id="update" type="button" class="btn bg-indigo waves-effect">Modificar <i class="material-icons">refresh</i></button>
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
                 {% end %}
                 </div>
             </div>
@@ -262,7 +262,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button id="insert-importar" type="submit" class="btn bg-indigo">Importar</button>
+                    <button id="insert-importar" type="submit" class="btn bg-indigo white-own">Importar</button>
                 </div>
             </form>
         </div>

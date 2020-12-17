@@ -14,7 +14,7 @@
         <div class="row clearfix">
             <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
                 {% if 'usuarioCondominio_insert' in privileges %}
-                    <button id="new" type="button" class="btn bg-indigo waves-effect">Nuevo <i class="material-icons"></i></button>
+                    <button id="new" type="button" class="btn bg-indigo waves-effect white-own">Nuevo <i class="material-icons"></i></button>
                 {% end %}
             </div>
         </div>
@@ -27,11 +27,12 @@
                         <tr>
                             <th class="order_by_th" data-name="names">Nrº</th>
                             <th class="order_by_th" data-name="name">Nombre Completo </th>
-                            <th class="order_by_th" data-name="usuarioname">Nombre de usuario </th>
+                            <th class="order_by_th" data-name="name">Nombre de usuario </th>
                             <th class="order_by_th" data-name="condominio">Perfil </th>
                             <th class="order_by_th" data-name="condominio">Condominio </th>
                             <th class="actions_header">Estado</th>
-                            <th class="actions_header">Editar</th>
+                            <th class="actions_header">Session</th>
+                            <th class="actions_header">Acciones</th>
                         </tr>
                     </thead>
 
@@ -50,9 +51,17 @@
     <script src="condominios/usuario/assets/usuario.js"></script>
 <script>
         $(document).ready(function () {
+            
+            var data_privilegios = [];
+            {% for pri in privileges %}
+                data_privilegios.push(
+                    '{{ pri }}'
+                );
+            {% end %}
+            
 
             var data = [];
-            {% set cont = 0 %}
+
             {% for c in usuarios_condominio %}
                 data.push( [
                     '{{ c.id }}',
@@ -64,13 +73,16 @@
                     {% else %}
                         '---------',
                     {% end %}
-                    '<input id="{{ c.id }}" onClick="event.preventDefault();eliminar(this)" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo delete" {% if c.enabled %} {{"checked"}} {% end %} /><label for="{{c.id}}"></label>' + ' ' + '{% if c.enabled %} Habilitado {% else %} Deshabilitado {% end %}',
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+                    '<input id="{{ c.id }}" onClick="event.preventDefault();estado(this)" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo delete" {% if c.estado %} {{"checked"}} {% end %} {% if 'usuarioCondominio_state' not in privileges %} disabled {% end %} /><label for="{{c.id}}"></label>',
+                    '<input id="se-{{ c.id }}" onClick="event.preventDefault();sesion(this)" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo" {% if c.login %} {{"checked"}} {% end %} {% if 'usuarioCondominio_sesion' not in privileges %} disabled {% end %} /><label for="se-{{c.id}}"></label>',
+                    {% if 'usuarioCondominio_update' in privileges %}'<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light white-own" title="Editar"><i class="material-icons">create</i></button>'+ {% end %}  ' '
+                    {% if 'usuarioCondominio_delete' in privileges %}+ '<button id="delete" onClick="eliminar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light white-own" title="Eliminar"><i class="material-icons">delete</i></button>' {% end %}
 
                 ]);
-            {% set cont = cont + 1 %}
+
             {% end %}
-            cargar_tabla(data)
+            console.log(data_privilegios)
+            cargar_tabla(data,data_privilegios)
         });
 
 

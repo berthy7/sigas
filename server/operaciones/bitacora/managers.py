@@ -25,7 +25,6 @@ class BitacoraManager(SuperManager):
         principal = self.db.query(Principal).first()
 
         if principal.estado:
-
             fecha_str = str(fechaHora)
             fecha_ = fecha_str[0:19]
             fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')

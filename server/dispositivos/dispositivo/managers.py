@@ -26,6 +26,16 @@ class DispositivoManager(SuperManager):
     def __init__(self, db):
         super().__init__(Dispositivo, db)
 
+    def verificar_estado(self, x):
+
+        for estado in x['estadoDispositivos']:
+            domi = Dispositivo(id=estado['fkdispositivo'],
+                               situacion=estado['conexion'])
+
+            self.db.merge(domi)
+            print(str(estado['fkdispositivo']) + " " + str(estado['conexion']) )
+        self.db.commit()
+
 
     def get_all(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
@@ -37,13 +47,16 @@ class DispositivoManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fkcondominio == idcondominio).all()
 
     def listar_todo_cant_marcaciones(self,x):
-        id_interprete = x['idinterprete']
-        # print(str(id_interprete))
+        # id_interprete = x['idinterprete']
+        # # print(str(id_interprete))
+        #
+        # dispositivos = self.db.query(Dispositivo).join(Dispositivointerprete)\
+        #     .filter(Dispositivo.estado == True) \
+        #     .filter(Dispositivointerprete.fkinterprete == id_interprete) \
+        #     .filter(Dispositivointerprete.estado == True).all()
 
-        dispositivos = self.db.query(Dispositivo).join(Dispositivointerprete)\
-            .filter(Dispositivo.estado == True) \
-            .filter(Dispositivointerprete.fkinterprete == id_interprete) \
-            .filter(Dispositivointerprete.estado == True).all()
+        dispositivos = self.db.query(Dispositivo)\
+            .filter(Dispositivo.estado == True).all()
 
         resp = []
         resp_config = []
@@ -80,7 +93,7 @@ class DispositivoManager(SuperManager):
 
         for x in  self.db.query(Cerraduras).filter(Cerraduras.estado == True).all():
 
-            if x.linea:
+            if x.dispositivo.situacion:
                 imagen = "/resources/images/dispositivo.PNG"
             else:
                 imagen ="/resources/images/dispositivo_off.png"
@@ -341,7 +354,7 @@ class ConfiguraciondispositivoManager(SuperManager):
 
 
     def insert_qr_invitacion(self, diccionary):
-        invitacion = self.db.query(Invitacion).filter(Invitacion.id == diccionary['codigo']).first()
+        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['codigo']).first()
 
         fkcondominio = None
         if invitacion.evento.fkdomicilio:
@@ -350,17 +363,13 @@ class ConfiguraciondispositivoManager(SuperManager):
             fkcondominio = invitacion.evento.areasocial.fkcondominio
 
         diccionary['fkcondominio']  =  fkcondominio
-        
-        inicial_id = 500000
-        codigo = inicial_id + int(diccionary['codigo'])
-        diccionary['codigo'] = str(codigo)
-        
+
         ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
 
 
 
     def denegar_qr_invitacion(self, diccionary):
-        invitacion = self.db.query(Invitacion).filter(Invitacion.id == diccionary['codigo']).first()
+        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['codigo']).first()
 
         fkcondominio = None
         if invitacion.evento.fkdomicilio:
@@ -369,10 +378,6 @@ class ConfiguraciondispositivoManager(SuperManager):
             fkcondominio = invitacion.evento.areasocial.fkcondominio
 
         diccionary['fkcondominio'] = fkcondominio
-
-        inicial_id = 500000
-        codigo = inicial_id + int(diccionary['codigo'])
-        diccionary['codigo'] = str(codigo)
 
         ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
 
