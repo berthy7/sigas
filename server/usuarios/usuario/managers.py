@@ -131,6 +131,56 @@ class UsuarioManager(SuperManager):
             random_list.append(random.choice(string.ascii_uppercase + string.digits))
         return ''.join(random_list)
 
+    def insert_residente(self, diccionary):
+        password_desencriptado = diccionary['password']
+
+        diccionary['password'] = hashlib.sha512(diccionary['password'].encode()).hexdigest()
+
+        usuario = UsuarioManager(self.db).entity(**diccionary)
+        user = self.db.query(Usuario).filter(Usuario.username == usuario.username).first()
+
+        if user:
+            return dict(respuesta=False, Mensaje="Nombre de Usuario ya Existe")
+
+        else:
+
+            fecha = BitacoraManager(self.db).fecha_actual()
+            b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
+            super().insert(b)
+            u = super().insert(usuario)
+
+            principal = self.db.query(Principal).first()
+
+            if principal.estado:
+                u.codigo = u.id
+                super().update(u)
+                diccionary['codigo'] = u.codigo
+                diccionary['password'] = password_desencriptado
+                diccionary['default'] = password_desencriptado
+
+                try:
+                    if u.fkcondominio:
+
+                        if u.condominio.ip_publica != "":
+                            url = "http://" + u.condominio.ip_publica + ":" + u.condominio.puerto + "/api/v1/sincronizar_usuario"
+
+                            headers = {'Content-Type': 'application/json'}
+                            string = diccionary
+                            cadena = json.dumps(string)
+                            body = cadena
+                            resp = requests.post(url, data=body, headers=headers, verify=False)
+                            response = json.loads(resp.text)
+
+                            print(response)
+
+
+                except Exception as e:
+                    # Other errors are possible, such as IOError.
+                    print("Error de conexion: " + str(e))
+
+            # UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
+            return dict(respuesta=True, Mensaje="Insertado Correctamente")
+
     def insert(self, diccionary):
         password_desencriptado = diccionary['password']
 

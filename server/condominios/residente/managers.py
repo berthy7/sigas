@@ -90,7 +90,7 @@ class ResidenteManager(SuperManager):
         password = UsuarioManager(self.db).generar_contraseña()
 
         dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=estado)
-        UsuarioManager(self.db).insert(dict_usuario)
+        UsuarioManager(self.db).insert_residente(dict_usuario)
 
 
         # diccionary = dict(codigo=a.codigoqr, tarjeta=a.codigoqr, situacion="Acceso")
