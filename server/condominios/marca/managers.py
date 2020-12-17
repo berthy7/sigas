@@ -29,6 +29,21 @@ class MarcaManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.nombre.asc()).all()
 
 
+    def obtener_o_crear(self,nombreMarca):
+        Marca =  self.db.query(self.entity).filter(self.entity.nombre == nombreMarca).first()
+
+        if Marca:
+            return Marca
+        else:
+            diccionary = dict(nombre=nombreMarca)
+
+            objeto = MarcaManager(self.db).entity(**diccionary)
+            a = super().insert(objeto)
+
+            return a
+
+
+
     def insert(self, diccionary):
 
         objeto = MarcaManager(self.db).entity(**diccionary)

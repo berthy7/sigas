@@ -182,7 +182,12 @@ class VehiculoManager(SuperManager):
 
         if query_vehiculo:
 
-            return  dict(id=query_vehiculo.id,placa="",fkcolor="",fktipo="",fkmarca="",fkmodelo="", fknropase=idtarjeta)
+            nombre_modelo = ""
+            if query_vehiculo.fkmarca:
+                nombre_modelo = query_vehiculo.marca.nombre
+
+
+            return  dict(id=query_vehiculo.id,placa="",fkcolor="",fktipo="",fkmarca="",nombre_marca=query_vehiculo.marca.nombre,fkmodelo=nombre_modelo,nombre_modelo="", fknropase=idtarjeta)
         else:
             if placa:
 
