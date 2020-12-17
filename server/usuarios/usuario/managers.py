@@ -131,6 +131,31 @@ class UsuarioManager(SuperManager):
             random_list.append(random.choice(string.ascii_uppercase + string.digits))
         return ''.join(random_list)
 
+    def insert_residente(self, diccionary):
+        password_desencriptado = diccionary['password']
+
+        diccionary['password'] = hashlib.sha512(diccionary['password'].encode()).hexdigest()
+
+        usuario = UsuarioManager(self.db).entity(**diccionary)
+        user = self.db.query(Usuario).filter(Usuario.username == usuario.username).first()
+
+        if user:
+            return dict(respuesta=False, response=None ,Mensaje="Nombre de Usuario ya Existe")
+
+        else:
+
+            fecha = BitacoraManager(self.db).fecha_actual()
+            b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
+            super().insert(b)
+            u = super().insert(usuario)
+
+            u.codigo = u.id
+            super().update(u)
+
+
+            # UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
+            return dict(respuesta=True, response=u, Mensaje="Insertado Correctamente")
+
     def insert(self, diccionary):
         password_desencriptado = diccionary['password']
 
