@@ -113,8 +113,8 @@ class ApiCondominioController(ApiController):
                         usuario = users.get_dict()
                         usuario['rol']['modulos'] = None
 
-                        user = UsuarioManager(self.db).login_token(user)
-                        usuario['token'] = user.token
+                        users = UsuarioManager(self.db).login_token(users)
+                        usuario['token'] = users.token
 
 
                         self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
@@ -892,8 +892,31 @@ class ApiCondominioController(ApiController):
                 usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
                 data['user'] = usuario.id
                 print("ingreso Vehicular movil ci: " + str(data['ci']))
-                resp = MovimientoManager(self.db).insert(data)
-                objeto = resp.get_dict()
+
+                mov = MovimientoManager(self.db).insert(data)
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    mov.codigo = mov.id
+                    data['codigo'] = mov.id
+
+                    if mov.fkdomicilio:
+                        data['codigo_destino'] = mov.domicilio.codigo
+
+                    elif mov.fkareasocial:
+                        data['codigo_destino'] = mov.areasocial.codigo
+
+                    else:
+                        data['codigo_destino'] = ""
+
+                    data['fkinvitado'] = ""
+                    data['fkconductor'] = ""
+
+                    self.db.merge(mov)
+                    self.db.commit()
+                    self.funcion_sincronizar(usuario,data,"sincronizar_movimiento")
+
+                objeto = mov.get_dict()
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -1328,7 +1351,7 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-            # user = UsuarioManager(self.db).insert(data)
+            user = UsuarioManager(self.db).insert(data)
             # user = user.get_dict()
             self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
 
@@ -1367,6 +1390,41 @@ class ApiCondominioController(ApiController):
             data['fkdomicilio'] = domi.id
 
             EventoManager(self.db).insert(data)
+            self.respond(response=None, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_movimiento(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+
+            if data['fkresidente'] != "":
+                resi = ResidenteManager(self.db).obtener_x_codigo(data['fkresidente'])
+                data['fkresidente'] = resi.id
+
+
+            if data['fkdomicilio'] != "":
+                domi = DomicilioManager(self.db).obtener_x_codigo(data['codigo_destino'])
+                data['fkdomicilio'] = domi.id
+
+            elif data['fkareasocial'] != "":
+                domi = AreasocialManager(self.db).obtener_x_codigo(data['codigo_destino'])
+                data['fkareasocial'] = domi.id
+
+
+            if data['codigoautorizacion'] != "":
+                invi = InvitacionManager(self.db).obtener_x_codigoqr(data['codigoautorizacion'])
+                data['fkinvitacion'] = invi.id
+
+
+            MovimientoManager(self.db).insert(data)
             self.respond(response=None, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)

@@ -29,7 +29,8 @@ class MovimientoController(CrudController):
         '/movimiento_reporte_xls': {'POST': 'imprimirxls'},
         '/movimiento_actualizar': {'POST': 'actualizar'},
         '/movimiento_actualizar_tabla': {'POST': 'actualizar_tabla'},
-        '/movimiento_filtrar': {'POST': 'filtrar'}
+        '/movimiento_filtrar': {'POST': 'filtrar'},
+        '/movimiento_recargar': {'POST': 'recargar'}
     }
 
     def get_extra_data(self):
@@ -79,8 +80,8 @@ class MovimientoController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
-        cname = self.manager(self.db).movimiento_excel(diccionary['datos'])
-        self.respond({'nombre': cname, 'url': 'resources/downloads/movimiento/' + cname}, True)
+        cname = self.manager(self.db).movimiento_excel()
+        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
         self.db.close()
 
     def salida(self):
@@ -107,7 +108,6 @@ class MovimientoController(CrudController):
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='actualizado correctamente.')
 
-
     def filtrar(self):
         self.set_session()
         data = json.loads(self.get_argument("object"))
@@ -122,3 +122,35 @@ class MovimientoController(CrudController):
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='actualizado correctamente.')
 
+    def importar(self):
+        self.set_session()
+        fileinfo = self.request.files['archivo'][0]
+        fname = fileinfo['filename']
+        extn = os.path.splitext(fname)[1]
+        cname = str(uuid.uuid4()) + extn
+        fh = open("server/common/resources/uploads/" + cname, 'wb')
+        fh.write(fileinfo['body'])
+        fh.close()
+        if extn in ['.xlsx', '.xls']:
+            mee = self.manager(self.db).importar_excel(cname, self.get_user_id(), self.request.remote_ip)
+            self.respond(message=mee['message'], success=mee['success'])
+        else:
+            self.respond(message='Formato de Archivo no aceptado¡¡', success=False)
+        self.db.close()
+
+    def recargar(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+        us = self.get_user()
+        ins_manager = self.manager(self.db)
+        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
+        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
+        ult_registro = data['ult_registro']
+        # indicted_object = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
+        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
+        if len(ins_manager.errors) == 0:
+            self.respond([objeto.get_dict() for objeto in arraT['datos']], message='Operacion exitosa!')
+        else:
+            self.respond([item.__dict__ for item in ins_manager.errors], False, 'Ocurrió un error al insertar')
+        self.db.close()

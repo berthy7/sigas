@@ -17,7 +17,9 @@ class UsuarioController(CrudController):
         '/usuario': {'GET': 'index', 'POST': 'table'},
         '/usuario_insert': {'POST': 'insert'},
         '/usuario_update': {'PUT': 'edit', 'POST': 'update'},
+        '/usuario_state': {'POST': 'state'},
         '/usuario_delete': {'POST': 'delete_user'},
+        '/usuario_sesion': {'POST': 'sesion'},
         '/usuario_activate': {'POST': 'activate_user'},
         '/usuario_profile': {'GET': 'usuario_profile'},
         '/usuario_update_profile': {'POST': 'user_update_profile'},
@@ -46,8 +48,14 @@ class UsuarioController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
         diccionary['user_id'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
+
+        contraseña_default = UsuarioManager(self.db).generar_contraseña()
+
         diccionary['username'] = diccionary['correo']
-        diccionary['password'] = diccionary['ci']
+        diccionary['password'] = contraseña_default
+        diccionary['default'] = contraseña_default
+
+
         diccionary['sigas'] = True
 
         respuesta = UsuarioManager(self.db).insert(diccionary)
@@ -174,9 +182,42 @@ class UsuarioController(CrudController):
         diccionary['user'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
         resp = UsuarioManager(self.db).restablecer_password(diccionary)
+
         self.respond(resp)
 
 
+    def state(self):
+        self.set_session()
+        us = self.get_user()
+        diccionary = json.loads(self.get_argument("object"))
+        result = UsuarioManager(self.db).state(diccionary['id'], diccionary['enabled'], self.get_user_id(), self.request.remote_ip)
+
+        if result.estado:
+            resultado = 'Habilito Correctamente.'
+        elif not result.estado:
+            resultado = 'Deshabilito Correctamente.'
+        else:
+            resultado = 'ERROR 403'
+
+        self.respond(success=True, message=resultado)
+
+
+    def sesion(self):
+        self.set_session()
+        us = self.get_user()
+        diccionary = json.loads(self.get_argument("object"))
+        result = UsuarioManager(self.db).sesion(diccionary['id'], diccionary['enabled'], self.get_user_id(), self.request.remote_ip)
+
+        resultado = ""
+
+        if result.login:
+            resultado = 'Inicio Session'
+        elif not result.login:
+            resultado = 'Cerro Session'
+        else:
+            resultado = 'ERROR 403'
+
+        self.respond(success=True, message=resultado)
 
 class ApiUserController(ApiController):
     routes = {

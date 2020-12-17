@@ -85,7 +85,7 @@ class PorterovirtualManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro portero virtual.", fecha=fecha,tabla="portero_virtual", identificador=a.id)
         super().insert(b)
 
-        abrir = dict(cerradura=a.cerradura.numero,id=a.cerradura.dispositivo.id)
+        abrir = dict(cerradura=a.cerradura.numero,id=a.cerradura.dispositivo.id,user=objeto.user,ip_local=objeto.ip)
         ConfiguraciondispositivoManager(self.db).abrir_cerradura(abrir)
 
         # deshabilitar invitacion

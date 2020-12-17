@@ -61,10 +61,7 @@ class EventoController(CrudController):
     def delete(self):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
-
-        id = diccionary['id']
-        state = diccionary['enabled']
-        respuesta = EventoManager(self.db).delete(id, self.get_user_id(), self.request.remote_ip,state)
+        respuesta = EventoManager(self.db).delete(diccionary['id'],diccionary['enabled'], self.get_user_id(), self.request.remote_ip)
 
         self.respond(success=True, message=respuesta)
         self.db.close()

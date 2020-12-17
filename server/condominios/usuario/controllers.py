@@ -44,8 +44,13 @@ class UsuarioCondominioController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
         diccionary['user_id'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
+
+        contraseña_default = UsuarioManager(self.db).generar_contraseña()
+
         diccionary['username'] = diccionary['correo']
-        diccionary['password'] = diccionary['ci']
+        diccionary['password'] = contraseña_default
+        diccionary['default'] = contraseña_default
+
         diccionary['sigas'] = False
 
         respuesta = UsuarioManager(self.db).insert(diccionary)
@@ -83,6 +88,9 @@ class UsuarioCondominioController(CrudController):
 
         arraT['datos'] = UsuarioManager(self.db).usuarios_condominio(us)
         arraT['privileges'] = UsuarioManager(self.db).get_privileges(self.get_user_id(), self.request.uri)
+
+        if result.fkresidente:
+            ResidenteManager(self.db).delete(result.fkresidente, self.get_user_id(), self.request.remote_ip, diccionary['enabled'])
 
         resultado = ""
 
@@ -128,10 +136,10 @@ class UsuarioCondominioController(CrudController):
 
         resultado = ""
 
-        if result.estado:
-            resultado = 'Cerro Session'
-        elif not result.estado:
+        if result.login:
             resultado = 'Inicio Session'
+        elif not result.login:
+            resultado = 'Cerro Session'
         else:
             resultado = 'ERROR 403'
 

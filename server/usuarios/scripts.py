@@ -2,6 +2,7 @@ import hashlib
 from server.database.connection import transaction
 from .usuario.models import *
 from .rol.models import Rol
+from .ajuste.models import Ajuste
 
 
 def insertions():
@@ -26,10 +27,15 @@ def insertions():
         if bitacora_m is None:
             bitacora_m = Modulo(title='Bitácora', route='/bitacora', name='bitacora', icon='dvr')
 
+        ajuste_m = session.query(Modulo).filter(Modulo.name == 'ajuste').first()
+        if ajuste_m is None:
+            ajuste_m = Modulo(title='Ajustes', route='/ajuste', name='ajuste', icon='settings')
+
         user_m.children.append(roles_m)
         user_m.children.append(usuarios_m)
         user_m.children.append(perfil_m)
         user_m.children.append(bitacora_m)
+        user_m.children.append(ajuste_m)
 
         query_rol = session.query(Modulo).filter(Modulo.name == 'rol_query').first()
         if query_rol is None:
@@ -84,6 +90,25 @@ def insertions():
 
         bitacora_m.children.append(query_bitacora)
 
+        query_ajuste = session.query(Modulo).filter(Modulo.name == 'ajuste_query').first()
+        if query_ajuste is None:
+            query_ajuste = Modulo(title='Consultar', route='', name='ajuste_query', menu=False)
+        insert_ajuste = session.query(Modulo).filter(Modulo.name == 'ajuste_insert').first()
+        if insert_ajuste is None:
+            insert_ajuste = Modulo(title='Adicionar', route='/ajuste_insert', name='ajuste_insert', menu=False)
+        update_ajuste = session.query(Modulo).filter(Modulo.name == 'ajuste_update').first()
+        if update_ajuste is None:
+            update_ajuste = Modulo(title='Actualizar', route='/ajuste_update', name='ajuste_update', menu=False)
+        delete_ajuste = session.query(Modulo).filter(Modulo.name == 'ajuste_delete').first()
+        if delete_ajuste is None:
+            delete_ajuste = Modulo(title='Dar de Baja', route='/ajuste_delete', name='ajuste_delete', menu=False)
+
+        ajuste_m.children.append(query_ajuste)
+        ajuste_m.children.append(insert_ajuste)
+        ajuste_m.children.append(update_ajuste)
+        ajuste_m.children.append(delete_ajuste)
+
+
         superadmin_role = session.query(Rol).filter(Rol.nombre == 'SUPER ADMINISTRADOR').first()
         if superadmin_role is None:
             superadmin_role = Rol(nombre='SUPER ADMINISTRADOR', descripcion='Todos los permisos')
@@ -120,6 +145,7 @@ def insertions():
         superadmin_role.modulos.append(usuarios_m)
         superadmin_role.modulos.append(perfil_m)
         superadmin_role.modulos.append(bitacora_m)
+        superadmin_role.modulos.append(ajuste_m)
         superadmin_role.modulos.append(query_usuario)
         superadmin_role.modulos.append(insert_usuario)
         superadmin_role.modulos.append(update_usuario)
@@ -131,6 +157,10 @@ def insertions():
         superadmin_role.modulos.append(update_rol)
         superadmin_role.modulos.append(delete_rol)
         superadmin_role.modulos.append(query_bitacora)
+        superadmin_role.modulos.append(query_ajuste)
+        superadmin_role.modulos.append(insert_ajuste)
+        superadmin_role.modulos.append(update_ajuste)
+        superadmin_role.modulos.append(delete_ajuste)
 
         admin_role.modulos.append(user_m)
         admin_role.modulos.append(usuarios_m)
@@ -147,15 +177,18 @@ def insertions():
         super_user = session.query(Usuario).filter(Usuario.username == 'admin').first()
         if super_user is None:
             # hex_dig = hashlib.sha512(b'Password2020').hexdigest()
-            hex_dig = hashlib.sha512(b'PruebasSigas2020').hexdigest()
+            hex_dig = hashlib.sha512(b'SigasProduccion2021').hexdigest()
             super_user = Usuario(username='admin', password=hex_dig,sigas=True)
             super_user.rol = superadmin_role
 
         servidor = ServidorCorreo(id=1, servidor='smtp.gmail.com', puerto='587',correo='NotificacionSigas@gmail.com', password='Sigas2020', estado=True)
         session.add(servidor)
 
-        versionMovil = VersionMovil(id=1, version='1.0.0', estado=True)
+        versionMovil = VersionMovil(id=1, version='0.6.7', estado=True)
         session.add(versionMovil)
+
+        ajuste_web = Ajuste(id=1, claveSecreta='SECRETSIGAS', estado=True)
+        session.add(ajuste_web)
 
         servidor = Principal(id=1, estado=False)
         session.add(servidor)

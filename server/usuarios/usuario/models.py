@@ -23,6 +23,7 @@ class Usuario(Serializable, Base):
     expendido = Column(String(20), nullable=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(150), nullable=False)
+    default = Column(String(150), nullable=True)
     token = Column(String(2000), nullable=True, default='Sin Token')
     fkrol = Column(Integer, ForeignKey('rol.id'), nullable=False)
     fkcondominio = Column(Integer, ForeignKey('condominio.id'), nullable=True)

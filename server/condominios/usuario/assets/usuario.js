@@ -279,13 +279,15 @@ $('#generar').click(function () {
                 object: objeto
             }, null, function (response) {
                 response = JSON.parse(response);
+                console.log(response)
                 if(response.success === true){
+
                     swal(
                           'Actualizada Correctamente.',
                           '',
                           'success'
                     )
-                    $('#password').val($('#ci').val())
+                    $('#password').val(response.response.response)
 
                 }else{
 
@@ -396,7 +398,7 @@ function editar(elemento){
         $('#telefono').val(self.telefono),
 
         $('#username').val(self.username)
-        $('#password').val(self.password)
+        $('#password').val(self.default)
         $('#ci').val(self.ci),
         $('#correo').val(self.correo),
         $('#expendido').val(self.expendido),
@@ -424,6 +426,7 @@ function editar(elemento){
         $('#id_div').hide()
         $('#insert').hide()
         $('#update').show()
+        $('#div_username').show()
         $('#form').modal('show')
     })
     }

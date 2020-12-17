@@ -1,4 +1,5 @@
 from .models import *
+from ...usuarios.usuario.managers import *
 from sqlalchemy.exc import IntegrityError
 from ...common.managers import *
 from ...operaciones.bitacora.managers import *
@@ -21,6 +22,9 @@ class ResidenteManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity)
 
+    def obtener_x_codigo(self, codigo):
+        return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
+
     def get_all_by_lastname(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.apellidop.asc()).all()
 
@@ -30,7 +34,9 @@ class ResidenteManager(SuperManager):
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.apellidop.asc()).all()
 
+
     def insert(self, diccionary):
+
         estado = diccionary['acceso'][0]['estado']
         if diccionary['b_fknropase'] == "0":
             if diccionary['fknropase']:
@@ -41,7 +47,9 @@ class ResidenteManager(SuperManager):
             diccionary['fknropase'] = None
 
         objeto = ResidenteManager(self.db).entity(**diccionary)
-        objeto.fechanacimiento = datetime.strptime(objeto.fechanacimiento, '%d/%m/%Y')
+        if objeto.fechanacimiento:
+            objeto.fechanacimiento = datetime.strptime(objeto.fechanacimiento, '%d/%m/%Y')
+
         for acce in objeto.acceso:
             acce.fechai = datetime.strptime(acce.fechai, '%d/%m/%Y')
             acce.fechaf = datetime.strptime(acce.fechaf, '%d/%m/%Y')
@@ -59,7 +67,9 @@ class ResidenteManager(SuperManager):
         super().insert(b)
 
         a.codigo = a.id
-        a.codigoqr= a.id
+
+        inicial_cod = 100000
+        a.codigoqr= a.id + inicial_cod
         super().update(a)
 
         if a.fknropase:
@@ -76,14 +86,15 @@ class ResidenteManager(SuperManager):
                 idcondominio = DomicilioManager(self.db).obtener_fkcondominio(d)
                 break
 
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=a.ci,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,enabled=estado)
+
+        password = UsuarioManager(self.db).generar_contraseña()
+
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=estado)
         UsuarioManager(self.db).insert(dict_usuario)
 
 
         # diccionary = dict(codigo=a.codigoqr, tarjeta=a.codigoqr, situacion="Acceso")
         # ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
-
-
 
 
         return a
@@ -137,7 +148,10 @@ class ResidenteManager(SuperManager):
 
     def delete(self, id, user, ip, state):
         x = self.db.query(Residente).filter(Residente.id == id).one()
+        xacceso = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == id).one()
         x.estado = state
+        xacceso.estado = state
+
         if state:
             mensaje = "Habilito Residente"
         else:
@@ -147,6 +161,7 @@ class ResidenteManager(SuperManager):
         b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha, tabla="residente", identificador=id)
         super().insert(b)
         self.db.merge(x)
+        self.db.merge(xacceso)
         self.db.commit()
 
         return mensaje
@@ -156,7 +171,7 @@ class ResidenteManager(SuperManager):
         try:
             wb = load_workbook(filename="server/common/resources/uploads/" + cname)
             ws = wb.active
-            colnames = ['NOMBRE','APELLIDOP','APELLIDOM', 'CI', 'UBICACION', 'SEXO', 'FECHANACIMIENTO', 'TELEFONO', 'TIPO', 'CORREO',
+            colnames = ['NOMBRE','APELLIDOP','APELLIDOM', 'CI', 'UBICACION', 'SEXO', 'TELEFONO', 'TIPO', 'CORREO',
                         'DOMICILIO','NUMERO','TARTEJAPEATONAL', 'PLACA', 'COLOR', 'TIPOVEHICULO', 'MARCA', 'MODELO', 'TARJETAVEHICULAR', 'FECHAI', 'FECHAF']
             indices = {cell[0].value: n - 1 for n, cell in enumerate(ws.iter_cols(min_row=1, max_row=1), start=1) if
                        cell[0].value in colnames}
@@ -168,7 +183,6 @@ class ResidenteManager(SuperManager):
                     ci = row[indices['CI']].value
                     ubicacion = row[indices['UBICACION']].value
                     sexo = row[indices['SEXO']].value
-                    fechanacimiento = row[indices['FECHANACIMIENTO']].value
                     telefono =  row[indices['TELEFONO']].value
                     tipo =  row[indices['TIPO']].value
                     correo = row[indices['CORREO']].value
@@ -184,7 +198,7 @@ class ResidenteManager(SuperManager):
                     fechai =  row[indices['FECHAI']].value
                     fechaf = row[indices['FECHAF']].value
 
-                    fechanacimiento = fechanacimiento.strftime('%d/%m/%Y')
+                    fechanacimiento = None
                     fechai = fechai.strftime('%d/%m/%Y')
                     fechaf = fechaf.strftime('%d/%m/%Y')
 
@@ -204,6 +218,7 @@ class ResidenteManager(SuperManager):
 
                         if query_domicilio:
                             if not query:
+
                                 dict_vehiculo = VehiculoManager(self.db).obtener_vehiculo(placa, color, tipovehiculo,marca, modelo,tarjetavehicular)
                                 list_domicilio.append(dict(fkdomicilio=query_domicilio.id, vivienda=True))
                                 if dict_vehiculo != "":

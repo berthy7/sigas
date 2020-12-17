@@ -19,6 +19,7 @@
                     </button>
                 {% end %}
 
+
             </div>
             <div class="col-sm-3">
                 <div class="switch p-l-own">
@@ -56,6 +57,13 @@
                     </button>
             </div>
         </div>
+
+                        <button id="reporte-xls" title="Excel" type="button" class="btn bg-teal waves-effect white-own">
+                    <i class="material-icons">explicit</i>
+                </button>
+                <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
+                    <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
+                </button>
 
         {% if 'movimiento_query' in privileges %}
         <div class="row">
@@ -111,8 +119,9 @@
         $(document).ready(function () {
 
             var data = [];
-            {% set cont = 0 %}
+
             {% for c in movimientos_vehicular %}
+
                 data.push( [
                     '{{ c.id }}',
                     {% if c.fechai %}
@@ -190,12 +199,14 @@
                     {% if c.fechaf %}
                         '✓',
                     {% else %}
-                         '<button id="exit" onClick="salida(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light salida" title="Actualizar Salida"><i class="material-icons">exit_to_app</i></button>'
+                         '<button id="exit" onClick="salida(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light salida" title="Actualizar Salida"><i class="material-icons">exit_to_app</i></button>'
                     {% end %}
 
                 ]);
-            {% set cont = cont + 1 %}
+
             {% end %}
+
+            ult_registro = data[0][00]
             cargar_tabla(data)
         });
 

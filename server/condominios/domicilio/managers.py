@@ -17,6 +17,10 @@ class DomicilioManager(SuperManager):
     def __init__(self, db):
         super().__init__(Domicilio, db)
 
+    def obtener_x_codigo(self, codigo):
+        return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
+
+
     def obtener_x_nombre(self, nombre):
         return self.db.query(self.entity).filter(self.entity.nombre == nombre).first()
 

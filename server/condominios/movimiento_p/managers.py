@@ -210,3 +210,28 @@ class Movimiento_pManager(SuperManager):
         marcacion.sincronizado =True
 
         return marcacion
+
+
+    def recargar(self, fechainicio, fechafin, usuario, ult_registro):
+        list = {}
+        c = 0
+
+        if usuario.sigas:
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                self.entity.id > ult_registro).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+                self.entity.tipo == "Peatonal").order_by(self.entity.id.desc()).all()
+        else:
+            domicilio = self.db.query(self.entity).join(Domicilio).filter(self.entity.id > ult_registro).filter(
+                Domicilio.fkcondominio == usuario.fkcondominio).filter(
+                func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+                self.entity.tipo == "Peatonal").filter(self.entity.estado == True).order_by(self.entity.id.desc()).all()
+
+            areasocial = self.db.query(self.entity).join(Areasocial).filter(self.entity.id > ult_registro).filter(
+                Areasocial.fkcondominio == usuario.fkcondominio).filter(
+                func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
+                self.entity.tipo == "Peatonal").filter(self.entity.estado == True).order_by(self.entity.id.desc()).all()
+
+            for area in areasocial:
+                domicilio.append(area)
+
+            return domicilio

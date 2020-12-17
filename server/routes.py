@@ -1,6 +1,7 @@
 ﻿from .usuarios.usuario.controllers import *
 from .usuarios.rol.controllers import *
 from .usuarios.login.controllers import *
+from .usuarios.ajuste.controllers import *
 
 from server.operaciones.bitacora.controllers import *
 
@@ -47,10 +48,8 @@ def get_handlers():
     # Usuario
     handlers.extend(get_routes(UsuarioController))
     handlers.extend(get_routes(RolController))
-
-
-    # Operaciones
     handlers.extend(get_routes(BitacoraController))
+    handlers.extend(get_routes(AjusteController))
 
 
     # Condominio

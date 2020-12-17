@@ -12,7 +12,7 @@ class Residente(Serializable, Base):
 
     __tablename__ = 'residente'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer,primary_key=True)
     codigo = Column(Integer, nullable=True)
     nombre = Column(String(100), nullable=False)
     apellidop = Column(String(100), nullable=False)
@@ -27,7 +27,9 @@ class Residente(Serializable, Base):
     tipo = Column(String(20), nullable=True) #tipo = Propietario, Inquilino, Co-propietario,provper
     correo = Column(String(255), nullable=True)
     fknropase = Column(Integer, ForeignKey('nropase.id'), nullable=True)
-    estado = Column(Boolean, default=True)
+    huella = Column(Text, nullable=True)
+    rostro = Column(Text, nullable=True)
+    estado = Column(Boolean, default=False)
 
 
     domicilios = relationship('ResidenteDomicilio', cascade="save-update, merge, delete, delete-orphan")

@@ -212,7 +212,7 @@ $('#generar').click(function () {
                           '',
                           'success'
                     )
-                    $('#password').val($('#ci').val())
+                    $('#password').val(response.response.response)
                     
                 }else{
     
@@ -272,7 +272,8 @@ $('#insert').click(function () {
                         var estado
                         for (var i = 0; i < Object.keys(response.response).length; i++) {
                             id = response['response'][i]['id']
-                            estado = response['response'][i]['enabled']
+                            estado = response['response'][i]['estado']
+                            var login = ""
                             if(estado == true){
                                 estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo 'checked disabled/><label for='" + id + "'></label>" +" "+ "Habilitado"
 
@@ -280,12 +281,20 @@ $('#insert').click(function () {
                                 estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)'data-id='" + id + "' type='checkbox' class='chk-col-indigo ' disabled/><label for='" + id + "'></label>" + " " + "Deshabilitado"
 
                             }
+
+                            if(response['response'][i]['login']){
+                                login = "<input id='se-" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked /><label for='se-" + id + "'></label>"
+                            }else{
+                               login = "<input id='se-" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' /><label for='se-" + id + "'></label>"
+                            }
+
                             data.push( [
                                 response['response'][i]['fullname'],
                                 response['response'][i]['username'],
                                 response['response'][i]['rol']['nombre'],
                                 estado,
-                                "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
+                                login,
+                                "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo white-own waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
                             ]);
                         }
         
@@ -329,32 +338,106 @@ function editar(elemento){
         object: obj
     }, function (response) {
         var self = response;
-
         $('#id').val(self.id),
         $('#nombre_usuario').val(self.nombre),
         $('#apellidop').val(self.apellidop),
         $('#apellidom').val(self.apellidom),
         $('#telefono').val(self.telefono),
-        $('#ci').val(self.ci)
-        $('#correo').val(self.correo)
-        $('#expendido').val(self.expendido)
-        $('#expendido').selectpicker('refresh')
 
         $('#username').val(self.username)
-        $('#password').val('')
+        $('#password').val(self.default)
+        $('#ci').val(self.ci),
+        $('#correo').val(self.correo),
+        $('#expendido').val(self.expendido),
+        $('#expendido').selectpicker('refresh'),
+
         $('#fkrol').val(self.fkrol)
         $('#fkrol').selectpicker('render')
+
 
         validationInputSelects("form")
         verif_inputs('')
         $('#id_div').hide()
         $('#insert').hide()
         $('#update').show()
-        $('#pass').hide()
         $('#div_username').show()
         $('#form').modal('show')
     })
     }
+
+function estado(elemento){
+    console.log("estado")
+    cb_delete = elemento
+    b = $(elemento).prop('checked')
+    if (!b) {
+        cb_title = "¿Deshabilitar Usuario?"
+
+    } else {
+        cb_title = "¿Habilitar Usuario?"
+    }
+    swal({
+        title: cb_title,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#393939",
+        cancelButtonColor: "#F44336",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar"
+    }).then(function () {
+        $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
+        objeto = JSON.stringify({
+            id: parseInt($(cb_delete).attr('data-id')),
+            enabled: $(cb_delete).is(':checked')
+        })
+        ajax_call('usuario_state', {
+            object: objeto,
+            _xsrf: getCookie("_xsrf")
+        }, null, function () {
+            setTimeout(function () {
+                window.location = main_route
+            }, 2000);
+
+        })
+        $('#form').modal('hide')
+    })
+}
+
+function sesion(elemento){
+    console.log("Sesion")
+    cb_delete = elemento
+    b = $(elemento).prop('checked')
+    if (!b) {
+        cb_title = "¿Cerrar Session del Usuario?"
+
+    } else {
+        cb_title = "¿Iniciar Session del Usuario?"
+    }
+    swal({
+        title: cb_title,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#393939",
+        cancelButtonColor: "#F44336",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar"
+    }).then(function () {
+        $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
+        objeto = JSON.stringify({
+            id: parseInt($(cb_delete).attr('data-id')),
+            enabled: $(cb_delete).is(':checked')
+        })
+        ajax_call('usuario_sesion', {
+            object: objeto,
+            _xsrf: getCookie("_xsrf")
+        }, null, function () {
+            setTimeout(function () {
+                window.location = main_route
+            }, 2000);
+
+        })
+        $('#form').modal('hide')
+    })
+}
 
 
 $('#update').click(function () {
@@ -395,6 +478,7 @@ $('#update').click(function () {
                 for (var i = 0; i < Object.keys(response.response).length; i++) {
                     id = response['response'][i]['id']
                     estado = response['response'][i]['enabled']
+                    var login = ""
                     if(estado == true){
                         estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo 'checked disabled/><label for='" + id + "'></label>" +" "+ "Habilitado"
 
@@ -402,12 +486,19 @@ $('#update').click(function () {
                         estado = "<input id='" + id + "' onClick='event.preventDefault();eliminar(this)'data-id='" + id + "' type='checkbox' class='chk-col-indigo ' disabled/><label for='" + id + "'></label>" + " " + "Deshabilitado"
 
                     }
+
+                    if(response['response'][i]['login']){
+                        login = "<input id='se-" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked /><label for='se-" + id + "'></label>"
+                    }else{
+                       login = "<input id='se-" + id + "' onClick='event.preventDefault();sesion(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' /><label for='se-" + id + "'></label>"
+                    }
                     data.push( [
                         response['response'][i]['fullname'],
                         response['response'][i]['username'],
                         response['response'][i]['rol']['nombre'],
                         estado,
-                        "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
+                        login,
+                        "<button id='edit' onClick='editar(this)' data-json='" + id + "' type='button' class='btn bg-indigo white-own waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
                     ]);
                 }
 
@@ -550,19 +641,3 @@ function Modificar_Contraseña() {
     }
 }
 
-
-$('.reset1').click(function () {
-    id = parseInt(JSON.parse($(this).attr('data-json')))
-
-    swal({
-        title: "Desea anular el dispositivo y habilitar nuevamente al usuario?",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#1565c0",
-        cancelButtonColor: "#F44336",
-        confirmButtonText: "Aceptar",
-        cancelButtonText: "Cancelar"
-    }).then(function () {
-        ajax_call("/usuario_codigo_reset", { id: id,_xsrf: getCookie("_xsrf")}, null, function () {setTimeout(function(){window.location=main_route}, 2000);})
-    })
-})

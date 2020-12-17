@@ -37,7 +37,7 @@ class EventoManager(SuperManager):
             respuesta = EventoManager(self.db).validar_invitacion(invi.codigoautorizacion)
 
             if respuesta:
-                diccionary = dict(codigo=invi.id, tarjeta=invi.codigoautorizacion, situacion="Acceso")
+                diccionary = dict(codigo=invi.codigoautorizacion, tarjeta=invi.codigoautorizacion, situacion="Acceso")
 
                 ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
 
@@ -116,11 +116,11 @@ class EventoManager(SuperManager):
             dicci['user'] = diccionary['user']
             dicci['ip'] = diccionary['ip']
 
-            if dicci['fkinvitado']:
-                if dicci['fkinvitado'] == "":
 
-                    invitado = InvitadoManager(self.db).registrar_invitado(dicci)
-                    dicci['fkinvitado'] = invitado.id
+            if dicci['fkinvitado'] == "":
+
+                invitado = InvitadoManager(self.db).registrar_invitado(dicci)
+                dicci['fkinvitado'] = invitado.id
 
 
         objeto = EventoManager(self.db).entity(**diccionary)
@@ -250,7 +250,7 @@ class EventoManager(SuperManager):
 
             if sin_guardia:
 
-                diccionary = dict(codigo=invitacion.id, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
+                diccionary = dict(codigo=invitacion.codigoautorizacion, tarjeta=invitacion.codigoautorizacion, situacion="Denegado")
                 ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         x.estado = state
@@ -270,10 +270,11 @@ class EventoManager(SuperManager):
     def generar_codigo_autorizacion(self, objeto):
 
         if objeto.codigoautorizacion == "":
+            inicial_cod = 400000
             # codigoqr = random.randrange(9999)
             # obj.codigoautorizacion = "EVEN" +str(objeto.id) + "INVI" +str(obj.id)
             #obj.codigoautorizacion = str(objeto.id) + str(obj.id) + str(codigoqr)
-            objeto.codigoautorizacion = str(objeto.id)
+            objeto.codigoautorizacion = str(objeto.id + inicial_cod)
 
             objeto = super().update(objeto)
 
@@ -289,7 +290,7 @@ class EventoManager(SuperManager):
             if respuesta:
 
 
-                diccionary = dict(codigo=objeto.id, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
+                diccionary = dict(codigo=objeto.codigoautorizacion, tarjeta=objeto.codigoautorizacion, situacion="Acceso")
 
                 ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
 
@@ -522,7 +523,7 @@ class InvitacionManager(SuperManager):
             sin_guardia = x.evento.areasocial.condominio.singuardia
 
         if sin_guardia:
-            diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+            diccionary = dict(codigo=x.codigoautorizacion, tarjeta=x.codigoautorizacion, situacion="Denegado")
             ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         return x
@@ -553,7 +554,7 @@ class InvitacionManager(SuperManager):
             sin_guardia = x.evento.areasocial.condominio.singuardia
 
         if sin_guardia:
-            diccionary = dict(codigo=x.id, tarjeta=x.codigoautorizacion, situacion="Denegado")
+            diccionary = dict(codigo=x.codigoautorizacion, tarjeta=x.codigoautorizacion, situacion="Denegado")
             ConfiguraciondispositivoManager(self.db).denegar_qr_invitacion(diccionary)
 
         return x

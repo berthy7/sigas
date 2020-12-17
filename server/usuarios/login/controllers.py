@@ -39,6 +39,13 @@ class LoginController(SuperController):
                 fecha = self.fecha_actual()
                 b = Bitacora(fkusuario=user.id, ip=ip, accion="Inicio de sesión.", fecha=fecha)
                 self.insertar_bitacora(b)
+
+                usuario = LoginManager().usuario_x_id(user.id)
+
+                usuario.login = True
+                self.registrar_login(usuario)
+
+
                 self.set_user_id(user.id)
                 self.redirect("/")
             else:
@@ -74,6 +81,12 @@ class LoginController(SuperController):
             session.commit()
 
 
+    def registrar_login(self, usuario):
+        with transaction() as session:
+            session.merge(usuario)
+            session.commit()
+
+
 class LogoutController(SuperController):
 
     @coroutine
@@ -86,6 +99,12 @@ class LogoutController(SuperController):
 
             b = Bitacora(fkusuario=user_id, ip=ip, accion="Finalizó sesión.", fecha=fecha)
             self.insertar_bitacora(b)
+
+            usuario = LoginManager().usuario_x_id(user_id)
+
+            usuario.login = False
+            self.registrar_login(usuario)
+
             self.clear_cookie('user')
             self.redirect(self.get_argument("next", "/"))
         except Exception as e:
@@ -113,6 +132,12 @@ class LogoutController(SuperController):
     def insertar_bitacora(self, bitacora):
         with transaction() as session:
             session.add(bitacora)
+            session.commit()
+
+
+    def registrar_login(self, usuario):
+        with transaction() as session:
+            session.merge(usuario)
             session.commit()
 
 

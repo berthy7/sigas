@@ -70,7 +70,6 @@ class NropaseManager(SuperManager):
         else:
             return None
 
-
     def listar_numero_pases(self,usuario):
 
         if usuario.sigas:
@@ -177,6 +176,7 @@ class NropaseManager(SuperManager):
                        cell[0].value in colnames}
             if len(indices) == len(colnames):
                 for row in ws.iter_rows(min_row=2):
+
                     nropase = row[indices['NUMERO_DE_PASE']].value
                     tarjeta = row[indices['TARJETA']].value
                     tipo = row[indices['TIPO']].value
@@ -187,7 +187,6 @@ class NropaseManager(SuperManager):
                             cod_condominio = cod_condominio.replace(" ", "")
 
                         list_condominio = list()
-
 
                         query = self.db.query(Nropase).filter(Nropase.tarjeta == str(tarjeta)).first()
                         query_condominio = self.db.query(Condominio).filter(
@@ -204,8 +203,6 @@ class NropaseManager(SuperManager):
 
                             if nropase is None or nropase == "":
                                 nropase = " "
-
-
 
 
                             if query_condominio:

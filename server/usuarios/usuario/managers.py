@@ -34,6 +34,13 @@ class UsuarioManager(SuperManager):
     def __init__(self, db):
         super().__init__(Usuario, db)
 
+    def generar_contraseña(self):
+        longitud = 6
+        valores = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+        p = ""
+        p = p.join([choice(valores) for i in range(longitud)])
+        return p
 
     def state(self, id,estado, user, ip):
         x = self.db.query(self.entity).filter(self.entity.id == id).one()
@@ -50,8 +57,12 @@ class UsuarioManager(SuperManager):
         super().insert(b)
         self.db.merge(x)
         self.db.commit()
-        return x
 
+        if x.rol.nombre == "RESIDENTE":
+            if x.condominio.singuardia:
+                UsuarioManager(self.db).sincronizar_dispositivos(x, estado)
+
+        return x
 
     def sesion(self, id,estado, user, ip):
         x = self.db.query(self.entity).filter(self.entity.id == id).one()
@@ -75,7 +86,6 @@ class UsuarioManager(SuperManager):
         usuario.token = str(uuid.uuid4()).replace('-', '')
 
         return super().update(usuario)
-
 
     def logout_sin_token(self, usuario):
         usuario.login = False
@@ -122,6 +132,8 @@ class UsuarioManager(SuperManager):
         return ''.join(random_list)
 
     def insert(self, diccionary):
+        password_desencriptado = diccionary['password']
+
 
         diccionary['password']= hashlib.sha512(diccionary['password'].encode()).hexdigest()
 
@@ -137,31 +149,36 @@ class UsuarioManager(SuperManager):
             b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
             super().insert(b)
             u = super().insert(usuario)
-            u.codigo = u.id
-            super().update(u)
+
 
             principal = self.db.query(Principal).first()
 
-            # if principal:
-            #     try:
-            #         if u.fkcondominio:
-            #
-            #             if u.condominio.ip_publica !="":
-            #                 url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/registrar_usuario"
-            #
-            #                 headers = {'Content-Type': 'application/json'}
-            #                 string = diccionary
-            #                 cadena = json.dumps(string)
-            #                 body = cadena
-            #                 resp = requests.post(url, data=body, headers=headers, verify=False)
-            #                 response = json.loads(resp.text)
-            #
-            #                 # print(response)
-            #
-            #
-            #     except Exception as e:
-            #         # Other errors are possible, such as IOError.
-            #         print("Error de conexion: " + str(e))
+            if principal.estado:
+                u.codigo = u.id
+                super().update(u)
+                diccionary['codigo'] = u.codigo
+                diccionary['password'] = password_desencriptado
+                diccionary['default'] = password_desencriptado
+
+                try:
+                    if u.fkcondominio:
+
+                        if u.condominio.ip_publica !="":
+                            url = "http://"+u.condominio.ip_publica+":"+u.condominio.puerto+"/api/v1/sincronizar_usuario"
+
+                            headers = {'Content-Type': 'application/json'}
+                            string = diccionary
+                            cadena = json.dumps(string)
+                            body = cadena
+                            resp = requests.post(url, data=body, headers=headers, verify=False)
+                            response = json.loads(resp.text)
+
+                            print(response)
+
+
+                except Exception as e:
+                    # Other errors are possible, such as IOError.
+                    print("Error de conexion: " + str(e))
 
             #UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])
             return dict(respuesta=True, Mensaje="Insertado Correctamente")
@@ -191,6 +208,27 @@ class UsuarioManager(SuperManager):
             result = nameprev.index(ap_user)
             u.correo = emailnew
 
+    def sincronizar_dispositivos(self,x,enable):
+
+        resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
+        resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
+        resi.estado = enable
+        resiacce.estado = enable
+        self.db.merge(resi)
+        self.db.merge(resiacce)
+
+        if enable:
+            situacion = "Acceso"
+        else:
+            situacion = "Denegado"
+
+
+        diccionary = dict(codigo=resi.codigoqr, tarjeta=resi.codigoqr, situacion=situacion,
+                          fkcondominio=x.fkcondominio, residente=resi.nombre + " " + resi.apellidop)
+
+        ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
+
+
     def delete_user(self, id, enable, Usuariocr, ip):
         x = self.db.query(Usuario).filter(Usuario.id == id).one()
 
@@ -206,28 +244,8 @@ class UsuarioManager(SuperManager):
             message = "Se deshabilitó un usuario."
 
         if x.rol.nombre == "RESIDENTE":
-            resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
-            resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
-            resi.estado = enable
-            resiacce.estado = enable
-            self.db.merge(resi)
-            self.db.merge(resiacce)
-
             if x.condominio.singuardia:
-
-                situacion = ""
-                if enable:
-                    situacion = "Acceso"
-                else:
-                    situacion = "Denegado"
-
-                inicial_cod = 100000
-                codigoInbio = inicial_cod + int(resi.codigo)
-
-                diccionary = dict(codigo=str(codigoInbio), tarjeta=resi.codigoqr, situacion=situacion, fkcondominio=x.fkcondominio, residente=resi.nombre+" "+resi.apellidop)
-
-                ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
-
+                UsuarioManager(self.db).sincronizar_dispositivos(x, enable)
 
         fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=Usuariocr, ip=ip, accion=message, fecha=fecha)
@@ -489,6 +507,7 @@ class UsuarioManager(SuperManager):
 
 
     def actualizar_credenciales(self, diccionary):
+
         usuario = UsuarioManager(self.db).get_by_pass(diccionary['user'])
         old_password = hashlib.sha512(diccionary['password'].encode()).hexdigest()
         if usuario.password == old_password:
@@ -533,9 +552,13 @@ class UsuarioManager(SuperManager):
 
         usuario = UsuarioManager(self.db).get_by_pass(diccionary['idusuario'])
 
+        diccionary['password'] = UsuarioManager(self.db).generar_contraseña()
+
+
         nuevo_password = hashlib.sha512(diccionary['password'].encode()).hexdigest()
 
         usuario.password = nuevo_password
+        usuario.default = diccionary['password']
 
 
         fecha = BitacoraManager(self.db).fecha_actual()
@@ -547,7 +570,7 @@ class UsuarioManager(SuperManager):
 
         # UsuarioManager(self.db).correo_password_reinicio(u, diccionary['password'])
 
-        return dict(response=None, success=True, message="Actualizado Correctamente")
+        return dict(response=diccionary['password'], success=True, message="Actualizado Correctamente")
 
 
 class ModuloManager:

@@ -8,6 +8,30 @@ import hashlib
 
 class LoginManager:
 
+    def usuario_x_id(self, idUsuario):
+        """Retorna un usuario que coincida con el username y password dados.
+
+        parameters
+        ----------
+        Usuarioname : str
+        password : str
+            El password deberá estar sin encriptar.
+
+        returns
+        -------
+        Usuario
+        None
+            Retornará None si no encuentra nada.
+        """
+
+        with transaction() as session:
+
+            usuario = session.query(Usuario).\
+                filter(Usuario.id == idUsuario).\
+                first()
+
+        return usuario
+
     def verificar_usuario_correcto(self, username, password):
 
         password = hashlib.sha512(password.encode()).hexdigest()

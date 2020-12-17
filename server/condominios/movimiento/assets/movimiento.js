@@ -2,6 +2,10 @@ main_route = '/movimiento'
 var refrescar = false;
 var sw_visita = false;
 
+var data_lista = []
+
+var ult_registro = 0
+
 $(document).ready(function () {
 
     auxiliar_method()
@@ -9,6 +13,12 @@ $(document).ready(function () {
     verificar_qr_residente()
 
 });
+
+var fechahoy = new Date();
+var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+
+document.getElementById("fechai").value=hoy
+document.getElementById("fechaf").value=hoy
 
 function auxiliar_method() {
     //main_method()
@@ -19,7 +29,7 @@ function auxiliar_method() {
         }else{
             console.log(refrescar)
             if(refrescar == false){
-                window.location = main_route
+                actualizar_tabla_x_fechas(hoy,hoy,ult_registro)
             }
         }
     }, 5000);
@@ -216,11 +226,143 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
-var fechahoy = new Date();
-var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
 
-document.getElementById("fechai").value=hoy
-document.getElementById("fechaf").value=hoy
+function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin, 
+        'ult_registro': ult_registro_parametro,
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "movimiento_recargar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
+
+    }).done(function (response) {
+        response = JSON.parse(response)
+
+        var data = [];
+        var id;
+        var fechai;
+        var fechaf;
+        var tipodocumento;
+        var ci;
+        var nombre;
+        var conductor;
+        var placa;
+        var tipo;
+        var marca;
+        var modelo;
+        var color;
+        var destino;
+        var nropase;
+        var salida;
+
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+                id = response['response'][i].id
+
+                if(i == 0){
+                        ult_registro = id
+                        // console.log("i = 0 : "+ult_registro)
+                    }
+
+                if(response['response'][i].fechai){
+                    fechai= response['response'][i].fechai
+                }else{
+                    fechai = '-----'
+                }
+
+                if(response['response'][i].fechaf){
+                    fechaf = response['response'][i].fechaf
+                    salida= '✓'
+                }else{
+                    fechaf = '-----'
+                    salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
+
+                }
+
+                if(response['response'][i].fktipodocumento){
+                    tipodocumento= response['response'][i].tipodocumento.nombre
+                }else{
+                    tipodocumento = '-----'
+                }
+
+                if(response['response'][i].fkinvitado != "None"){
+                    ci = response['response'][i].invitado.ci,
+                    nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
+
+                }else{
+                    ci ='Residente'
+                    nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
+                }
+
+
+                if(response['response'][i].fkconductor != "None"){
+                    conductor= response['response'][i].conductor.nombre +" "+response['response'][i].conductor.apellidop+" "+response['response'][i].conductor.apellidom
+                }else{
+                    conductor ='-----'
+                }
+
+                placa= response['response'][i].vehiculo.placa
+                tipo = response['response'][i].vehiculo.tipo.nombre
+
+                if(response['response'][i].vehiculo.fkmarca != "None"){
+                    marca = response['response'][i].vehiculo.marca.nombre
+                }else{
+                    marca ='-----'
+                }
+                if(response['response'][i].vehiculo.fkmodelo != "None"){
+                    modelo = response['response'][i].vehiculo.modelo.nombre
+                }else{
+                    modelo ='-----'
+                }
+
+                color = response['response'][i].vehiculo.color.nombre
+
+
+                if(response['response'][i].fkdomicilio != "None"){
+                    destino = response['response'][i].domicilio.ubicacion + " " + response['response'][i].domicilio.numero
+                }else if(response['response'][i].fkareasocial != "None"){
+                    destino = response['response'][i].areasocial.nombre
+                }else{
+                    destino = '-----'
+                }
+
+                if(response['response'][i].fknropase != "None"){
+                    nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
+                }else{
+                    nropase = '-----'
+                }
+
+                data_lista.push( [
+                    id,
+                    fechai,
+                    fechaf,
+                    tipodocumento,
+                    ci,
+                    nombre,
+                    conductor,
+                    response['response'][i].cantpasajeros,
+                    placa,
+                    tipo,
+                    marca,
+                    modelo,
+                    color,
+                    destino,
+                    response['response'][i].autorizacion.nombre,
+                    nropase,
+                    response['response'][i].tipopase.nombre,
+                    salida
+                ]);
+        }
+
+        cargar_tabla(data_lista)
+    })
+}
+
 
 $('#fkinvitado').selectpicker({
     size: 10,
@@ -320,6 +462,141 @@ $('#fkcolor').selectpicker({
     title: 'Seleccione'
 })
 
+    $('#reporte-xls').click(function () {
+        aux = {'datos': ''}
+        obj = JSON.stringify(aux)
+        ruta = "/movimiento_reporte_xls";
+        $.ajax({
+            method: "POST",
+            url: ruta,
+            data:{_xsrf: getCookie("_xsrf"), object: obj},
+            async: false
+        }).done(function(response){
+            response = JSON.parse(response)
+
+            if (response.success) {
+                $('#link_excel').attr('href', response.response.url).html(response.response.nombre)
+            }
+        })
+        $('#modal-rep-xls').modal('show')
+    })
+
+    $('#importar_Excel').click(function () {
+    $(".xlsfl").each(function () {
+        $(this).fileinput('refresh',{
+            allowedFileExtensions: ['xlsx', 'txt'],
+            maxFileSize: 2000,
+            maxFilesNum: 1,
+            showUpload: false,
+            layoutTemplates: {
+                main1: '{preview}\n' +
+                    '<div class="kv-upload-progress hide"></div>\n' +
+                    '<div class="input-group {class}">\n' +
+                    '   {caption}\n' +
+                    '   <div class="input-group-btn">\n' +
+                    '       {remove}\n' +
+                    '       {cancel}\n' +
+                    '       {browse}\n' +
+                    '   </div>\n' +
+                    '</div>',
+                main2: '{preview}\n<div class="kv-upload-progress hide"></div>\n{remove}\n{cancel}\n{browse}\n',
+                preview: '<div class="file-preview {class}">\n' +
+                    '    {close}\n' +
+                    '    <div class="{dropClass}">\n' +
+                    '    <div class="file-preview-thumbnails">\n' +
+                    '    </div>\n' +
+                    '    <div class="clearfix"></div>' +
+                    '    <div class="file-preview-status text-center text-success"></div>\n' +
+                    '    <div class="kv-fileinput-error"></div>\n' +
+                    '    </div>\n' +
+                    '</div>',
+                icon: '<span class="glyphicon glyphicon-file kv-caption-icon"></span>',
+                caption: '<div tabindex="-1" class="form-control file-caption {class}">\n' +
+                    '   <div class="file-caption-name"></div>\n' +
+                    '</div>',
+                btnDefault: '<button type="{type}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</button>',
+                btnLink: '<a href="{href}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</a>',
+                btnBrowse: '<div tabindex="500" class="{css}"{status}>{icon}{label}</div>',
+                progress: '<div class="progress">\n' +
+                    '    <div class="progress-bar progress-bar-success progress-bar-striped text-center" role="progressbar" aria-valuenow="{percent}" aria-valuemin="0" aria-valuemax="100" style="width:{percent}%;">\n' +
+                    '        {percent}%\n' +
+                    '     </div>\n' +
+                    '</div>',
+                footer: '<div class="file-thumbnail-footer">\n' +
+                    '    <div class="file-caption-name" style="width:{width}">{caption}</div>\n' +
+                    '    {progress} {actions}\n' +
+                    '</div>',
+                actions: '<div class="file-actions">\n' +
+                    '    <div class="file-footer-buttons">\n' +
+                    '        {delete} {other}' +
+                    '    </div>\n' +
+                    '    {drag}\n' +
+                    '    <div class="file-upload-indicator" title="{indicatorTitle}">{indicator}</div>\n' +
+                    '    <div class="clearfix"></div>\n' +
+                    '</div>',
+                actionDelete: '<button type="button" class="kv-file-remove {removeClass}" title="{removeTitle}"{dataUrl}{dataKey}>{removeIcon}</button>\n',
+                actionDrag: '<span class="file-drag-handle {dragClass}" title="{dragTitle}">{dragIcon}</span>'
+            }
+        })
+    });
+    verif_inputs('')
+
+    $('#id_div').hide()
+    $('#insert-importar').show()
+    $('#form-importar').modal('show')
+})
+
+    $('#insert-importar').on('click',function (e) {
+     e.preventDefault();
+
+    var data = new FormData($('#importar-form')[0]);
+
+    ruta = "movimiento_importar";
+    data.append('_xsrf', getCookie("_xsrf"))
+    render = null
+    callback = function () {
+        setTimeout
+        (function () {
+            window.location = main_route
+        }, 2000);
+    }
+    $.ajax({
+        url: ruta,
+        type: "post",
+        data: data,
+        contentType: false,
+        processData: false,
+        cache: false,
+        async: false
+    }).done(function (response) {
+        $('.page-loader-wrapper').hide();
+        $('#form').modal('hide');
+        response = JSON.parse(response)
+
+        if (response.success) {
+            swal({
+                title: "Operacion Correcta...",
+                text: response.message,
+                type: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Confirmar"
+            }).then(function () {
+                $('#form-importar').modal('hide')
+                setTimeout(function () {
+                    window.location = main_route
+                }, 500);
+            });
+        } else {
+            swal("Operacion Fallida", response.message, "error").then(function () {
+                query_render('/movimiento');
+            });
+        }
+    })
+    $('#form').modal('hide')
+})
+
+
 $('#switch').change(function() {
    var sw = $(this).prop('checked')
 
@@ -393,6 +670,8 @@ $('#switch_refrescar').change(function() {
 })
 
 function cargar_tabla(data){
+    data_lista = data
+
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
         table.destroy();
@@ -475,7 +754,7 @@ function actualizar_tabla(response){
                 salida= '✓'
             }else{
                 fechaf = '-----'
-                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
+                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
 
             }
         
@@ -552,55 +831,9 @@ function actualizar_tabla(response){
                 response['response'][i].tipopase.nombre,
                 salida
             ]);
-        }
-
-
-    if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
-        var table = $('#data_table').DataTable();
-        table.destroy();
     }
 
-    $('#data_table').DataTable({
-        data:           data,
-        deferRender:    true,
-        scrollCollapse: true,
-        scroller:       true,
-
-        dom: "Bfrtip" ,
-        buttons: [
-            {  extend : 'excelHtml5',
-               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10,11,12,13,14,15,16]},
-                sheetName: 'Reporte Control y Registro Vehicular',
-               title: 'Control y Registro Vehicular'  },
-            {  extend : 'pdfHtml5',
-                orientation: 'landscape',
-               customize: function(doc) {
-                    doc.styles.tableBodyEven.alignment = 'center';
-                    doc.styles.tableBodyOdd.alignment = 'center';
-               },
-               exportOptions : {
-                    columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10,11,12,13,14,15,16]
-                },
-               title: 'Control y Registro Vehicular'
-            }
-        ],
-        initComplete: function () {
-
-
-        },
-        "order": [[ 1, "desc" ]],
-        language : {
-            'url': '/resources/js/spanish.json',
-        },
-        "pageLength": 5,
-        fixedHeader: {
-            header: true,
-            headerOffset: $('.navbar-header').outerHeight()
-        },
-        paging: true,
-        select: true
-    });
-
+    cargar_tabla(data)
 
 }
 
@@ -1130,9 +1363,9 @@ $('#insert').click(function () {
                     object: objeto,
                     _xsrf: getCookie("_xsrf")
                 }, null, function () {
-                    setTimeout(function () {
-                        window.location = main_route
-                    }, 2000);
+                    // setTimeout(function () {
+                    //     window.location = main_route
+                    // }, 2000);
                 })
                 $('#form').modal('hide')
             } else {
@@ -1197,9 +1430,9 @@ $('#insert').click(function () {
                         object: objeto,
                         _xsrf: getCookie("_xsrf")
                     }, null, function () {
-                        setTimeout(function () {
-                            window.location = main_route
-                        }, 2000);
+                        // setTimeout(function () {
+                        //     window.location = main_route
+                        // }, 2000);
                     })
                     $('#form').modal('hide')
                 } else {
@@ -1416,6 +1649,7 @@ $('#filtrar').click(function () {
 
         response = JSON.parse(response)
         actualizar_tabla(response)
+
     })
 });
 

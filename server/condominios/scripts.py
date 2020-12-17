@@ -1320,6 +1320,7 @@ def insertions():
         session.add(Color(nombre='ROJO'))
         session.add(Color(nombre='ROSADO'))
         session.add(Color(nombre='VERDE'))
+        session.add(Color(nombre='PLATA'))
 
         session.commit()
 

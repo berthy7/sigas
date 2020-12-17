@@ -354,7 +354,7 @@ class ConfiguraciondispositivoManager(SuperManager):
 
 
     def insert_qr_invitacion(self, diccionary):
-        invitacion = self.db.query(Invitacion).filter(Invitacion.id == diccionary['codigo']).first()
+        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['codigo']).first()
 
         fkcondominio = None
         if invitacion.evento.fkdomicilio:
@@ -363,17 +363,13 @@ class ConfiguraciondispositivoManager(SuperManager):
             fkcondominio = invitacion.evento.areasocial.fkcondominio
 
         diccionary['fkcondominio']  =  fkcondominio
-        
-        inicial_id = 500000
-        codigo = inicial_id + int(diccionary['codigo'])
-        diccionary['codigo'] = str(codigo)
-        
+
         ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
 
 
 
     def denegar_qr_invitacion(self, diccionary):
-        invitacion = self.db.query(Invitacion).filter(Invitacion.id == diccionary['codigo']).first()
+        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['codigo']).first()
 
         fkcondominio = None
         if invitacion.evento.fkdomicilio:
@@ -382,10 +378,6 @@ class ConfiguraciondispositivoManager(SuperManager):
             fkcondominio = invitacion.evento.areasocial.fkcondominio
 
         diccionary['fkcondominio'] = fkcondominio
-
-        inicial_id = 500000
-        codigo = inicial_id + int(diccionary['codigo'])
-        diccionary['codigo'] = str(codigo)
 
         ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(diccionary)
 

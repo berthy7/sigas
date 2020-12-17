@@ -4,6 +4,42 @@ $(document).ready(function () {
 
 });
 
+
+$(function () {
+    $('#sign_in').validate({
+        highlight: function (input) {
+            $(input).parents('.form-line').addClass('error');
+        },
+        unhighlight: function (input) {
+            $(input).parents('.form-line').removeClass('error');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parents('.input-group').append(error);
+        }
+    });
+});
+
+$('#see-pass').mousedown(function(){
+    $("#ic-pass").css("color", "lightgrey");
+    $("#password").prop("type", "text");
+    $("#ic-pass").html("visibility");
+});
+
+$("#see-pass").mouseup(function(){
+    $("#ic-pass").css("color", "grey");
+    $("#password").prop("type", "password");
+    $("#ic-pass").html("visibility_off");
+});
+
+$('#sign_in').submit(function(){
+    if(!$('#username').val() == '' && $(!'#password').val() == ''){
+        $('#btn-login').html('Espere...')
+        $('#msg-data').fadeOut('slow')
+    }else{
+        $('#msg-data').fadeIn('slow')
+    }
+});
+
 id_gv = 0
 sw = false
 accion = "nuevo"
@@ -500,7 +536,7 @@ document.getElementById("tab-residente").click();
             $('#' + id_vehiculo ).parent().addClass('focused')
             $('#' + id_placa).val($('#placa').val())
             $('#' + id_placa).parent().addClass('focused')
-            $('#' + id_fktipo).val($('#fktipovehiculo').val())
+            $('#' + id_fktipo).val($('#fktipo').val())
             $('#' + id_fktipo).parent().addClass('focused')
             $('#' + id_tipo).val($( "#fktipo option:selected" ).text())
             $('#' + id_tipo).parent().addClass('focused')
@@ -530,7 +566,7 @@ document.getElementById("tab-residente").click();
             $('#id' + id ).parent().addClass('focused')
             $('#placa' + id ).val($('#placa').val())
             $('#placa' + id ).parent().addClass('focused')
-            $('#fktipo' + id).val($('#fktipovehiculo').val())
+            $('#fktipo' + id).val($('#fktipo').val())
             $('#fktipo' + id).parent().addClass('focused')
             $('#tipo' + id).val($("#fktipo option:selected").text())
             $('#tipo' + id).parent().addClass('focused')
@@ -1199,49 +1235,32 @@ function editar(elemento){
             $('#vivienda_div').empty()
 
             for (invi in self.domicilios) {
-                id = self.domicilios[invi]['id']
-                fkvivienda= self.domicilios[invi]['fkdomicilio']
-                codigo = self.domicilios[invi]['codigo']
-                nombre = self.domicilios[invi]['nombre']
-                vivienda = self.domicilios[invi]['vivienda']
-                append_input_vivienda(id)
-                $('#idv' + id).val(id)
-                $('#fkvivienda' + id).val(fkvivienda)
-                $('#codigo' + id).val(codigo)
-                $('#ubicacion' + id).val(nombre)
-                $('#b_' + id).prop('checked', vivienda)
+
+                append_input_vivienda(self.domicilios[invi]['id'])
+                $('#idv' + self.domicilios[invi]['id']).val(self.domicilios[invi]['id'])
+                $('#fkvivienda' + self.domicilios[invi]['id']).val(self.domicilios[invi]['fkdomicilio'])
+                $('#codigo' + self.domicilios[invi]['id']).val(self.domicilios[invi]['codigo'])
+                $('#ubicacion' + self.domicilios[invi]['id']).val(self.domicilios[invi]['nombre'])
+                $('#b_' + self.domicilios[invi]['id']).prop('checked', self.domicilios[invi]['vivienda'])
             }
 
             $('#vehiculo_div').empty()
             console.log(self.vehiculos)
             for (vehi in self.vehiculos) {
-                
-                idve = self.vehiculos[vehi]['id']
-                placa= self.vehiculos[vehi]['placa']
-                fktipo = self.vehiculos[vehi]['fktipo']
-                nombrefktipo = self.vehiculos[vehi]['nombrefktipo']
-                fkcolor = self.vehiculos[vehi]['fkcolor']
-                nombrefkcolor = self.vehiculos[vehi]['nombrefkcolor']
-                fkmarca = self.vehiculos[vehi]['fkmarca']
-                nombremarca = self.vehiculos[vehi]['nombremarca']
-                fkmodelo = self.vehiculos[vehi]['fkmodelo']
-                nombremodelo = self.vehiculos[vehi]['nombremodelo']
-                fknropase = self.vehiculos[vehi]['fknropase']
-                nropase = self.vehiculos[vehi]['nropase']
 
-                append_input_vehiculos(idve)
-                $('#id' + idve).val(idve)
-                $('#placa' + idve).val(placa)
-                $('#fktipo' + idve).val(fktipo)
-                $('#fktipo' + idve).val(nombrefktipo)
-                $('#fkcolor' + idve).val(fkcolor)
-                $('#fkcolor' + idve).val(nombrefkcolor)
-                $('#fkmarca' + idve).val(fkmarca)
-                $('#marca' + idve).val(nombremarca)
-                $('#fkmodelo' + idve).val(fkmodelo)
-                $('#modelo' + idve).val(nombremodelo)
-                $('#fknropase' + idve).val(fknropase)
-                $('#nropase' + idve).val(nropase)
+                append_input_vehiculos(self.vehiculos[vehi]['id'])
+                $('#id' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['id'])
+                $('#placa' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['placa'])
+                $('#fktipo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fktipo'])
+                $('#tipo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombretipo'])
+                $('#fkcolor' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fkcolor'])
+                $('#color' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombrecolor'])
+                $('#fkmarca' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fkmarca'])
+                $('#marca' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombremarca'])
+                $('#fkmodelo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fkmodelo'])
+                $('#modelo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombremodelo'])
+                $('#fknropase' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fknropase'])
+                $('#nropase' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nropase'])
 
             }
 

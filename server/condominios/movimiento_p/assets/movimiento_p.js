@@ -2,6 +2,10 @@ main_route = '/movimiento_p'
 var refrescar = false;
 var sw_visita = false;
 
+var data_lista = []
+
+var ult_registro = 0
+
 $(document).ready(function () {
 
     auxiliar_method()
@@ -9,6 +13,13 @@ $(document).ready(function () {
     verificar_qr_residente()
 
 });
+
+var fechahoy = new Date();
+var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+
+
+document.getElementById("fechai").value=hoy
+document.getElementById("fechaf").value=hoy
 
 function auxiliar_method() {
     //main_method()
@@ -19,7 +30,8 @@ function auxiliar_method() {
         }else{
             console.log(refrescar)
             if(refrescar == false){
-                window.location = main_route
+                actualizar_tabla_x_fechas(hoy,hoy,ult_registro)
+
             }
         }
     }, 5000);
@@ -213,12 +225,101 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
-var fechahoy = new Date();
-var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
+        'ult_registro': ult_registro_parametro,
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "movimiento_p_recargar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
 
+    }).done(function (response) {
+        response = JSON.parse(response)
 
-document.getElementById("fechai").value=hoy
-document.getElementById("fechaf").value=hoy
+        var data = [];
+        var id;
+        var fechai;
+        var fechaf;
+        var tipodocumento;
+        var ci;
+        var nombre;
+
+        var destino;
+        var nropase;
+        var salida;
+
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+            id = response['response'][i].id
+
+            if(response['response'][i].fechai){
+                fechai= response['response'][i].fechai
+            }else{
+                fechai =response['response'][i].fechar
+                // fechai = '-----'
+            }
+
+            if(response['response'][i].fechaf){
+                fechaf = response['response'][i].fechaf
+                salida= '✓'
+            }else{
+                fechaf = '-----'
+                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
+
+            }
+
+            if(response['response'][i].fktipodocumento){
+                    tipodocumento= response['response'][i].tipodocumento.nombre
+                }else{
+                    tipodocumento = '-----'
+                }
+
+            if(response['response'][i].fkinvitado != "None"){
+                ci = response['response'][i].invitado.ci,
+                nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
+
+            }else{
+                ci ='Residente'
+                nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
+            }
+
+            if(response['response'][i].fkdomicilio != "None"){
+                destino = response['response'][i].domicilio.ubicacion
+            }else if(response['response'][i].fkareasocial != "None"){
+                destino = response['response'][i].areasocial.nombre
+            }else{
+                destino = '-----'
+            }
+
+            if(response['response'][i].fknropase != "None"){
+                nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
+            }else{
+                nropase = '-----'
+            }
+
+            data.push( [
+                id,
+                fechai,
+                fechaf,
+                tipodocumento,
+                ci,
+                nombre,
+                destino,
+                response['response'][i].autorizacion.nombre,
+                nropase,
+                response['response'][i].tipopase.nombre,
+                salida
+            ]);
+        }
+
+        cargar_tabla(data_lista)
+    })
+}
 
 $('#fkinvitado').selectpicker({
     size: 10,
@@ -366,6 +467,8 @@ $('#switch_refrescar').change(function() {
 })
 
 function cargar_tabla(data){
+    data_lista = data
+
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
         var table = $('#data_table').DataTable();
         table.destroy();
@@ -492,45 +595,7 @@ function actualizar_tabla(response){
     }
 
 
-    if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
-        var table = $('#data_table').DataTable();
-        table.destroy();
-    }
-
-    $('#data_table').DataTable({
-        data:           data,
-        deferRender:    true,
-        scrollCollapse: true,
-        scroller:       true,
-
-        dom: "Bfrtip" ,
-        buttons: [
-            {  extend : 'excelHtml5',
-               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10]},
-                sheetName: 'Reporte Control y Registro Peaonal',
-               title: 'Control y Registro Peaonal'  },
-            {  extend : 'pdfHtml5',
-                orientation: 'landscape',
-               customize: function(doc) {
-                    doc.styles.tableBodyEven.alignment = 'center';
-                    doc.styles.tableBodyOdd.alignment = 'center';
-               },
-               exportOptions : {
-                    columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10]
-                },
-               title: 'Control y Registro Peaonal'
-            }
-        ],
-        initComplete: function () {
-
-
-        },
-        "order": [[ 1, "desc" ]],
-        language : {
-            'url': '/resources/js/spanish.json',
-        },
-        "pageLength": 50
-    });
+    cargar_tabla(data)
 
 
 }

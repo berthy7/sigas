@@ -122,8 +122,8 @@ function actualizar_tabla(response){
             }else{
                 destino = '-----'
             }
-            estado ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
-            editar ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
+            estado ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
+            editar ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
         
 
             data.push( [
