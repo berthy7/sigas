@@ -77,9 +77,11 @@ class ApiCondominioController(ApiController):
 
         '/api/v1/sincronizar_condominio': {'POST': 'sincronizar_condominio'},
         '/api/v1/sincronizar_usuario': {'POST': 'sincronizar_usuario'},
+        '/api/v1/sincronizar_residente': {'POST': 'sincronizar_residente'},
         '/api/v1/sincronizar_invitado': {'POST': 'sincronizar_invitado'},
         '/api/v1/sincronizar_evento': {'POST': 'sincronizar_evento'},
         '/api/v1/sincronizar_invitacion': {'POST': 'sincronizar_invitacion'},
+        '/api/v1/sincronizar_movimiento': {'POST': 'sincronizar_movimiento'},
         '/api/v1/sincronizar_invitacion_rapida': {'POST': 'sincronizar_invitacion_rapida'},
         '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
         '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
@@ -1355,6 +1357,25 @@ class ApiCondominioController(ApiController):
             # user = user.get_dict()
             self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
 
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_residente(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+
+            print(data)
+
+            ResidenteManager(self.db).insert(data['dict_residente'])
+
+            UsuarioManager(self.db).insert_residente(data['dict_usuario'])
+
+
+            self.respond(response=None, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))

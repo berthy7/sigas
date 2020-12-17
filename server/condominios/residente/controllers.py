@@ -78,7 +78,28 @@ class ResidenteController(CrudController):
             f.close()
             diccionary['foto'] = "/resources/images/residente/" + cname
 
-        ResidenteManager(self.db).insert(diccionary)
+        dict_usuario = ResidenteManager(self.db).insert(diccionary)
+        c = UsuarioManager(self.db).insert_residente(dict_usuario)
+
+        principal = self.db.query(Principal).first()
+
+        if principal.estado:
+
+            if c.condominio.ip_publica != "":
+                url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
+
+                headers = {'Content-Type': 'application/json'}
+
+                diccionary = dict(dict_usuario=dict_usuario, dict_residente=diccionary)
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+
+
         arraT = UsuarioManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] = ResidenteManager(self.db).listar_residentes(us)
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,

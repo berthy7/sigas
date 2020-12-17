@@ -88,16 +88,10 @@ class ResidenteManager(SuperManager):
 
 
         password = UsuarioManager(self.db).generar_contraseña()
-
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=estado)
-        UsuarioManager(self.db).insert_residente(dict_usuario)
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
 
 
-        # diccionary = dict(codigo=a.codigoqr, tarjeta=a.codigoqr, situacion="Acceso")
-        # ConfiguraciondispositivoManager(self.db).insert_qr_residente(diccionary)
-
-
-        return a
+        return dict_usuario
 
     def update(self, diccionary):
         estado = diccionary['acceso'][0]['estado']
@@ -250,7 +244,28 @@ class ResidenteManager(SuperManager):
                                                   user=user,
                                                   ip=ip)
 
-                                ResidenteManager(self.db).insert(residente)
+                                dict_usuario = ResidenteManager(self.db).insert(residente)
+
+                                c = UsuarioManager(self.db).insert_residente(dict_usuario)
+
+                                principal = self.db.query(Principal).first()
+
+                                if principal.estado:
+
+                                    if c.condominio.ip_publica != "":
+                                        url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
+
+                                        headers = {'Content-Type': 'application/json'}
+
+                                        diccionary = dict(dict_usuario=dict_usuario,dict_residente=residente)
+
+                                        cadena = json.dumps(diccionary)
+                                        body = cadena
+                                        resp = requests.post(url, data=body, headers=headers, verify=False)
+                                        response = json.loads(resp.text)
+
+                                        print(response)
+
                                 # self.db.merge(propietario)
                                 # self.db.flush()
                     else:
@@ -378,7 +393,6 @@ class ResidenteManager(SuperManager):
         x = self.db.query(Domicilio).join(ResidenteDomicilio).filter(ResidenteDomicilio.fkresidente == idresidente).filter(ResidenteDomicilio.vivienda == True).filter(Domicilio.estado == True).order_by(Domicilio.tipo.desc(),Domicilio.ubicacion.asc()).first()
 
         return x
-
 
 
     def listar_residentes(self,usuario):
