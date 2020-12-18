@@ -183,11 +183,11 @@ class VehiculoManager(SuperManager):
         if query_vehiculo:
 
             nombre_modelo = ""
-            if query_vehiculo.fkmarca:
-                nombre_modelo = query_vehiculo.marca.nombre
+            if query_vehiculo.fkmodelo:
+                nombre_modelo = query_vehiculo.modelo.nombre
 
 
-            return  dict(id=query_vehiculo.id,placa="",fkcolor="",fktipo="",fkmarca="",nombre_marca=query_vehiculo.marca.nombre,fkmodelo=nombre_modelo,nombre_modelo="", fknropase=idtarjeta)
+            return  dict(id=query_vehiculo.id,placa="",fkcolor="",fktipo="",fkmarca="",nombre_marca=query_vehiculo.marca.nombre,fkmodelo="",nombre_modelo=nombre_modelo, fknropase=idtarjeta)
         else:
             if placa:
 
@@ -228,7 +228,7 @@ class VehiculoManager(SuperManager):
                 else:
                     idmodelo = modelo
 
-                return  dict(id="", placa=placa, fkcolor=idcolor, fktipo=idtipo, fkmarca=idmarca, fkmodelo=idmodelo, fknropase=idtarjeta)
+                return  dict(id="", placa=placa, fkcolor=idcolor, fktipo=idtipo, fkmarca=idmarca,nombre_marca=marca, fkmodelo=idmodelo,nombre_modelo=modelo, fknropase=idtarjeta)
             else:
                 return ""
 
