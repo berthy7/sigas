@@ -1376,6 +1376,8 @@ class ApiCondominioController(ApiController):
 
                 nombre_marca = vehiculos['nombre_marca']
 
+                print("nombre_marca:" +nombre_marca)
+
                 marca = MarcaManager(self.db).obtener_o_crear(nombre_marca)
 
                 print("marca: " + marca)
@@ -1388,8 +1390,6 @@ class ApiCondominioController(ApiController):
 
 
             ResidenteManager(self.db).insert(data['dict_residente'])
-
-
 
             UsuarioManager(self.db).insert_residente(data['dict_usuario'])
 
