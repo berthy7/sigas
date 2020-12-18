@@ -37,6 +37,8 @@ class ResidenteManager(SuperManager):
 
     def insert(self, diccionary):
 
+        print(str(diccionary))
+
         estado = diccionary['acceso'][0]['estado']
         if diccionary['b_fknropase'] == "0":
             if diccionary['fknropase']:
