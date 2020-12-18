@@ -1380,9 +1380,11 @@ class ApiCondominioController(ApiController):
 
                 marca = MarcaManager(self.db).obtener_o_crear(nombre_marca)
 
-                print("marca: " + marca)
+
 
                 vehiculos['fkmarca'] = marca.id
+
+                print(str(vehiculos['fkmarca']))
 
 
             print("vehiculo: "+data['dict_residente']['vehiculos'])
