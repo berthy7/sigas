@@ -1387,7 +1387,7 @@ class ApiCondominioController(ApiController):
                 print(str(vehiculos['fkmarca']))
 
 
-            print("vehiculo: "+data['dict_residente']['vehiculos'])
+            print("vehiculo: "+str(data['dict_residente']['vehiculos']))
 
 
 
