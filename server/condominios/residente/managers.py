@@ -66,11 +66,14 @@ class ResidenteManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)
 
-        a.codigo = a.id
+        if a.codigo is None:
+            print("codigo none")
 
-        inicial_cod = 100000
-        a.codigoqr= a.id + inicial_cod
-        super().update(a)
+            a.codigo = a.id
+
+            inicial_cod = 100000
+            a.codigoqr= a.id + inicial_cod
+            super().update(a)
 
         if a.fknropase:
             NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
@@ -88,7 +91,7 @@ class ResidenteManager(SuperManager):
 
 
         password = UsuarioManager(self.db).generar_contraseña()
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id,codigoqr_residente=a.codigoqr, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
 
 
         return dict_usuario

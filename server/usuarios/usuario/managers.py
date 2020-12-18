@@ -149,8 +149,10 @@ class UsuarioManager(SuperManager):
             super().insert(b)
             u = super().insert(usuario)
 
-            u.codigo = u.id
-            super().update(u)
+            if u.codigo is None:
+                print("codigo is none")
+                u.codigo = u.id
+                super().update(u)
 
 
             # UsuarioManager(self.db).correo_creacion_usuarios(u,diccionary['password'])

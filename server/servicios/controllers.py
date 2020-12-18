@@ -1367,32 +1367,24 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-
             print(data)
 
             for vehiculos in data['dict_residente']['vehiculos']:
 
-                print(vehiculos)
-
                 nombre_marca = vehiculos['nombre_marca']
 
-                print("nombre_marca:" +nombre_marca)
-
                 marca = MarcaManager(self.db).obtener_o_crear(nombre_marca)
-
-
 
                 vehiculos['fkmarca'] = marca.id
 
                 print(str(vehiculos['fkmarca']))
 
 
+
             print("vehiculo: "+str(data['dict_residente']['vehiculos']))
 
-
-
-            ResidenteManager(self.db).insert(data['dict_residente'])
-
+            dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
+            data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
             UsuarioManager(self.db).insert_residente(data['dict_usuario'])
 
 
