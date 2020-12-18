@@ -66,7 +66,7 @@ class ResidenteManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)
 
-        if a.codigo is None:
+        if a.codigo == None:
             print("codigo none")
 
             a.codigo = a.id

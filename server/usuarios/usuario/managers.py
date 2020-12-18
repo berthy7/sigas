@@ -149,7 +149,7 @@ class UsuarioManager(SuperManager):
             super().insert(b)
             u = super().insert(usuario)
 
-            if u.codigo is None:
+            if u.codigo == None:
                 print("codigo is none")
                 u.codigo = u.id
                 super().update(u)
