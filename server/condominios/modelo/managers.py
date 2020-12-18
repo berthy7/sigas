@@ -17,6 +17,20 @@ class ModeloManager(SuperManager):
     def __init__(self, db):
         super().__init__(Modelo, db)
 
+    def obtener_o_crear(self, nombreModelo):
+        Modelo = self.db.query(self.entity).filter(
+            self.entity.nombre == nombreModelo).first()
+
+        if Modelo:
+            return Modelo
+        else:
+            diccionary = dict(nombre=nombreModelo)
+
+            objeto = ModeloManager(self.db).entity(**diccionary)
+            a = super().insert(objeto)
+
+            return a
+
 
     def get_all(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()

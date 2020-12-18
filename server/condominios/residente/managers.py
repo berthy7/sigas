@@ -214,7 +214,7 @@ class ResidenteManager(SuperManager):
                             if not query:
 
                                 dict_vehiculo = VehiculoManager(self.db).obtener_vehiculo(placa, color, tipovehiculo,marca, modelo,tarjetavehicular)
-                                list_domicilio.append(dict(fkdomicilio=query_domicilio.id, vivienda=True))
+                                list_domicilio.append(dict(fkdomicilio=query_domicilio.id,codigo_domicilio=query_domicilio.codigo,vivienda=True))
                                 if dict_vehiculo != "":
                                     list_vehiculo.append(dict_vehiculo)
 
@@ -252,8 +252,8 @@ class ResidenteManager(SuperManager):
 
                                 if principal.estado:
 
-                                    if c.condominio.ip_publica != "":
-                                        url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
+                                    if c['response'].condominio.ip_publica != "":
+                                        url = "http://" + c['response'].condominio.ip_publica + ":" + c['response'].condominio.puerto + "/api/v1/sincronizar_residente"
 
                                         headers = {'Content-Type': 'application/json'}
 
