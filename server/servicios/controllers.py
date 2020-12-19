@@ -1380,8 +1380,7 @@ class ApiCondominioController(ApiController):
 
             dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
             data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
-            data['dict_usuario']['codigo'] = dict_usuario['fkresidente']
-            print(data)
+            print("diccionario: "+data)
 
             UsuarioManager(self.db).insert_residente(data['dict_usuario'])
 
