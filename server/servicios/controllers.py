@@ -1376,6 +1376,10 @@ class ApiCondominioController(ApiController):
 
                 vehiculos['fkmarca'] = marca.id
 
+                modelo = ModeloManager(self.db).obtener_o_crear(vehiculos['nombre_modelo'],vehiculos['fkmarca'])
+
+                vehiculos['fkmodelo'] = modelo.id
+
 
 
             for domicilios in data['dict_residente']['domicilios']:
