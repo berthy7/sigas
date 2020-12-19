@@ -37,8 +37,6 @@ class ResidenteManager(SuperManager):
 
     def insert(self, diccionary):
 
-        print(str(diccionary))
-
         estado = diccionary['acceso'][0]['estado']
         if diccionary['b_fknropase'] == "0":
             if diccionary['fknropase']:
@@ -258,6 +256,8 @@ class ResidenteManager(SuperManager):
                                         url = "http://" + c['response'].condominio.ip_publica + ":" + c['response'].condominio.puerto + "/api/v1/sincronizar_residente"
 
                                         headers = {'Content-Type': 'application/json'}
+                                        dict_usuario['codigo'] = c['response'].id
+
 
                                         diccionary = dict(dict_usuario=dict_usuario,dict_residente=residente)
 

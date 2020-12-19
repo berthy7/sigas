@@ -148,7 +148,9 @@ class UsuarioManager(SuperManager):
             b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
             super().insert(b)
             u = super().insert(usuario)
-            print("codigo usuario : " + str(u.codigo))
+
+            print("codigo usuario : "+str(u.codigo))
+
             if u.codigo == None:
                 print("codigo is none")
                 u.codigo = u.id

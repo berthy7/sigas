@@ -90,7 +90,6 @@ class ResidenteController(CrudController):
                 diccionary['codigoqr'] = dict_usuario['codigoqr_residente']
                 dict_usuario['codigo'] = c.id
 
-
                 url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
 
                 headers = {'Content-Type': 'application/json'}

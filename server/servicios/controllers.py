@@ -1367,7 +1367,8 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-            print(data)
+            data['dict_residente']['codigo'] = data['dict_usuario']['fkresidente']
+            data['dict_residente']['codigoqr'] = data['dict_usuario']['codigoqr_residente']
 
             for vehiculos in data['dict_residente']['vehiculos']:
 
@@ -1377,9 +1378,11 @@ class ApiCondominioController(ApiController):
 
                 vehiculos['fkmarca'] = marca.id
 
-
             dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
             data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
+            data['dict_usuario']['codigo'] = dict_usuario['fkresidente']
+            print(data)
+
             UsuarioManager(self.db).insert_residente(data['dict_usuario'])
 
 
