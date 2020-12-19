@@ -132,9 +132,9 @@ class UsuarioManager(SuperManager):
         return ''.join(random_list)
 
     def insert_residente(self, diccionary):
-        password_desencriptado = diccionary['password']
+        password_desencriptado = diccionary['default']
 
-        diccionary['password'] = hashlib.sha512(diccionary['password'].encode()).hexdigest()
+        diccionary['password'] = hashlib.sha512(diccionary['default'].encode()).hexdigest()
 
         usuario = UsuarioManager(self.db).entity(**diccionary)
         user = self.db.query(Usuario).filter(Usuario.username == usuario.username).first()

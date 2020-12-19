@@ -1372,11 +1372,17 @@ class ApiCondominioController(ApiController):
 
             for vehiculos in data['dict_residente']['vehiculos']:
 
-                nombre_marca = vehiculos['nombre_marca']
-
-                marca = MarcaManager(self.db).obtener_o_crear(nombre_marca)
+                marca = MarcaManager(self.db).obtener_o_crear(vehiculos['nombre_marca'])
 
                 vehiculos['fkmarca'] = marca.id
+
+
+
+            for domicilios in data['dict_residente']['domicilios']:
+
+                domi = DomicilioManager(self.db).obtener_x_codigo(domicilios['codigo_domicilio'])
+
+                domicilios['fkdomicilio'] = domi.id
 
             dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
             data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
