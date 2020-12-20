@@ -1363,6 +1363,7 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def sincronizar_residente(self):
+        print("funcion sincronizar residente")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
