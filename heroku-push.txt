@@ -1,9 +1,9 @@
 E:
-cd C:\Proyectos\proyecto_prueba
-cd C:\Proyectos\proyecto_prueba_web
+cd C:\Proyectos\sigas
+
 heroku login
 git init
-heroku git:remote -a sistemacondominio
+
 heroku git:remote -a sigas-web
 
 git add .
