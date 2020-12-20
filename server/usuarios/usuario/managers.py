@@ -71,6 +71,8 @@ class UsuarioManager(SuperManager):
             resi = self.db.merge(resi)
             self.db.merge(resiacce)
 
+            print("residente estado= " + str(resi.estado))
+
             if x.condominio.singuardia:
                 UsuarioManager(self.db).sincronizar_dispositivos(x, estado,resi)
 
