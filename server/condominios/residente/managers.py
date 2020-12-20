@@ -87,9 +87,18 @@ class ResidenteManager(SuperManager):
                 break
 
 
-        password = UsuarioManager(self.db).generar_contraseña()
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id,codigoqr_residente=a.codigoqr, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
+        if a.fknropase:
+            tarjeta = a.nropase.tarjeta
 
+        else:
+            tarjeta = ""
+
+
+        password = UsuarioManager(self.db).generar_contraseña()
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,
+                            correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,
+                            fkrol=7,fkresidente=a.id,codigoqr_residente=a.codigoqr,tarjeta_residente=tarjeta, fkcondominio=idcondominio,sigas=False,
+                            user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
 
         return dict_usuario
 

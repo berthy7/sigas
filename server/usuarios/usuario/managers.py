@@ -59,8 +59,45 @@ class UsuarioManager(SuperManager):
         self.db.commit()
 
         if x.rol.nombre == "RESIDENTE":
+
+            resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
+            resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
+            resi.estado = estado
+            resiacce.estado = estado
+            resi = self.db.merge(resi)
+            self.db.merge(resiacce)
+
             if x.condominio.singuardia:
-                UsuarioManager(self.db).sincronizar_dispositivos(x, estado)
+                UsuarioManager(self.db).sincronizar_dispositivos(x, estado,resi)
+
+
+        principal = self.db.query(Principal).first()
+
+        if principal.estado:
+
+            try:
+                if x.fkcondominio:
+
+                    if x.condominio.ip_publica != "":
+
+                        diccionary = dict( id=id,estado=estado, user=user, ip=ip)
+
+
+                        url = "http://" + x.condominio.ip_publica + ":" + x.condominio.puerto + "/api/v1/sincronizar_usuario_estado"
+
+                        headers = {'Content-Type': 'application/json'}
+                        string = diccionary
+                        cadena = json.dumps(string)
+                        body = cadena
+                        resp = requests.post(url, data=body, headers=headers, verify=False)
+                        response = json.loads(resp.text)
+
+                        print(response)
+
+
+            except Exception as e:
+                # Other errors are possible, such as IOError.
+                print("Error de conexion: " + str(e))
 
         return x
 
@@ -237,14 +274,7 @@ class UsuarioManager(SuperManager):
             result = nameprev.index(ap_user)
             u.correo = emailnew
 
-    def sincronizar_dispositivos(self,x,enable):
-
-        resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
-        resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
-        resi.estado = enable
-        resiacce.estado = enable
-        self.db.merge(resi)
-        self.db.merge(resiacce)
+    def sincronizar_dispositivos(self,x,enable,resi):
 
         if enable:
             situacion = "Acceso"

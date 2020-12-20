@@ -77,6 +77,7 @@ class ApiCondominioController(ApiController):
 
         '/api/v1/sincronizar_condominio': {'POST': 'sincronizar_condominio'},
         '/api/v1/sincronizar_usuario': {'POST': 'sincronizar_usuario'},
+        '/api/v1/sincronizar_usuario_estado': {'POST': 'sincronizar_usuario_estado'},
         '/api/v1/sincronizar_residente': {'POST': 'sincronizar_residente'},
         '/api/v1/sincronizar_invitado': {'POST': 'sincronizar_invitado'},
         '/api/v1/sincronizar_evento': {'POST': 'sincronizar_evento'},
@@ -1362,6 +1363,23 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    def sincronizar_usuario_estado(self):
+        print("funcion sincronizar usuario estado")
+        try:
+            self.set_session()
+            diccionary = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(diccionary['id'])
+
+            user = UsuarioManager(self.db).state(u.id, diccionary['estado'], diccionary['user'], diccionary['ip'])
+            # user = user.get_dict()
+            self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
     def sincronizar_residente(self):
         print("funcion sincronizar residente")
         try:
@@ -1374,20 +1392,22 @@ class ApiCondominioController(ApiController):
             for vehiculos in data['dict_residente']['vehiculos']:
 
                 marca = MarcaManager(self.db).obtener_o_crear(vehiculos['nombre_marca'])
-
                 vehiculos['fkmarca'] = marca.id
 
                 modelo = ModeloManager(self.db).obtener_o_crear(vehiculos['nombre_modelo'],vehiculos['fkmarca'])
 
-                vehiculos['fkmodelo'] = modelo.id
-
+                vehiculos['fkmodelo'] = modelo.id if modelo else modelo
 
 
             for domicilios in data['dict_residente']['domicilios']:
-
                 domi = DomicilioManager(self.db).obtener_x_codigo(domicilios['codigo_domicilio'])
-
                 domicilios['fkdomicilio'] = domi.id
+
+
+            nro = NropaseManager(self.db).obtener_x_tarjeta(data['dict_usuario']['tarjeta_residente'])
+
+            data['dict_residente']['fknropase'] = nro.id if nro else nro
+
 
             dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
             data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
