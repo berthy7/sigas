@@ -43,6 +43,7 @@ class UsuarioManager(SuperManager):
         return p
 
     def state(self, id,estado, user, ip):
+        print("funcion State")
         x = self.db.query(self.entity).filter(self.entity.id == id).one()
         x.estado = estado
 
@@ -200,7 +201,6 @@ class UsuarioManager(SuperManager):
     def insert(self, diccionary):
         password_desencriptado = diccionary['password']
 
-
         diccionary['password']= hashlib.sha512(diccionary['password'].encode()).hexdigest()
 
         usuario = UsuarioManager(self.db).entity(**diccionary)
@@ -215,7 +215,6 @@ class UsuarioManager(SuperManager):
             b = Bitacora(fkusuario=usuario.user_id, ip=usuario.ip, accion="Se registró un usuario.", fecha=fecha)
             super().insert(b)
             u = super().insert(usuario)
-
 
             principal = self.db.query(Principal).first()
 

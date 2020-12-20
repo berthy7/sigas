@@ -1330,11 +1330,8 @@ def condominio_schedule():
         # print("sincronizacion")
 
         with transaction() as db:
-            print("validar_eventos")
             EventoManager(db).validar_eventos()
-            print("expirar_eventos_pasados")
             EventoManager(db).expirar_eventos_pasados()
-            print("expirar_eventos")
             EventoManager(db).expirar_eventos()
 
     schedule.every(1).minutes.do(sincronizar_invitaciones)
