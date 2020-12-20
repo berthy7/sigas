@@ -1381,6 +1381,10 @@ class ApiCondominioController(ApiController):
                 vehiculos['fkmodelo'] = modelo.id
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5f34e6b7d30c6f0c46c3bf2024aef917079b9464
             for domicilios in data['dict_residente']['domicilios']:
 
                 domi = DomicilioManager(self.db).obtener_x_codigo(domicilios['codigo_domicilio'])

@@ -32,6 +32,10 @@ class ModeloManager(SuperManager):
             return a
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5f34e6b7d30c6f0c46c3bf2024aef917079b9464
     def get_all(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 

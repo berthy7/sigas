@@ -27,7 +27,10 @@ class AreasocialController(CrudController):
         aux['sigas'] = us.sigas
         aux['condominios'] = CondominioManager(self.db).listar_todo()
         aux['areas'] = AreasocialManager(self.db).listar_x_usuario(us)
+<<<<<<< HEAD
         # actualizacion
+=======
+>>>>>>> 5f34e6b7d30c6f0c46c3bf2024aef917079b9464
 
         return aux
 
