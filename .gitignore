@@ -8,9 +8,6 @@ docs/
 *.toc
 *.pkg
 *.pyz
-<<<<<<< HEAD
 *.ini
-=======
->>>>>>> 5f34e6b7d30c6f0c46c3bf2024aef917079b9464
 *.manifest
 venv/
