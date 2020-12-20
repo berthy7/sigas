@@ -61,7 +61,8 @@ class UsuarioManager(SuperManager):
 
         if x.rol.nombre == "RESIDENTE":
 
-            print("usuario= "+str(x))
+            print("usuario fkresidente= "+str(x.fkresidente))
+            print("estado= " + str(x.estado))
 
             resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
             resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
