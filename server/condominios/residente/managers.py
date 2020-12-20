@@ -58,19 +58,19 @@ class ResidenteManager(SuperManager):
         objeto.vehiculos = []
         objeto.estado = estado
 
-        objeto.codigo = None
-
-
         a = super().insert(objeto)
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)
+        print("codigo residente : " + str(a.codigo))
+        if a.codigo == None:
+            print("codigo none")
 
-        a.codigo = a.id
+            a.codigo = a.id
 
-        inicial_cod = 100000
-        a.codigoqr= a.id + inicial_cod
-        super().update(a)
+            inicial_cod = 100000
+            a.codigoqr= a.id + inicial_cod
+            super().update(a)
 
         if a.fknropase:
             NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
@@ -88,7 +88,7 @@ class ResidenteManager(SuperManager):
 
 
         password = UsuarioManager(self.db).generar_contraseña()
-        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
+        dict_usuario = dict(nombre=a.nombre,apellidop=a.apellidop,apellidom=a.apellidom,ci=a.ci,expendido=a.expendido,correo=a.correo,telefono=a.telefono,username=a.correo,password=password,default=password,fkrol=7,fkresidente=a.id,codigoqr_residente=a.codigoqr, fkcondominio=idcondominio,sigas=False,user_id=objeto.user,ip=objeto.ip,estado=estado,enabled=True)
 
 
         return dict_usuario
@@ -256,6 +256,8 @@ class ResidenteManager(SuperManager):
                                         url = "http://" + c['response'].condominio.ip_publica + ":" + c['response'].condominio.puerto + "/api/v1/sincronizar_residente"
 
                                         headers = {'Content-Type': 'application/json'}
+                                        dict_usuario['codigo'] = c['response'].id
+
 
                                         diccionary = dict(dict_usuario=dict_usuario,dict_residente=residente)
 

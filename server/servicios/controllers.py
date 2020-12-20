@@ -1367,29 +1367,29 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
-
-            print(data)
+            data['dict_residente']['codigo'] = data['dict_usuario']['fkresidente']
+            data['dict_residente']['codigoqr'] = data['dict_usuario']['codigoqr_residente']
 
             for vehiculos in data['dict_residente']['vehiculos']:
 
-                print(vehiculos)
-
-                nombre_marca = vehiculos['nombre_marca']
-
-                marca = MarcaManager(self.db).obtener_o_crear(nombre_marca)
-
-                print("marca: " + marca)
+                marca = MarcaManager(self.db).obtener_o_crear(vehiculos['nombre_marca'])
 
                 vehiculos['fkmarca'] = marca.id
 
+                modelo = ModeloManager(self.db).obtener_o_crear(vehiculos['nombre_modelo'],vehiculos['fkmarca'])
 
-            print("vehiculo: "+data['dict_residente']['vehiculos'])
-
-
-
-            ResidenteManager(self.db).insert(data['dict_residente'])
+                vehiculos['fkmodelo'] = modelo.id
 
 
+            for domicilios in data['dict_residente']['domicilios']:
+
+                domi = DomicilioManager(self.db).obtener_x_codigo(domicilios['codigo_domicilio'])
+
+                domicilios['fkdomicilio'] = domi.id
+
+            dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
+            data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
+            print("diccionario: " + str(data))
 
             UsuarioManager(self.db).insert_residente(data['dict_usuario'])
 

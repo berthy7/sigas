@@ -30,10 +30,10 @@ class MarcaManager(SuperManager):
 
 
     def obtener_o_crear(self,nombreMarca):
-        Marca =  self.db.query(self.entity).filter(self.entity.nombre == nombreMarca).first()
+        obj_marca =  self.db.query(self.entity).filter(self.entity.nombre == nombreMarca).first()
 
-        if Marca:
-            return Marca
+        if obj_marca:
+            return obj_marca
         else:
             diccionary = dict(nombre=nombreMarca)
 

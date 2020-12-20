@@ -86,11 +86,15 @@ class ResidenteController(CrudController):
         if principal.estado:
 
             if c.condominio.ip_publica != "":
+                diccionary['codigo'] = c.fkresidente
+                diccionary['codigoqr'] = dict_usuario['codigoqr_residente']
+                dict_usuario['codigo'] = c.id
+
                 url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
 
                 headers = {'Content-Type': 'application/json'}
 
-                diccionary = dict(dict_usuario=dict_usuario, dict_residente=diccionary)
+                diccionary = dict(dict_residente=diccionary,dict_usuario=dict_usuario)
 
                 cadena = json.dumps(diccionary)
                 body = cadena

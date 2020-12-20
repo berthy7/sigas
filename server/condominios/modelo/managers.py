@@ -17,14 +17,14 @@ class ModeloManager(SuperManager):
     def __init__(self, db):
         super().__init__(Modelo, db)
 
-    def obtener_o_crear(self, nombreModelo):
-        Modelo = self.db.query(self.entity).filter(
+    def obtener_o_crear(self, nombreModelo,idMarca):
+        objeto_modelo = self.db.query(self.entity).filter(
             self.entity.nombre == nombreModelo).first()
 
-        if Modelo:
-            return Modelo
+        if objeto_modelo:
+            return objeto_modelo
         else:
-            diccionary = dict(nombre=nombreModelo)
+            diccionary = dict(nombre=nombreModelo,fkmarca=idMarca)
 
             objeto = ModeloManager(self.db).entity(**diccionary)
             a = super().insert(objeto)
