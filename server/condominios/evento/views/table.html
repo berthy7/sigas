@@ -1,0 +1,38 @@
+{% for c in eventos %}
+<tr>
+    <td>{{ c.id }}</td>
+    <td>{{ c.tipoevento.nombre }}</td>
+    <td>{{ c.residente.fullname }}</td>
+
+    {% if c.fkdomicilio %}
+        <div>
+            <td>{{ c.domicilio.ubicacion}}</td>
+        </div>
+    {% else %}
+        <div>
+            <td>-----</td>
+        </div>
+
+    {% end %}
+    <td>{{ c.fechai.strftime("%d/%m/%Y") }}</td>
+    <td>{{ c.fechaf.strftime("%d/%m/%Y") }}</td>
+    <td align="center ">
+        {% if 'evento_delete' in privileges %}
+            <div>
+                <input  id="{{c.id}}" data-id="{{c.id}}" type="checkbox"  class="module chk-col-deep-purple delete"  {%if c.estado %} {{"checked"}} {% end %} />
+                <label for="{{c.id}}"></label>
+            </div>
+        {% end %}
+
+    </td>
+
+    <td align="center">
+        <div class="contenedor">
+            {% if 'evento_update' in privileges %}
+                <button id="edit" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+            {% end %}
+
+        </div>
+    </td>
+</tr>
+{% end %}

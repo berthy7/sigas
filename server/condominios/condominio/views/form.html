@@ -1,0 +1,225 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:75vw; max-width: 700px" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="condominio_tittle" class="modal-title">Ingreso de Condominio</h3>
+                <h4 id="condominio_enable" class=""></h4>
+            </div>
+
+            <div class="modal-body">
+                <div id="condominio_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">ID</label>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <label>Nro de Contrato</label>
+                                <div class="form-line">
+                                    <input id="contrato" name="Nro de Contrato" type="number" class="form-control txta-own" required>
+                                </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <label class="form-label">Fecha Inicio</label>
+                           <div class="form-group">
+                                <div class="form-line success">
+                                    <input id="fechai" type="text" class="form-control date" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label class="form-label">Fecha Fin</label>
+                                <div  class="form-line success">
+
+                                    <input id="fechaf" type="text" class="form-control date" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <label>Codigo</label>
+                                <div class="form-line">
+                                    <input id="codigo" name="Codigo" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Nombre</label>
+                                <div class="form-line">
+                                    <input id="nombre" name="Nombre" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <label>Cant. de Casas</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Cant. de Departamentos</label>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-2">
+                                <div class="form-line">
+                                    <input id="cant_casas" name="Nro de Casas" type="number" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+
+                        </div>
+                        <div class="col-sm-2">
+                                <div class="form-line">
+                                    <input id="cant_departamentos" name="Nombre" type="number" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <label>Cant. de Residentes</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Cant. de Vehiculos</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Cant. de Tarjetas</label>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-2">
+                                <div class="form-line">
+                                    <input id="cant_residentes" name="Nro de Residentes" type="number" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+
+                        </div>
+                        <div class="col-sm-2">
+                                <div class="form-line">
+                                    <input id="cant_vehiculos" name="Nro de Vehiculos" type="number" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                        <div class="col-sm-1">
+
+                        </div>
+                        <div class="col-sm-2">
+                                <div class="form-line">
+                                    <input id="cant_tarjetas" name="Nro de Pases" type="number" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <label>servidor Local Condominio</label>
+
+                        </div>
+
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                            <label>IP publica</label>
+                                <div class="form-line">
+                                    <input id="ip_publica" name="Ip_publica" type="text" class="form-control txta-own" >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>IP privada</label>
+                                <div class="form-line">
+                                    <input id="ip_privada" name="Ip_privada" type="text" class="form-control txta-own" >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Puerto</label>
+                                <div class="form-line">
+                                    <input id="puerto" name="Puerto" type="text" class="form-control txta-own" >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <label>Opciones de invitaciones</label>
+                            <div  class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <div><input  type="text" class="form-control" value="Pase Libre" readonly></div>
+                                    </div>
+                                 </div>
+                                <div class="col-md-2">
+                                    <input id="invitacionpaselibre" type="checkbox" class="regular-checkbox big-checkbox" >
+                                    <label for="invitacionpaselibre"></label>
+                                 </div>
+
+                            </div>
+                            <div  class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <div><input  type="text" class="form-control" value="Grupal" readonly></div>
+                                    </div>
+                                 </div>
+                                <div class="col-md-2">
+                                    <input id="invitacionmultiple" type="checkbox" class="regular-checkbox big-checkbox" >
+                                    <label for="invitacionmultiple"></label>
+                                 </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    </br>
+
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <label>Entrada visitas sin Guardia</label>
+                            <div  class="box-body">
+                                <div id="c_" class="col-md-2">
+                                    <input id="singuardia" type="checkbox" class="regular-checkbox big-checkbox" data-id="1" >
+                                    <label for="singuardia"></label>
+                                 </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <label>Tipos de Entradas</label>
+                            <div id="entradas" class="box-body">
+                                <div id="entradas_div" class="clearfix">
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                {% if 'condominio_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'condominio_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

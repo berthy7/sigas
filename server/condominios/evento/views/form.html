@@ -1,0 +1,213 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:75vw; max-width: 1300px" >
+        <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="evento_title" class="modal-title">Ingreso de Evento</h3>
+                    <h4 id="evento_enable" class=""></h4>
+                </div>
+
+                <div class="modal-body">
+                <div id="evento_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">Evento ID</label>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                           <label>Residentes</label>
+                             <select id="fkresidente" class="form-control" required>
+                                {% for res in residentes %}
+                                    <option value="{{res.id}}">{{res.fullname}}</option>
+                                {% end %}
+                             </select>
+                            </br>
+                            </br>
+                        </div>
+                        <div class="col-sm-4">
+                           <label>Domicilio</label>
+                             <select id="fkdomicilio" class="form-control" >
+
+                             </select>
+                            </br>
+                            </br>
+                        </div>
+                        <div class="col-sm-4">
+                           <label>Area Social</label>
+                             <select id="fkareasocial" class="form-control" >
+                                {% for area in areasociales %}
+                                    <option value="{{area.id}}">{{area.nombre}}</option>
+                                {% end %}
+                             </select>
+                            </br>
+                            </br>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                           <label>Tipo de Evento</label>
+                             <select id="fktipoevento" class="form-control">
+                                {% for tipoeve in tipoeventos %}
+                                    <option value="{{tipoeve.id}}">{{tipoeve.nombre}}</option>
+                                {% end %}
+                             </select>
+                            </br>
+                            </br>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Descripcion</label>
+                                <div class="form-line">
+                                    <input id="descripcion" type="text" class="form-control text" >
+
+                                </div>
+                        </div>
+                    </div>
+                     <div class="row clearfix">
+                        <div class="col-sm-3">
+                             <div class="form-group">
+                                <div class="form-line">
+                                    <label class="form-label">Fecha Inicio</label>
+                                    <input id="fechai" name="Fecha Inicio" type="text" class="form-control date" required>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-sm-3">
+                             <div class="form-group">
+                                <div class="form-line">
+                                    <label class="form-label">Hora Inicio</label>
+                                    <input id="horai" name="Hora Inicio" type="text" class="form-control hr">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row clearfix">
+                         <div class="col-sm-3">
+                             <div class="form-group">
+                                <div class="form-line">
+                                    <label class="form-label">Fecha Fin</label>
+                                    <input id="fechaf" name="Fecha Fin" type="text" class="form-control date" required>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-sm-3">
+                             <div class="form-group">
+                                <div class="form-line">
+                                    <label class="form-label">Hora Fin</label>
+                                    <input id="horaf" name="Hora Fin" type="text" class="form-control hr">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                            <div class="col-sm-3">
+                                <div class="switch p-l-own">
+
+                                   <label>
+                                       Multi acceso
+                                       <input id="switch_multiacceso" type="checkbox">
+                                       <span class="lever"></span>
+                                   </label>
+                                </div>
+                                     </br>
+                            </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <div class="switch p-l-own">
+
+                               <label>
+                                   Pase Libre
+                                   <input id="switch_paselibre" type="checkbox">
+                                   <span class="lever"></span>
+                               </label>
+                            </div>
+                                 </br>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <div class="switch p-l-own">
+
+                               <label>
+                                   Multiple
+                                   <input id="switch_multiple" type="checkbox">
+                                   <span class="lever"></span>
+                               </label>
+                            </div>
+                                 </br>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="modal-header header-own">
+                            <h4  class="modal-title">Invitaciones</h4>
+                        </div>
+                        </br>
+
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                             <label>Buscar personas</label>
+                            <select id="personas" class="form-control">
+                                {% for s in invitados %}
+                                <option value="{{ s.id }}">{{s.ci}} - {{ s.fullname }}</option>
+                                {% end %}
+                            </select>
+                            </br>
+                            </br>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <button id="new_integrante" type="button" class="btn bg-indigo white-own waves-effect" title="Agregar">Agregar
+                                    <i class="material-icons">add</i>
+                                </button>
+                            </div>
+                       </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-2">
+                            <label class="form-label">Nombre</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="form-label">Apellido paterno</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="form-label">Apellido materno</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="form-label">Carnet identidad</label>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label class="form-label">Tipo de Pase</label>
+                        </div>
+
+                    </div>
+
+                    <div class="row clearfix">
+
+                       <div class="col-sm-12">
+                             <div id="integrante" class="box-body">
+                                <div id="integrante_div" class="clearfix">
+
+                                </div>
+                             </div>
+                       </div>
+                   </div>
+
+                </div>
+
+                <div class="modal-footer">
+                {% if 'evento_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'evento_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

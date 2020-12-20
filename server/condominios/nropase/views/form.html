@@ -1,0 +1,143 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="nropase_tittle" class="modal-title">Ingreso de Tarjeta</h3>
+                <h4 id="nropase_enable" class=""></h4>
+            </div>
+
+            <div class="modal-body">
+                <div id="nropase_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label for="id" class="form-label">Nropase ID</label>
+                            <input type="hidden" id="sigas" value="{{sigas}}">
+                            <input type="hidden" id="idcondominio" value="{{idcondominio}}">
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-sm-2">
+                            <label>Numero</label>
+                                <div class="form-line">
+                                    <input id="numero" name="Numero" type="text" class="form-control txta-own">
+                                </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <label>Tarjeta</label>
+                                <div class="form-line">
+                                    <input id="tarjeta" name="Tarjeta" type="text" class="form-control txta-own" required >
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                             <label>Tipo</label>
+                             <select id="tipo" class="form-control">
+                                <option value="Residente">Residente</option>
+                                <option value="Visita">Visita</option>
+                                <option value="Proveedores">Proveedores</option>
+                                <option value="Provper">Prov. Per.</option>
+                                <option value="Excepcion">Excepcion</option>
+                             </select>
+                             </br>
+                             </br>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div id="condominio_form_body" class="box-body">
+                            <div class="row clearfix">
+                                <div id="div_agregar_condominio" class="col-sm-2">
+                                    <button id="agregar_condominio" type="button" class="btn bg-indigo waves-effect white-own waves-light"
+                                            title="Agregar condominio">Agregar <i class="material-icons white-own">add</i></button>
+                                    </br>
+                                </div>
+                                <div id="div_cancelar_condominio" class="col-sm-2" hidden>
+                                    <button id="cancelar_condominio" type="button" class="btn bg-red waves-effect waves-light"
+                                            title="Cancelar">Cancelar <i class="material-icons">clear</i></button>
+                                    </br>
+                                </div>
+
+                            </div>
+                            </br>
+                            </br>
+                            <div class="row clearfix">
+                                <div id="div_buscar_condominio" class="col-sm-4" hidden>
+                                     <label>Buscar condominio</label>
+                                    <select id="condominios" class="form-control">
+                                        {% for s in condominios %}
+                                        <option value="{{ s.id }}">{{s.nombre}}</option>
+                                        {% end %}
+                                    </select>
+                                    </br>
+                                    </br>
+                                </div>
+
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-2">
+                                    <label class="form-label">Condominios</label>
+                                </div>
+
+                            </div>
+                            <div class="row clearfix">
+
+                               <div class="col-sm-9">
+                                     <div id="condominio" class="box-body">
+                                        <div id="condominio_div" class="clearfix">
+
+                                        </div>
+                                     </div>
+                               </div>
+                           </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                </div>
+
+                <div class="modal-footer">
+                {% if 'nropase_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect white-own">Guardar <i class="material-icons">save</i></button>
+                {% end %}
+                {% if 'nropase_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect white-own">Modificar <i class="material-icons">refresh</i></button>
+                {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="form-importar" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="width:60vw; max-width: 500px" >
+        <div class="modal-content">
+              <form id="importar-form" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h3 id="importxls_title" class="modal-title">Importar</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div id="importxls_form_body" class="box-body">
+                        <label class="control-label">Excel o Texto</label>
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input id="archivo" name="archivo" type="file" class="form-control file xlsfl" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="insert-importar" type="submit" class="btn bg-indigo white-own">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

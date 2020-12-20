@@ -1,0 +1,100 @@
+{% extends ../../../common/views/layout.html %}
+
+{% block style %}
+    {% set user = usuario %}
+    <link rel="stylesheet" href="condominios/reporte/assets/reporte.css">
+{% end %}
+
+{% block content %}
+
+{% include form.html %}
+
+
+    <div class="header"><h2 class="title-rg-own">Reportes</h2></div>
+    <div class="body">
+
+        <div class="row clearfix">
+            <div class="col-sm-4">
+                <label>Tipo de Reportes</label>
+                 <select id="tipo_reporte" class="form-control">
+                     <option value="vehicular_visita">Control y Registro Vehicular Visitas</option>
+                     <option value="peatonal_visita">Control y Registro Peatonal Visitas</option>
+                     <option value="vehicular_residente">Control y Registro Vehicular Residentes</option>
+                     <option value="peatonal_residente">Control y Registro Peatonal Residentes</option>
+                     <option value="singuardia_visita">Control y Registro Sin Guardia Visitas</option>
+                 </select>
+            </div>
+            <div class="col-sm-4">
+                <button id="generar" type="button" class="btn bg-indigo waves-effect white-own">Generar <i class="material-icons"></i></button>
+            </div>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-sm-2">
+                <label class="form-label">Fecha Inicio</label>
+               <div class="form-group">
+                    <div id="fechaDIVinicio" class="form-line success">
+
+                        <input id="fechainicio" type="text" class="form-control datepicker">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label class="form-label">Fecha Fin</label>
+                    <div id="fechaDIVfin" class="form-line success">
+
+                        <input id="fechafin" type="text" class="form-control datepicker">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if 'reporte_query' in privileges %}
+        <div id="row_vehicular_visita" class="row" hidden>
+            <div class="body table-responsive">
+                {% include 'tabla_vehicular_visita.html' %}
+
+            </div>
+        </div>
+        <div id="row_peatonal_visita" class="row" hidden>
+            <div class="body table-responsive">
+                {% include 'tabla_peatonal_visita.html' %}
+
+            </div>
+        </div>
+        <div id="row_vehicular_residente" class="row" hidden>
+            <div class="body table-responsive">
+                {% include 'tabla_vehicular_residente.html' %}
+
+            </div>
+        </div>
+        <div id="row_peatonal_residente" class="row" hidden>
+            <div class="body table-responsive">
+                {% include 'tabla_peatonal_residente.html' %}
+
+            </div>
+        </div>
+        <div id="row_singuardia_visita" class="row" hidden>
+            <div class="body table-responsive">
+                {% include 'tabla_singuardia_visita.html' %}
+
+            </div>
+        </div>
+        {% else %}
+        <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+        {% end %}
+    </div>
+{% end %}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="condominios/reporte/assets/reporte.js"></script>
+    <script src="condominios/reporte/assets/vehicular_visita.js"></script>
+    <script src="condominios/reporte/assets/peatonal_visita.js"></script>
+    <script src="condominios/reporte/assets/peatonal_residente.js"></script>
+    <script src="condominios/reporte/assets/vehicular_residente.js"></script>
+    <script src="condominios/reporte/assets/singuardia_visita.js"></script>
+
+{% end %}

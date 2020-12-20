@@ -1,0 +1,90 @@
+{% extends ../../../common/views/layout.html %}
+
+{% block style %}
+    {% set user = usuario %}
+    <link rel="stylesheet" href="condominios/vehiculo/assets/vehiculo.css">
+{% end %}
+
+{% block content %}
+    {% if 'vehiculo_insert' in privileges or 'vehiculo_update' in privileges %}
+        {% include form.html %}
+    {% end %}
+
+    <div class="header"><h2 class="title-rg-own">Vehiculos</h2></div>
+    <div class="body">
+        <div class="row clearfix">
+            <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                {% if 'vehiculo_insert' in privileges %}
+                    <button id="new" type="button" class="btn bg-indigo waves-effect white-own">Nuevo <i class="material-icons"></i></button>
+                {% end %}
+                <button id="reporte-xls" title="Excel" type="button" class="btn bg-teal waves-effect white-own">
+                    <i class="material-icons">explicit</i>
+                </button>
+                <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
+                    <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
+                </button>
+            </div>
+        </div>
+
+        {% if 'vehiculo_query' in privileges %}
+        <div class="row">
+            <div class="body table-responsive">
+                <table id="data_table" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="order_by_th" data-name="names">Placa</th>
+                            <th class="order_by_th" data-name="names">Color</th>
+                            <th class="order_by_th" data-name="names">Tipo</th>
+                            <th class="order_by_th" data-name="names">Marca</th>
+                            <th class="order_by_th" data-name="names">Modelo</th>
+                            <th class="order_by_th" data-name="names">Nro de Tarjeta</th>
+                            <th class="actions_header">Editar</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+        {% end %}
+    </div>
+{% end %}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="condominios/vehiculo/assets/vehiculo.js"></script>
+<script>
+        $(document).ready(function () {
+
+            var data = [];
+            {% set cont = 0 %}
+            {% for c in objects %}
+                data.push( [
+                    '{{ c.placa }}',
+                    '{{ c.color.nombre }}',
+                    '{{ c.tipo.nombre }}',
+                    '{{ c.marca.nombre }}',
+                    {% if c.fkmodelo %}
+                        '{{ c.modelo.nombre }}',
+                    {% else %}
+                        '-----',
+                    {% end %}
+                    {% if c.fknropase %}
+                        '{{ c.nropase.tarjeta }}',
+                    {% else %}
+                        '-----',
+                    {% end %}
+
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+
+                ]);
+            {% set cont = cont + 1 %}
+            {% end %}
+            cargar_tabla(data)
+        });
+
+
+</script>
+{% end %}

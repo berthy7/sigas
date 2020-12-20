@@ -1,0 +1,155 @@
+{% extends ../../../common/views/layout.html %}
+
+{% block style %}
+    {% set user = usuario %}
+    <link rel="stylesheet" href="dispositivos/registros/assets/registros.css">
+{% end %}
+
+{% block content %}
+
+{% include form.html %}
+
+
+    <div class="header"><h2 class="title-rg-own">Registros</h2></div>
+    <div class="body">
+        <div class="row clearfix">
+            <div class="col-sm-3">
+                <div class="switch p-l-own">
+                   <label>
+                       Refrescar
+                       <input id="switch_refrescar" type="checkbox">
+                       <span class="lever"></span>
+                       Detener
+                   </label>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-sm-2">
+                <label class="form-label">Fecha Inicio</label>
+               <div class="form-group">
+                    <div id="fechaDIVinicio" class="form-line success">
+
+                        <input id="fechai" type="text" class="form-control datei">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label class="form-label">Fecha Fin</label>
+                    <div id="fechaDIVfin" class="form-line success">
+
+                        <input id="fechaf" type="text" class="form-control datef">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                    <button id="filtrar" type="button" class="btn bg-indigo waves-effect white-own">
+                    <i class="material-icons">youtube_searched_for</i>
+                    </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="body table-responsive">
+                <table id="data_table_dispositivos" class="table table-bordered table-striped table-hover">
+                {% include 'table.html' %}
+
+                </table>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-sm-10">
+                <div id="rproc-loader" class="loader-wrapper" style="display: none">
+                    <div class="loader loader-own">
+                        <div class="preloader preloader-own">
+                            <div class="spinner-layer pl-teal">
+                                <div class="circle-clipper left"><div class="circle"></div></div>
+                                <div class="circle-clipper right"><div class="circle"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center inf-own">Cargando Registros...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-sm-10">
+                 <div class="row m-b-10">
+                    <div class="text-center">
+                     <img id='imagen_alarma' src='' width='200px' >
+                    </div>
+                 </div>
+            </div>
+
+        </div>
+            </br>
+
+        <audio id="audio" controls>
+            <source type="audio/wav" src="/resources/images/alarma.wav">
+        </audio>
+
+        {% if 'registros_query' in privileges %}
+        <div class="row">
+            <div class="body table-responsive">
+                <table id="data_table" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="order_by_th" data-name="names">N°</th>
+                            <th class="order_by_th" data-name="names">Codigo</th>
+                            <th class="actions_header">Evento</th>
+                            <th class="actions_header">Autorizacion</th>
+                            <th class="actions_header">Destino</th>
+                            <th class="actions_header">Dia</th>
+                            <th class="actions_header">Mes</th>
+                            <th class="actions_header">Año</th>
+                            <th class="actions_header">hora</th>
+                            <th class="actions_header">Dispositivo</th>
+                            <th class="actions_header">Cerradura</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+        {% end %}
+    </div>
+{% end %}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="dispositivos/registros/assets/registros.js"></script>
+<script>
+        $(document).ready(function () {
+
+            var data = [];
+            {% for c in registros %}
+                {% if c['evento'] == 6 and c['alertado'] == False%}
+                   activar_alarma('{{ c['id'] }}')
+                {% end %}
+                data.push( [
+                    '{{ c['id'] }}',
+                    '{{ c['tarjeta'] }}',
+                    '{{ c['codigo'] }}',
+                    '{{ c['autorizacion'] }}',
+                    '{{ c['destino'] }}',
+                    '{{ c['dia']}}',
+                    '{{ c['mes']}}',
+                    '{{ c['año']}}',
+                    '{{ c['hora']}}',
+                    '{{ c['dispositivo'] }}',
+                    '{{ c['cerradura']}}'
+                ]);
+
+            {% end %}
+
+            ult_registro = data[0][00]
+            cargar_tabla(data)
+        });
+
+
+</script>
+{% end %}
