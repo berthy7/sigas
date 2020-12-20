@@ -61,8 +61,6 @@ class UsuarioManager(SuperManager):
 
         if x.rol.nombre == "RESIDENTE":
 
-            print("usuario fkresidente= "+str(x.fkresidente))
-            print("estado= " + str(x.estado))
 
             resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
             resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
@@ -70,8 +68,7 @@ class UsuarioManager(SuperManager):
             resiacce.estado = estado
             resi = self.db.merge(resi)
             self.db.merge(resiacce)
-
-            print("residente estado= " + str(resi.estado))
+            self.db.commit()
 
             if x.condominio.singuardia:
                 UsuarioManager(self.db).sincronizar_dispositivos(x, estado,resi)
