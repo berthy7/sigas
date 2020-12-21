@@ -137,8 +137,20 @@ class MovimientoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         diccionary['tipo'] = "Vehicular"
-        diccionary['fechar'] = fecha
+
+
+
         # diccionary['fechai'] = fecha
+
+        try:
+            if diccionary['fechar'] == "":
+                diccionary['fechar'] = fecha
+
+        except Exception as e:
+            print("fechar nul")
+
+            diccionary['fechar'] = fecha
+
 
         objeto = MovimientoManager(self.db).entity(**diccionary)
 

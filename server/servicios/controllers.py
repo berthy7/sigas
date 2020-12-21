@@ -902,9 +902,14 @@ class ApiCondominioController(ApiController):
                 if principal.estado:
                     mov.codigo = mov.id
                     data['codigo'] = mov.id
+                    data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
                     data['nombre_marca'] = mov.vehiculo.marca.nombre
                     data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
+                    if mov.nropase:
+                        data['tarjeta'] = mov.nropase.tarjeta
+                    else:
+                        data['tarjeta'] = ""
 
 
                     if mov.fkdomicilio:
@@ -922,7 +927,6 @@ class ApiCondominioController(ApiController):
                     data['fkinvitado'] = ""
                     data['fkconductor'] = ""
 
-                    data['fechar'] = data['fechar'].strftime('%d/%m/%Y %H:%M:%S')
 
                     self.db.merge(mov)
                     self.db.commit()
@@ -1505,6 +1509,26 @@ class ApiCondominioController(ApiController):
 
             marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
             data['fkmarca'] = marca.id
+
+            if data['codigoautorizacion'] != "":
+
+                invitacion = InvitacionManager(self.db).obtener_x_codigo(data['codigoautorizacion'])
+
+                if invitacion:
+
+                    data['fkinvitacion'] = invitacion.id
+                else:
+                    data['fkinvitacion'] = invitacion
+
+
+            tarjeta = NropaseManager(self.db).obtener_x_tarjeta(data['tarjeta'])
+
+            if tarjeta:
+
+                data['fknropase'] = tarjeta.id
+            else:
+                data['fknropase'] = tarjeta
+
 
             if data['nombre_modelo'] != "":
 
