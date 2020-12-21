@@ -903,8 +903,7 @@ class ApiCondominioController(ApiController):
                     mov.codigo = mov.id
                     data['codigo'] = mov.id
                     data['nombre_marca'] = mov.vehiculo.marca.nombre
-                    data['nombre_modelo'] = mov.vehiculo.modelo.nombre
-
+                    data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
 
                     if mov.fkdomicilio:
