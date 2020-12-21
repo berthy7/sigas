@@ -902,6 +902,10 @@ class ApiCondominioController(ApiController):
                 if principal.estado:
                     mov.codigo = mov.id
                     data['codigo'] = mov.id
+                    data['nombre_marca'] = mov.vehiculo.marca.nombre
+                    data['nombre_modelo'] = mov.vehiculo.modelo.nombre
+
+
 
                     if mov.fkdomicilio:
                         data['codigo_destino'] = mov.domicilio.codigo
@@ -1498,6 +1502,13 @@ class ApiCondominioController(ApiController):
 
             data['fkvehiculo'] =  ""
             data['fkinvitado'] = ""
+
+            marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
+            data['fkmarca'] = marca.id
+
+            modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
+
+            data['fkmodelo'] = modelo.id if modelo else modelo
 
 
             if data['fkresidente'] != "":
