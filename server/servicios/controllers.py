@@ -905,19 +905,23 @@ class ApiCondominioController(ApiController):
 
                     if mov.fkdomicilio:
                         data['codigo_destino'] = mov.domicilio.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
 
                     elif mov.fkareasocial:
                         data['codigo_destino'] = mov.areasocial.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
 
                     else:
                         data['codigo_destino'] = ""
+                        condominio = None
 
                     data['fkinvitado'] = ""
                     data['fkconductor'] = ""
 
                     self.db.merge(mov)
                     self.db.commit()
-                    self.funcion_sincronizar(usuario,data,"sincronizar_movimiento")
+
+                    self.funcion_sincronizar_x_condominio(condominio,data,"sincronizar_movimiento")
 
                 objeto = mov.get_dict()
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
@@ -1334,6 +1338,26 @@ class ApiCondominioController(ApiController):
             # Other errors are possible, such as IOError.
             print("Error de conexion funcion sincronizar: " + str(e))
 
+    def funcion_sincronizar_x_condominio(self, condominio, data, ws):
+        try:
+
+            if condominio.ip_publica != "":
+                url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/" + ws
+
+                headers = {'Content-Type': 'application/json'}
+                string = data
+                cadena = json.dumps(string)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                # print(response)
+
+
+        except Exception as e:
+            # Other errors are possible, such as IOError.
+            print("Error de conexion funcion sincronizar: " + str(e))
+
     def sincronizar_condominio(self):
         try:
             self.set_session()
@@ -1364,7 +1388,6 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def sincronizar_usuario_estado(self):
-        print("funcion sincronizar usuario estado")
         try:
             self.set_session()
             diccionary = json.loads(self.request.body.decode('utf-8'))
@@ -1373,7 +1396,7 @@ class ApiCondominioController(ApiController):
 
             user = UsuarioManager(self.db).state(u.id, diccionary['estado'], diccionary['user'], diccionary['ip'])
             # user = user.get_dict()
-            self.respond(response=None, success=True, message='Usuario Registrado correctamente.')
+            self.respond(response=None, success=True, message='Actualizacion de estado correctamente.')
 
         except Exception as e:
             print(e)
@@ -1381,7 +1404,6 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def sincronizar_residente(self):
-        print("funcion sincronizar residente")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
@@ -1397,6 +1419,11 @@ class ApiCondominioController(ApiController):
                 modelo = ModeloManager(self.db).obtener_o_crear(vehiculos['nombre_modelo'],vehiculos['fkmarca'])
 
                 vehiculos['fkmodelo'] = modelo.id if modelo else modelo
+
+
+                tarjeta = NropaseManager(self.db).obtener_x_tarjeta(vehiculos['tarjeta'])
+
+                vehiculos['fknropase'] = tarjeta.id if tarjeta else tarjeta
 
 
             for domicilios in data['dict_residente']['domicilios']:
@@ -1462,7 +1489,8 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-
+            print("sincronizar movimiento")
+            print(str(data))
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = u.id
 

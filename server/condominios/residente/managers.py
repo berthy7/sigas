@@ -182,7 +182,9 @@ class ResidenteManager(SuperManager):
                 for row in ws.iter_rows(min_row=2):
                     nombre =  row[indices['NOMBRE']].value
                     apellidop = row[indices['APELLIDOP']].value
-                    apellidom = row[indices['APELLIDOM']].value
+
+                    apellidom = row[indices['APELLIDOM']].value if row[indices['APELLIDOM']].value else ""
+
                     ci = row[indices['CI']].value
                     ubicacion = row[indices['UBICACION']].value
                     sexo = row[indices['SEXO']].value

@@ -43,7 +43,6 @@ class UsuarioManager(SuperManager):
         return p
 
     def state(self, id,estado, user, ip):
-        print("funcion State")
         x = self.db.query(self.entity).filter(self.entity.id == id).one()
         x.estado = estado
 
@@ -60,7 +59,6 @@ class UsuarioManager(SuperManager):
         self.db.commit()
 
         if x.rol.nombre == "RESIDENTE":
-
 
             resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
             resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
