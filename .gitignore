@@ -8,6 +8,6 @@ docs/
 *.toc
 *.pkg
 *.pyz
-*.ini
+settings.ini
 *.manifest
 venv/
