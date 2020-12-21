@@ -918,6 +918,8 @@ class ApiCondominioController(ApiController):
                     data['fkinvitado'] = ""
                     data['fkconductor'] = ""
 
+                    data['fechar'] = data['fechar'].strftime('%d/%m/%Y %H:%M:%S')
+
                     self.db.merge(mov)
                     self.db.commit()
 
@@ -1493,6 +1495,9 @@ class ApiCondominioController(ApiController):
             print(str(data))
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = u.id
+
+            data['fkvehiculo'] =  ""
+            data['fkinvitado'] = ""
 
 
             if data['fkresidente'] != "":
