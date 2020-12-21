@@ -90,6 +90,11 @@ class ResidenteController(CrudController):
                 diccionary['codigoqr'] = dict_usuario['codigoqr_residente']
                 dict_usuario['codigo'] = c.id
 
+                for domicilios in diccionary['domicilios']:
+                    domi = DomicilioManager(self.db).obtener_x_id(domicilios['fkdomicilio'])
+                    domicilios['codigo_domicilio'] = domi.codigo
+
+
                 url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
 
                 headers = {'Content-Type': 'application/json'}

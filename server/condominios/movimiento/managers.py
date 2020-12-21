@@ -415,64 +415,6 @@ class MovimientoManager(SuperManager):
 
                         print("movimiento import: " + str(row[indices['ID']].value))
 
-                        fkinvitado = None
-                        fkconductor = None
-                        fkvehiculo = None
-
-
-                        query_invitado = self.db.query(Invitado).filter(and_(Invitado.ci == ci,Invitado.nombre == nombre,Invitado.apellidop== apellidop,Invitado.apellidom == apellidom)).first()
-
-                        if query_invitado :
-                            print("existe invitado")
-                            fkinvitado = query_invitado.id
-
-                        else:
-                            invi = Invitado(nombre=nombre, apellidop=apellidop, apellidom=apellidom,
-                                            ci=ci, expendido=expedido)
-
-                            self.db.add(invi)
-                            self.db.flush()
-
-                            fkinvitado = invi.id
-
-
-                        if nombre_conductor:
-                            query_conductor = self.db.query(Invitado).filter(and_(Invitado.ci == ci_conductor,Invitado.nombre == nombre_conductor,Invitado.apellidop== apellidop_conductor,
-                                                                                  Invitado.apellidom == apellidom_conductor)).first()
-
-                            if query_conductor :
-                                print("existe conductor")
-                                fkconductor = query_conductor.id
-
-                            else:
-                                condu = Invitado(nombre=nombre_conductor, apellidop=apellidop_conductor, apellidom=apellidom_conductor,
-                                                ci=ci_conductor, expendido=expedido)
-
-                                self.db.add(condu)
-                                self.db.flush()
-
-                                fkconductor = condu.id
-
-                        if row[indices['Placa']].value:
-
-                            dict_vehiculo = VehiculoManager(self.db).obtener_vehiculo(row[indices['Placa']].value, row[indices['Color']].value, row[indices['Tipo vehiculo']].value, row[indices['Marca']].value,
-                                                                                      row[indices['Modelo']].value, '')
-
-                            if dict_vehiculo['id'] != "":
-                                print("existe vehiculo")
-                                fkvehiculo = dict_vehiculo['id']
-
-                            else:
-                                dict_vehiculo['id'] = None
-
-                                vehi = Vehiculo(placa=dict_vehiculo['placa'], fkcolor=dict_vehiculo['fkcolor'], fktipo=dict_vehiculo['fktipo'], fkmarca=dict_vehiculo['fkmarca'], fkmodelo=dict_vehiculo['fkmodelo'])
-
-                                self.db.add(vehi)
-                                self.db.flush()
-
-                                fkvehiculo = vehi.id
-
-
                         query_domicilio = self.db.query(Domicilio).filter(Domicilio.codigo == row[indices['Destino']].value).first()
 
                         if query_domicilio:
@@ -490,20 +432,86 @@ class MovimientoManager(SuperManager):
                                 result_areasocial = None
 
 
-                        query_domicilio = self.db.query(Domicilio).filter(Domicilio.codigo == row[indices['Destino']].value).first()
+                        query = self.db.query(self.entity).filter(self.entity.fechar == str(row[indices['Fecha Registro']].value)) \
+                            .filter(self.entity.fkdomicilio == str(result_domicilio)).filter(self.entity.fkareasocial == str(result_areasocial)).all()
 
-                        query_tipo_pase = self.db.query(Tipopase).filter(Tipopase.nombre == row[indices['Tipo de pase']].value).first()
+                        if not query:
 
-                        query_autorizacion = self.db.query(Autorizacion).filter(Autorizacion.nombre == row[indices['Autorizacion']].value).first()
+                            fkinvitado = None
+                            fkconductor = None
+                            fkvehiculo = None
 
-                        movi = Movimiento(fktipodocumento=row[indices['Tipo documento']].value,
-                                          fkinvitado=fkinvitado, fkvehiculo=fkvehiculo,
-                                          fechai=row[indices['Fecha Ingreso']].value, fechaf=row[indices['Fecha Salida']].value, fechar=row[indices['Fecha Registro']].value, fkautorizacion=query_autorizacion.id,
-                                          fkdomicilio=result_domicilio, fkareasocial=result_areasocial, fktipopase=query_tipo_pase.id, observacion=row[indices['Observacion']].value, tipo=row[indices['Tipo']].value,
-                                          cantpasajeros=row[indices['Cant. Pasajeros']].value,fktipodocumento_conductor=None,fkconductor=fkconductor)
 
-                        self.db.merge(movi)
-                        self.db.flush()
+                            query_invitado = self.db.query(Invitado).filter(and_(Invitado.ci == ci,Invitado.nombre == nombre,Invitado.apellidop== apellidop,Invitado.apellidom == apellidom)).first()
+
+                            if query_invitado :
+                                print("existe invitado")
+                                fkinvitado = query_invitado.id
+
+                            else:
+                                invi = Invitado(nombre=nombre, apellidop=apellidop, apellidom=apellidom,
+                                                ci=ci, expendido=expedido)
+
+                                self.db.add(invi)
+                                self.db.flush()
+
+                                fkinvitado = invi.id
+
+
+                            if nombre_conductor:
+                                query_conductor = self.db.query(Invitado).filter(and_(Invitado.ci == ci_conductor,Invitado.nombre == nombre_conductor,Invitado.apellidop== apellidop_conductor,
+                                                                                      Invitado.apellidom == apellidom_conductor)).first()
+
+                                if query_conductor :
+                                    print("existe conductor")
+                                    fkconductor = query_conductor.id
+
+                                else:
+                                    condu = Invitado(nombre=nombre_conductor, apellidop=apellidop_conductor, apellidom=apellidom_conductor,
+                                                    ci=ci_conductor, expendido=expedido)
+
+                                    self.db.add(condu)
+                                    self.db.flush()
+
+                                    fkconductor = condu.id
+
+                            if row[indices['Placa']].value:
+
+                                dict_vehiculo = VehiculoManager(self.db).obtener_vehiculo(row[indices['Placa']].value, row[indices['Color']].value, row[indices['Tipo vehiculo']].value, row[indices['Marca']].value,
+                                                                                          row[indices['Modelo']].value, '')
+
+                                if dict_vehiculo['id'] != "":
+                                    print("existe vehiculo")
+                                    fkvehiculo = dict_vehiculo['id']
+
+                                else:
+                                    dict_vehiculo['id'] = None
+
+                                    vehi = Vehiculo(placa=dict_vehiculo['placa'], fkcolor=dict_vehiculo['fkcolor'], fktipo=dict_vehiculo['fktipo'], fkmarca=dict_vehiculo['fkmarca'], fkmodelo=dict_vehiculo['fkmodelo'])
+
+                                    self.db.add(vehi)
+                                    self.db.flush()
+
+                                    fkvehiculo = vehi.id
+
+
+
+
+
+                            query_domicilio = self.db.query(Domicilio).filter(Domicilio.codigo == row[indices['Destino']].value).first()
+
+                            query_tipo_pase = self.db.query(Tipopase).filter(Tipopase.nombre == row[indices['Tipo de pase']].value).first()
+
+                            query_autorizacion = self.db.query(Autorizacion).filter(Autorizacion.nombre == row[indices['Autorizacion']].value).first()
+
+                            movi = Movimiento(fktipodocumento=row[indices['Tipo documento']].value,
+                                              fkinvitado=fkinvitado, fkvehiculo=fkvehiculo,
+                                              fechai=row[indices['Fecha Ingreso']].value, fechaf=row[indices['Fecha Salida']].value, fechar=row[indices['Fecha Registro']].value, fkautorizacion=query_autorizacion.id,
+                                              fkdomicilio=result_domicilio, fkareasocial=result_areasocial, fktipopase=query_tipo_pase.id, observacion=row[indices['Observacion']].value, tipo=row[indices['Tipo']].value,
+                                              cantpasajeros=row[indices['Cant. Pasajeros']].value,fktipodocumento_conductor=None,fkconductor=fkconductor)
+
+                            self.db.merge(movi)
+                            self.db.flush()
 
                     else:
 

@@ -25,6 +25,10 @@ class NropaseManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
+
+    def obtener_x_tarjeta(self,tarjeta):
+        return self.db.query(self.entity).filter(self.entity.tarjeta == tarjeta).filter(self.entity.estado == True).first()
+
     def list_all(self):
         return dict(objects=self.db.query(self.entity).filter(self.entity.estado == True))
 

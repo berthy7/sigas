@@ -77,6 +77,7 @@ class ApiCondominioController(ApiController):
 
         '/api/v1/sincronizar_condominio': {'POST': 'sincronizar_condominio'},
         '/api/v1/sincronizar_usuario': {'POST': 'sincronizar_usuario'},
+        '/api/v1/sincronizar_usuario_estado': {'POST': 'sincronizar_usuario_estado'},
         '/api/v1/sincronizar_residente': {'POST': 'sincronizar_residente'},
         '/api/v1/sincronizar_invitado': {'POST': 'sincronizar_invitado'},
         '/api/v1/sincronizar_evento': {'POST': 'sincronizar_evento'},
@@ -904,19 +905,25 @@ class ApiCondominioController(ApiController):
 
                     if mov.fkdomicilio:
                         data['codigo_destino'] = mov.domicilio.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
 
                     elif mov.fkareasocial:
                         data['codigo_destino'] = mov.areasocial.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
 
                     else:
                         data['codigo_destino'] = ""
+                        condominio = None
 
                     data['fkinvitado'] = ""
                     data['fkconductor'] = ""
 
+                    data['fechar'] = data['fechar'].strftime('%d/%m/%Y %H:%M:%S')
+
                     self.db.merge(mov)
                     self.db.commit()
-                    self.funcion_sincronizar(usuario,data,"sincronizar_movimiento")
+
+                    self.funcion_sincronizar_x_condominio(condominio,data,"sincronizar_movimiento")
 
                 objeto = mov.get_dict()
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
@@ -1333,6 +1340,26 @@ class ApiCondominioController(ApiController):
             # Other errors are possible, such as IOError.
             print("Error de conexion funcion sincronizar: " + str(e))
 
+    def funcion_sincronizar_x_condominio(self, condominio, data, ws):
+        try:
+
+            if condominio.ip_publica != "":
+                url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/" + ws
+
+                headers = {'Content-Type': 'application/json'}
+                string = data
+                cadena = json.dumps(string)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                # print(response)
+
+
+        except Exception as e:
+            # Other errors are possible, such as IOError.
+            print("Error de conexion funcion sincronizar: " + str(e))
+
     def sincronizar_condominio(self):
         try:
             self.set_session()
@@ -1362,6 +1389,22 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    def sincronizar_usuario_estado(self):
+        try:
+            self.set_session()
+            diccionary = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(diccionary['id'])
+
+            user = UsuarioManager(self.db).state(u.id, diccionary['estado'], diccionary['user'], diccionary['ip'])
+            # user = user.get_dict()
+            self.respond(response=None, success=True, message='Actualizacion de estado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
     def sincronizar_residente(self):
         try:
             self.set_session()
@@ -1373,20 +1416,27 @@ class ApiCondominioController(ApiController):
             for vehiculos in data['dict_residente']['vehiculos']:
 
                 marca = MarcaManager(self.db).obtener_o_crear(vehiculos['nombre_marca'])
-
                 vehiculos['fkmarca'] = marca.id
 
                 modelo = ModeloManager(self.db).obtener_o_crear(vehiculos['nombre_modelo'],vehiculos['fkmarca'])
 
-                vehiculos['fkmodelo'] = modelo.id
+                vehiculos['fkmodelo'] = modelo.id if modelo else modelo
 
+
+                tarjeta = NropaseManager(self.db).obtener_x_tarjeta(vehiculos['tarjeta'])
+
+                vehiculos['fknropase'] = tarjeta.id if tarjeta else tarjeta
 
 
             for domicilios in data['dict_residente']['domicilios']:
-
                 domi = DomicilioManager(self.db).obtener_x_codigo(domicilios['codigo_domicilio'])
-
                 domicilios['fkdomicilio'] = domi.id
+
+
+            nro = NropaseManager(self.db).obtener_x_tarjeta(data['dict_usuario']['tarjeta_residente'])
+
+            data['dict_residente']['fknropase'] = nro.id if nro else nro
+
 
             dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
             data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
@@ -1441,9 +1491,13 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-
+            print("sincronizar movimiento")
+            print(str(data))
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = u.id
+
+            data['fkvehiculo'] =  ""
+            data['fkinvitado'] = ""
 
 
             if data['fkresidente'] != "":
