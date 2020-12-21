@@ -1506,9 +1506,13 @@ class ApiCondominioController(ApiController):
             marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
             data['fkmarca'] = marca.id
 
-            modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
+            if data['nombre_modelo'] != "":
 
-            data['fkmodelo'] = modelo.id if modelo else modelo
+                modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
+
+                data['fkmodelo'] = modelo.id if modelo else modelo
+            else:
+                data['fkmodelo'] = None
 
 
             if data['fkresidente'] != "":
