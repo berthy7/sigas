@@ -906,6 +906,7 @@ class ApiCondominioController(ApiController):
                     data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
 
+
                     if mov.fkdomicilio:
                         data['codigo_destino'] = mov.domicilio.codigo
                         condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
