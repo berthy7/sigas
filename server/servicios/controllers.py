@@ -409,7 +409,7 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def listar_vehiculo(self):
-        print("consulto listar_vehiculo")
+        print("consulto listar_vehiculos")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
@@ -420,18 +420,20 @@ class ApiCondominioController(ApiController):
                 arraT = self.manager(self.db).get_page(1, 10, None, None, True)
                 resp = []
 
-                arraT['objeto'] = VehiculoManager(self.db).listar_todo()
-                for item in arraT['objeto']:
-                    obj_dict = item.get_dict()
-                    obj_dict['residente'] = None
-                    obj_dict['invitado'] = None
-                    obj_dict['nropase'] =  None
-
-                    resp.append(obj_dict)
+                arraT = VehiculoManager(self.db).listar_todo_dict()
+                # for item in arraT['objeto']:
+                #     obj_dict = item.get_dict()
+                #     obj_dict['residente'] = None
+                #     obj_dict['invitado'] = None
+                #     obj_dict['nropase'] =  None
+                #
+                #     resp.append(obj_dict)
 
                 self.db.close()
 
-                self.respond(response=resp, success=True, message="Vehiculos recuperados correctamente.")
+                print("response listar_vehiculo")
+
+                self.respond(response=[item.get_dict() for item in arraT['objeto']], success=True, message="Vehiculos recuperados correctamente.")
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
                              message=Respuestausuario['message'])
@@ -488,7 +490,7 @@ class ApiCondominioController(ApiController):
                 resp = []
 
                 arraT = InvitadoManager(self.db).listar_x_usuario_dict(usuario)
-                cont = 1
+
                 # for item in arraT['objeto']:
                 #     print("conteo"+ str(cont))
                 #     obj_dict = item.get_dict()

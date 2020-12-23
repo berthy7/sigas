@@ -19,6 +19,10 @@ class VehiculoManager(SuperManager):
     def __init__(self, db):
         super().__init__(Vehiculo, db)
 
+    def listar_todo_dict(self):
+        return dict(objeto=self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.placa.asc()))
+
+
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.placa.asc()).all()
 
