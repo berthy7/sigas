@@ -83,6 +83,7 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_evento': {'POST': 'sincronizar_evento'},
         '/api/v1/sincronizar_invitacion': {'POST': 'sincronizar_invitacion'},
         '/api/v1/sincronizar_movimiento': {'POST': 'sincronizar_movimiento'},
+        '/api/v1/sincronizar_movimiento_salida': {'POST': 'sincronizar_movimiento_salida'},
         '/api/v1/sincronizar_invitacion_rapida': {'POST': 'sincronizar_invitacion_rapida'},
         '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
         '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
