@@ -240,6 +240,19 @@ class UsuarioManager(SuperManager):
 
                             print(response)
 
+                    if u.sigas:
+                        url = "http://190.186.79.215:5000/api/v1/sincronizar_usuario"
+
+                        headers = {'Content-Type': 'application/json'}
+                        string = diccionary
+                        cadena = json.dumps(string)
+                        body = cadena
+                        resp = requests.post(url, data=body, headers=headers, verify=False)
+                        response = json.loads(resp.text)
+
+                        print(response)
+
+
 
                 except Exception as e:
                     # Other errors are possible, such as IOError.
