@@ -89,16 +89,15 @@ class MovimientoController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
-        id = diccionary['id']
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
-        resp = MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
+        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
 
         principal = self.db.query(Principal).first()
         if principal.estado:
 
-            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
                 condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
