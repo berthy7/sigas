@@ -96,7 +96,9 @@ class MovimientoController(CrudController):
 
         principal = self.db.query(Principal).first()
         if principal.estado:
-
+            diccionary['user'] = self.get_user_id()
+            diccionary['ip'] = self.request.remote_ip
+            diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -108,9 +110,7 @@ class MovimientoController(CrudController):
             diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
             if condominio.ip_publica != "":
-                diccionary['user'] = self.get_user_id()
-                diccionary['ip'] = self.request.remote_ip()
-                diccionary['idmovimiento'] = diccionary['id']
+
 
                 url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
 
