@@ -1589,10 +1589,12 @@ class ApiCondominioController(ApiController):
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
             print(str(data))
+            print(str(usuario))
 
             mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
 
-            print(str(mov.id))
+            print("mov: " +str(mov.id))
+            print("usuario: " +str(usuario.id))
 
             MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
             self.respond(response=None, success=True, message='Salida movimiento.')
