@@ -928,10 +928,6 @@ class ApiCondominioController(ApiController):
                     data['fkinvitado'] = ""
                     data['fkconductor'] = ""
 
-
-                    self.db.merge(mov)
-                    self.db.commit()
-
                     self.funcion_sincronizar_x_condominio(condominio,data,"sincronizar_movimiento")
 
                 objeto = mov.get_dict()
@@ -1518,7 +1514,10 @@ class ApiCondominioController(ApiController):
             print("sincronizar movimiento")
             print(str(data))
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            print(str(u ))
             data['user'] = u.id
+
+            print("usuario local: "+str(data['user']))
 
             data['fkvehiculo'] =  ""
             data['fkinvitado'] = ""

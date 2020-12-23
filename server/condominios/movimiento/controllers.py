@@ -62,11 +62,58 @@ class MovimientoController(CrudController):
 
     def insert(self):
         self.set_session()
-        diccionary = json.loads(self.get_argument("object"))
-        diccionary['user'] = self.get_user_id()
-        diccionary['ip'] = self.request.remote_ip
-        print("ingreso Vehicular web nombre: " + str(diccionary['nombre']))
-        MovimientoManager(self.db).insert(diccionary)
+        data = json.loads(self.get_argument("object"))
+        data['user'] = self.get_user_id()
+        data['ip'] = self.request.remote_ip
+        print("ingreso Vehicular web nombre: " + str(data['nombre']))
+        mov = MovimientoManager(self.db).insert(data)
+
+        destino = MovimientoManager(self.db).obtener_destino(mov.id)
+
+
+        principal = self.db.query(Principal).first()
+        if principal.estado:
+
+            if destino.condominio.ip_publica != "":
+
+                mov.codigo = mov.id
+                data['codigo'] = mov.id
+                data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
+                data['nombre_marca'] = mov.vehiculo.marca.nombre
+                data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+                if mov.nropase:
+                    data['tarjeta'] = mov.nropase.tarjeta
+                else:
+                    data['tarjeta'] = ""
+
+                if mov.fkdomicilio:
+                    data['codigo_destino'] = mov.domicilio.codigo
+                    condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+
+                elif mov.fkareasocial:
+                    data['codigo_destino'] = mov.areasocial.codigo
+                    condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+
+                else:
+                    data['codigo_destino'] = ""
+                    condominio = None
+
+                data['fkinvitado'] = ""
+                data['fkconductor'] = ""
+
+                url = "http://" + destino.condominio.ip_publica + ":" + destino.condominio.puerto + "/api/v1/sincronizar_movimiento"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(data)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+
+
         self.respond(success=True, message='Insertado correctamente.')
 
     def update(self):
