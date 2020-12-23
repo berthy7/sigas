@@ -103,7 +103,7 @@ $('#tipo').selectpicker({
                 <input  id="fkcondominio'+id_in+'" class="form-control fkcondominio condominio txta-own">\
                 </div>\
             </div>\
-            <div class="col-sm-4">\
+            <div class="col-sm-6">\
                 <div class="form-line">\
                     <input id="nombre'+id_in+'" data-id="'+id_in+'" class="form-control nombre  txta-own"readonly>\
                 </div>\

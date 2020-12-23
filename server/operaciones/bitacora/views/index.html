@@ -46,20 +46,34 @@
     $(document).ready(function () {
 
             var data = [];
-            {% set cont = 0 %}
+
+
             {% for c in objects %}
+                var tabla = "---";
+                var identificador = "---";
+
+                {% if c.tabla %}
+                    tabla = {{ c.tabla }}
+
+                {% end %}
+
+                {% if c.identificador %}
+                    identificador = {{ c.identificador }}
+
+                {% end %}
+
+
 
                 data.push( [
                     '{{ c.id }}',
                     '{{ c.usuario.username}}',
                     '{{ c.accion }}',
                     '{{ c.ip }}',
-                    '{{ c.tabla }}',
-                    '{{ c.identificador }}',
+                    tabla,
+                    identificador,
                     '{{ c.fecha.strftime("%d/%m/%Y %H:%M:%S") }}',
 
                 ]);
-            {% set cont = cont + 1 %}
             {% end %}
             cargar_tabla(data)
         });

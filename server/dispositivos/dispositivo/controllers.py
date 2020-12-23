@@ -65,14 +65,6 @@ class DispositivoController(CrudController):
         self.respond(success=True, message=respuesta)
         self.db.close()
 
-    def interpretes(self):
-        self.set_session()
-        data = json.loads(self.get_argument("object"))
-        ins_manager = InterpreteManager(self.db)
-        arraT = ins_manager.get_page(1, 10, None, None, True)
-        arraT['datos'] = ins_manager.obtener_interpretes()
-        self.respond([objeto.get_dict() for objeto in arraT['datos']])
-        self.db.close()
 
     def configuracion(self):
         self.set_session()

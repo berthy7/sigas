@@ -82,7 +82,7 @@
                     '{{ c.ubicacion }}',
                     '{{ c.condominio.nombre}}',
                     '<input id="{{ c.id }}" onClick="event.preventDefault();eliminar(this)" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo delete" {% if c.estado %} {{"checked"}} {% end %} /><label for="{{c.id}}"></label>',
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
 
                 ]);
             {% set cont = cont + 1 %}

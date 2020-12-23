@@ -243,102 +243,9 @@ function obtener_cerraduras() {
         return objeto
     }
 
-function cargar_interpretes() {
-    obj = JSON.stringify({
-        '_xsrf': getCookie("_xsrf")
-    })
-    ruta = "dispositivo_interpretes";
-    $.ajax({
-        method: "POST",
-        url: ruta,
-        data: {_xsrf: getCookie("_xsrf"), object: obj},
-        async: true
-    }).done(function (response) {
-        response = JSON.parse(response)
-        var self = response;
-
-        $('#interpretes_div').empty()
-
-        for(i in self.response){
-            aux0 = self.response[i]['id']
-            aux1 = self.response[i]['nombre']
-
-            append_input_interpretes(aux0)
-            $('#fkinterprete' + aux0).val(aux0)
-            $('#nombre_interprete' + aux0).val(aux1)
-            $('#b_interprete' + aux0).prop('checked', false)
-        }
-
-    })
-
-}
-
-//////////////////////////////////////////////////editar///////////////////////////////////////////////////////////////////////
-    function append_input_interpretes(id_in) {
-
-        $('#interpretes_div').append(
-            '<div class="row" >\
-                 <div class="col-sm-1" hidden>\
-                    <div class="input-group">\
-                    <input  id="id_interprete'+id_in+'" class="form-control interpretes readonly" hidden>\
-                    </div>\
-                 </div>\
-                 <div class="col-sm-1">\
-                    <div class="input-group">\
-                    <input  id="fkinterprete'+id_in+'" value="'+id_in+'" class="form-control interpretes readonly">\
-                    </div>\
-                 </div>\
-                 <div class="col-sm-5">\
-                    <div class="input-group">\
-                        <div><input id="nombre_interprete'+id_in+'" type="text" class="form-control" readonly></div>\
-                    </div>\
-                 </div>\
-                 <div class="col-md-2">\
-                    <input id="b_interprete'+id_in+'" type="checkbox" class="regular-checkbox big-checkbox interpretes" data-id="1" >\
-                    <label for="b_interprete'+id_in+'"></label>\
-                 </div>\
-             </div>'
-        )
-    }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-function obtener_interpretes() {
-        objeto = []
-        objeto_inputs = $('.interpretes')
-
-        for(i=0;i<objeto_inputs.length;i+=3){
-            h0 = objeto_inputs[i].value
-            h1 = objeto_inputs[i+1].value
-            h2 = objeto_inputs[i+2].checked
-
-                objeto.push((function add_hours(h0,h1,h2) {
-                    if (h0 ==''){
-                        return {
-                        'fkinterprete': h1,
-                        'estado': h2
-
-                        }
-
-                    }else{
-                        return {
-                        'id':h0,
-                        'fkinterprete': h1,
-                        'estado': h2
-                        }
-                    }
-                })(h0,
-                   h1,
-                   h2))
-
-        }
-        return objeto
-    }
 
 
 $('#new').click(function () {
-    cargar_interpretes()
     $('#ip').val('')
     $('#puerto').val('4370')
     $('#fktipodispositivo').val('')
@@ -405,8 +312,7 @@ $('#insert').click(function () {
             'modelo': $('#modelo').val(),
             'descripcion': $('#descripcion').val(),
             'fkcondominio': $('#fkcondominio').val(),
-            'cerraduras': obtener_cerraduras(),
-            'interpretes': obtener_interpretes()
+            'cerraduras': obtener_cerraduras()
         })
         ajax_call('dispositivo_insert', {
             object: objeto,
@@ -436,7 +342,6 @@ function editar(elemento){
         object: obj
     }, function (response) {
         var self = response;
-        //cargar_interpretes()
         $('#id').val(self.id)
         $('#ip').val(self.ip)
         $('#puerto').val(self.puerto)
@@ -462,19 +367,6 @@ function editar(elemento){
             $('#fkentrada' + aux1).selectpicker('refresh')
         }
         
-        $('#interpretes_div').empty()
-        for(i in self.interpretes){
-            aux0 = self.interpretes[i]['id']
-            aux1 = self.interpretes[i]['fkinterprete']
-            aux2 = self.interpretes[i]['interprete'].nombre
-            aux3 = self.interpretes[i]['estado']
-
-            append_input_interpretes(aux0)
-            $('#id_interprete' + aux0).val(aux0)
-            $('#fkinterprete' + aux0).val(aux1)
-            $('#nombre_interprete' + aux0).val(aux2)
-            $('#b_interprete' + aux0).prop('checked', aux3)
-        }
 
         validationInputSelects("form")
         verif_inputs('')
@@ -503,8 +395,7 @@ $('#update').click(function () {
             'modelo': $('#modelo').val(),
             'descripcion': $('#descripcion').val(),
             'fkcondominio': $('#fkcondominio').val(),
-            'cerraduras': obtener_cerraduras(),
-            'interpretes': obtener_interpretes()
+            'cerraduras': obtener_cerraduras()
         })
         ajax_call('dispositivo_update', {
             object: objeto,

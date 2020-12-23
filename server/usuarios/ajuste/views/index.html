@@ -15,6 +15,7 @@
 
     <div class="body">
           <div class="row clearfix">
+              <input id="id_movil" type="hidden" value="{{ ajuste['id_movil'] }}">
             <div class="col-sm-4">
               <div class="card" style="padding-left: 20px; padding-top: 10px">
                   <label ><span class="card-title">Clave Secreta</span></label>
@@ -23,11 +24,22 @@
                 <div class="card-content">
 
                     <div class="row clearfix">
-                        <div class="col-sm-5">
+                        <div class="col-sm-7">
                             <label>Contraseña</label>
                                 <div class="form-line">
-                                    <input id="montoMinimoReserva" name="Monto minimo" value="{{ ajuste['claveSecreta'] }}" type="text" class="form-control txta-own"  >
+                                    <input id="clavesecreta" name="Clave Secreta" value="{{ ajuste['claveSecreta'] }}" type="password" class="form-control txta-own"  >
                                 </div>
+
+                            </span>
+                        </div>
+                        <div class="col-sm-1">
+                            <label></label>
+                             <div class="form-line">
+                                <span class="input-group-addon" id="see-pass" style="cursor: pointer;" title="Mostrar">
+                                <i class="material-icons" style="color: grey" id="ic-pass">visibility_off</i>
+
+                                </span>
+                            </div>
                         </div>
 
                     </div>
@@ -45,12 +57,6 @@
               </div>
             </div>
 
-          </div>
-
-    </div>
-    <div class="body">
-          <div class="row clearfix">
-              <input id="id_movil" type="hidden" value="{{ ajuste['id_movil'] }}">
             <div class="col-sm-4">
               <div class="card" style="padding-left: 20px; padding-top: 10px">
                   <label ><span class="card-title">Version Movil</span></label>
@@ -84,6 +90,7 @@
           </div>
 
     </div>
+
 {%end%}
 
 {% block script%}

@@ -122,7 +122,13 @@ function actualizar_tabla(response){
             }else{
                 destino = '-----'
             }
-            estado ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
+
+            if(response['response'][i]['estado']){
+                estado = "<input id='" + id + "' onClick='event.preventDefault();estado(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' checked /><label for='" + id + "'></label>"
+            }else{
+               estado = "<input id='" + id + "' onClick='event.preventDefault();estado(this)' data-id='" + id + "' type='checkbox' class='chk-col-indigo' /><label for='" + id + "'></label>"
+            }
+
             editar ="<button id='edit' onClick='editar(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light' title='Editar'><i class='material-icons'>create</i></button>"
         
 

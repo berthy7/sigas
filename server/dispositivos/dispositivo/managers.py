@@ -47,13 +47,6 @@ class DispositivoManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fkcondominio == idcondominio).all()
 
     def listar_todo_cant_marcaciones(self,x):
-        # id_interprete = x['idinterprete']
-        # # print(str(id_interprete))
-        #
-        # dispositivos = self.db.query(Dispositivo).join(Dispositivointerprete)\
-        #     .filter(Dispositivo.estado == True) \
-        #     .filter(Dispositivointerprete.fkinterprete == id_interprete) \
-        #     .filter(Dispositivointerprete.estado == True).all()
 
         dispositivos = self.db.query(Dispositivo)\
             .filter(Dispositivo.estado == True).all()
@@ -305,12 +298,10 @@ class ConfiguraciondispositivoManager(SuperManager):
 
     def listar_todo(self,x):
 
-        dispos = self.db.query(Dispositivo).join(Configuraciondispositivo).join(Dispositivointerprete)\
+        dispos = self.db.query(Dispositivo).join(Configuraciondispositivo)\
                 .filter(Dispositivo.estado == True) \
                 .filter(Configuraciondispositivo.estado == True) \
-                .filter(Configuraciondispositivo.situacion != "Abrir") \
-                .filter(Dispositivointerprete.fkinterprete == x['idinterprete']) \
-                .filter(Dispositivointerprete.estado == True).all()
+                .filter(Configuraciondispositivo.situacion != "Abrir").all()
 
         for dis in dispos:
             config = self.db.query(Configuraciondispositivo) \
@@ -472,15 +463,6 @@ class ConfiguraciondispositivoManager(SuperManager):
         b = Bitacora(fkusuario=diccionary['user'], ip=diccionary['ip_local'], accion="Abrió cerradura Nº"+str(diccionary['cerradura']), fecha=fecha, tabla="dispositivo")
         super().insert(b)
 
-
-
-class InterpreteManager(SuperManager):
-
-    def __init__(self, db):
-        super().__init__(Interprete, db)
-
-    def obtener_interpretes(self):
-        return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
 
 class DispositivoeventosManager(SuperManager):

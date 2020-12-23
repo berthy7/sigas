@@ -1211,10 +1211,26 @@ class ApiCondominioController(ApiController):
             if Respuestausuario['success']:
                 usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
                 data['user'] = usuario.id
-                idmovimiento = data['idmovimiento']
-                user = data['user']
-                ip = data['ip']
-                resp = MovimientoManager(self.db).salida(idmovimiento, user, ip)
+
+                resp = MovimientoManager(self.db).salida(data['idmovimiento'], data['user'], data['ip'])
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+
+                     destino = MovimientoManager(self.db).obtener_destino(data['idmovimiento'])
+
+                     if destino:
+                         condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+                     else:
+                         condominio = None
+
+                     data['fechaf'] = resp.fechaf
+
+
+                     self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_salida")
+
+
                 self.respond(response=None, success=True, message='Salida Actualizada Correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -1303,7 +1319,6 @@ class ApiCondominioController(ApiController):
             data = json.loads(self.request.body.decode('utf-8'))
             # x = ast.literal_eval(data)
             x = json.loads(data)
-            # print("ws listar dispositivos " + str(x['idinterprete']))
 
             resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(x)
             DispositivoManager(self.db).verificar_estado(x)
@@ -1560,6 +1575,23 @@ class ApiCondominioController(ApiController):
 
             MovimientoManager(self.db).insert(data)
             self.respond(response=None, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+
+    def sincronizar_movimiento_salida(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+
+            mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
+
+            MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
+            self.respond(response=None, success=True, message='Salida movimiento.')
+
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))

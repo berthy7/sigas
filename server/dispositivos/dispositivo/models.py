@@ -9,7 +9,7 @@ from ...condominios.condominio.models import *
 
 
 class Dispositivo(Serializable, Base):
-    way = {'condominio': {},'tipodispositivo': {},'configuraciondispositivo': {},'interpretes': {'interprete': {}},'cerraduras': {'entrada': {}}}
+    way = {'condominio': {},'tipodispositivo': {},'configuraciondispositivo': {},'cerraduras': {'entrada': {}}}
 
     __tablename__ = 'dispositivo'
 
@@ -26,7 +26,6 @@ class Dispositivo(Serializable, Base):
 
     condominio = relationship('Condominio')
     configuraciondispositivo = relationship('Configuraciondispositivo')
-    interpretes = relationship('Dispositivointerprete')
     tipodispositivo = relationship('Tipodispositivo')
     cerraduras = relationship('Cerraduras', cascade="save-update, merge, delete, delete-orphan")
 
@@ -72,30 +71,6 @@ class Configuraciondispositivo(Serializable, Base):
     codigoacceso = Column(String(100), nullable=True, default="")
 
     dispositivo = relationship('Dispositivo')
-
-class Interprete(Serializable, Base):
-    way = {}
-
-    __tablename__ = 'interprete'
-
-    id = Column(Integer, primary_key=True)
-    nombre = Column(String(200), nullable=True, default="")
-    estado = Column(Boolean, default=True)
-
-
-class Dispositivointerprete(Serializable, Base):
-    way = {'dispositivo': {},'interprete': {}}
-
-    __tablename__ = 'dispositivointerprete'
-
-    id = Column(Integer, primary_key=True)
-    fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
-    fkinterprete = Column(Integer, ForeignKey('interprete.id'), nullable=True)
-    estado = Column(Boolean, default=True)
-
-    dispositivo = relationship('Dispositivo')
-    interprete = relationship('Interprete')
-
 
 
 class Dispositivoeventos(Serializable, Base):

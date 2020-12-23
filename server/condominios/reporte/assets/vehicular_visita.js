@@ -47,7 +47,7 @@ function preparar_datos_vehicular_visita(datos){
         
         if (datos[i].fkvehiculo !="None"){
             placa= datos[i]['vehiculo'].placa
-            tipo= datos[i]['vehiculo'].tipo
+            tipo= datos[i]['vehiculo'].tipo.nombre
             if(datos[i]['vehiculo'].fkmarca !="None"){
                 marca= datos[i]['vehiculo']['marca'].nombre
             }else{
@@ -58,7 +58,7 @@ function preparar_datos_vehicular_visita(datos){
             }else{
                 modelo= '-----'
             }
-            color= datos[i]['vehiculo'].color
+            color= datos[i]['vehiculo'].color.nombre
 
 
         }else{

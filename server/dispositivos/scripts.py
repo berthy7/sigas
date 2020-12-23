@@ -210,9 +210,6 @@ def insertions():
         session.add(Tipodispositivo(id=3,nombre='Controlador de 4 Cerraduras'))
         session.add(Tipodispositivo(id=4,nombre='Terminal Biometrico'))
 
-        session.add(Interprete(id=1, nombre='Servidor Ciudad Jardin'))
-        session.add(Interprete(id=2, nombre='Servidor Demo'))
-
         session.add(Dispositivoeventos(codigo=0, nombre='Apertura', descripcion="In [Card Only] verification mode, the person has open door permission punch the card and triggers this normal event of open the door."))
         session.add(Dispositivoeventos(codigo=1, nombre='Apertura normal dentro de la zona horaria', descripcion="At the normally open period (set to normally open period of a single door or the door open period after the first card normally open), or through the remote normal open operation, the person has open door permission punch the effective card at the opened door to trigger this normal events."))
         session.add(Dispositivoeventos(codigo=2, nombre='1ra apertura nomarl(tarjeta accion)', descripcion="In [Card Only] verification mode, the person has first card normally open permission, punch card at the setting first card normally open period but the door is not opened, and trigger the normal event."))

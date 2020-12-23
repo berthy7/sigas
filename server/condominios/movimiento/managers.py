@@ -18,6 +18,19 @@ class MovimientoManager(SuperManager):
     def __init__(self, db):
         super().__init__(Movimiento, db)
 
+    def obtener_x_codigo(self, codigo):
+        return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
+
+    def obtener_destino(self,idMovimiento):
+        mov = self.db.query(self.entity).filter(self.entity.id == idMovimiento).first()
+
+        if mov.fkdomicilio:
+            return mov.domicilio
+        elif mov.fkareasocial:
+            return mov.areasocial
+        else:
+            return None
+
     def get_all(self):
         return self.db.query(self.entity)
 
@@ -139,7 +152,6 @@ class MovimientoManager(SuperManager):
         diccionary['tipo'] = "Vehicular"
 
 
-
         # diccionary['fechai'] = fecha
 
         try:
@@ -189,7 +201,31 @@ class MovimientoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
         if x.fechai is None:
             x.fechai = x.fechar
+
+
         x.fechaf = fecha
+
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=user, ip=ip, accion="Registro Salida", fecha=fecha, tabla="movimiento", identificador=id)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+
+
+        if x.fknropase:
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(x.fknropase, "Libre")
+
+        return x
+
+    def salida_sincronizada(self, id, fechaf, user, ip):
+        x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
+        fecha = BitacoraManager(self.db).fecha_actual()
+        if x.fechai is None:
+            x.fechai = x.fechar
+
+        x.fechaf = fechaf
 
 
         fecha = BitacoraManager(self.db).fecha_actual()

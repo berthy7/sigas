@@ -58,6 +58,9 @@ class ResidenteManager(SuperManager):
         objeto.vehiculos = []
         objeto.estado = estado
 
+        if objeto.codigo == "":
+            objeto.codigo = None
+
         a = super().insert(objeto)
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)

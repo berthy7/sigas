@@ -4,6 +4,31 @@ $(document).ready(function () {
  cargar_reserva_minima()
 });
 
+$(function () {
+    $('#sign_in').validate({
+        highlight: function (input) {
+            $(input).parents('.form-line').addClass('error');
+        },
+        unhighlight: function (input) {
+            $(input).parents('.form-line').removeClass('error');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parents('.input-group').append(error);
+        }
+    });
+});
+
+$('#see-pass').mousedown(function(){
+    $("#ic-pass").css("color", "lightgrey");
+    $("#clavesecreta").prop("type", "text");
+    $("#ic-pass").html("visibility");
+});
+
+$("#see-pass").mouseup(function(){
+    $("#ic-pass").css("color", "grey");
+    $("#clavesecreta").prop("type", "password");
+    $("#ic-pass").html("visibility_off");
+});
 
 $(document).ajaxStart(function () { });
 

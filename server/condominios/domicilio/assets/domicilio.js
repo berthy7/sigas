@@ -38,7 +38,7 @@ function cargar_tabla(response){
             response['response'][i]['numero'],
             interno,
             response['response'][i]['condominio']['nombre'],
-            "<button id='edit' onClick='editar(this)' data-json='" + response['response'][i]['id'] + "' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
+            "<button id='edit' onClick='editar(this)' data-json='" + response['response'][i]['id'] + "' type='button' class='btn bg-indigo white-own waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>"
         ]);
     }
 
