@@ -1543,6 +1543,7 @@ class ApiCondominioController(ApiController):
             print("tarjeta: " + str(data['tarjeta']))
             tarjeta = NropaseManager(self.db).obtener_x_tarjeta(data['tarjeta'])
             print("tarjeta: " + str(tarjeta))
+
             if tarjeta:
 
                 data['fknropase'] = tarjeta.id
@@ -1562,20 +1563,24 @@ class ApiCondominioController(ApiController):
 
             if data['fkresidente'] != "":
                 resi = ResidenteManager(self.db).obtener_x_codigo(data['fkresidente'])
+                print("resi: " + str(resi))
                 data['fkresidente'] = resi.id
 
 
             if data['fkdomicilio'] != "":
                 domi = DomicilioManager(self.db).obtener_x_codigo(data['codigo_destino'])
+                print("domi: " + str(domi))
                 data['fkdomicilio'] = domi.id
 
             elif data['fkareasocial'] != "":
                 domi = AreasocialManager(self.db).obtener_x_codigo(data['codigo_destino'])
+                print("area: " + str(domi))
                 data['fkareasocial'] = domi.id
 
 
             if data['codigoautorizacion'] != "":
                 invi = InvitacionManager(self.db).obtener_x_codigoqr(data['codigoautorizacion'])
+                print("invi: " + str(invi))
                 data['fkinvitacion'] = invi.id
 
 
