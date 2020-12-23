@@ -48,8 +48,10 @@ class DispositivoManager(SuperManager):
 
     def listar_todo_cant_marcaciones(self,x):
 
-        dispositivos = self.db.query(Dispositivo)\
-            .filter(Dispositivo.estado == True).all()
+        dispositivos = self.db.query(Dispositivo).join(Condominio)\
+            .filter(Dispositivo.fkcondominio == Condominio.id)\
+            .filter(Dispositivo.estado == True)\
+            .filter(Condominio.ip_publica == "").all()
 
         resp = []
         resp_config = []
