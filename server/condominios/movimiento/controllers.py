@@ -70,7 +70,6 @@ class MovimientoController(CrudController):
 
         destino = MovimientoManager(self.db).obtener_destino(mov.id)
 
-
         principal = self.db.query(Principal).first()
         if principal.estado:
 

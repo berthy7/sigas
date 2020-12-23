@@ -1512,32 +1512,37 @@ class ApiCondominioController(ApiController):
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             print("sincronizar movimiento")
-            print(str(data))
+
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            print(str(u ))
+
             data['user'] = u.id
 
-            print("usuario local: "+str(data['user']))
 
             data['fkvehiculo'] =  ""
             data['fkinvitado'] = ""
 
+
+            print("nombre_marca: "+str(data['nombre_marca']))
+
             marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
+            print("marca: " + str(marca))
+
             data['fkmarca'] = marca.id
 
             if data['codigoautorizacion'] != "":
 
+                print("codigoautorizacion: " + str(data['codigoautorizacion']))
                 invitacion = InvitacionManager(self.db).obtener_x_codigo(data['codigoautorizacion'])
-
+                print("invitacion: " + str(invitacion))
                 if invitacion:
 
                     data['fkinvitacion'] = invitacion.id
                 else:
                     data['fkinvitacion'] = invitacion
 
-
+            print("tarjeta: " + str(data['tarjeta']))
             tarjeta = NropaseManager(self.db).obtener_x_tarjeta(data['tarjeta'])
-
+            print("tarjeta: " + str(tarjeta))
             if tarjeta:
 
                 data['fknropase'] = tarjeta.id
@@ -1547,8 +1552,9 @@ class ApiCondominioController(ApiController):
 
             if data['nombre_modelo'] != "":
 
+                print("modelo: " + str(data['nombre_modelo']))
                 modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
-
+                print("modelo: " + str(modelo))
                 data['fkmodelo'] = modelo.id if modelo else modelo
             else:
                 data['fkmodelo'] = None
