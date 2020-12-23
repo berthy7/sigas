@@ -220,7 +220,7 @@ class MovimientoManager(SuperManager):
         return x
 
     def salida_sincronizada(self, id, fechaf, user, ip):
-        fechaf = datetime.strptime(fechaf, '%d/%m/%Y')
+        fechaf = datetime.strptime(fechaf, '%d/%m/%Y %H:%M:%S')
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
         fecha = BitacoraManager(self.db).fecha_actual()
         if x.fechai is None:

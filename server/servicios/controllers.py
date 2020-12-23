@@ -1226,7 +1226,7 @@ class ApiCondominioController(ApiController):
                      else:
                          condominio = None
 
-                     data['fechaf'] = resp.fechaf.strftime('%d/%m/%Y')
+                     data['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
 
                      self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_salida")

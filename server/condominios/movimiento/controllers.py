@@ -1,6 +1,7 @@
 from .managers import *
 from server.common.controllers import CrudController
 from ..invitado.managers import *
+from ..condominio.managers import *
 from ..residente.managers import *
 from ..domicilio.managers import *
 from ..vehiculo.managers import *
@@ -92,7 +93,37 @@ class MovimientoController(CrudController):
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
-        MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
+        resp = MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
+
+        principal = self.db.query(Principal).first()
+        if principal.estado:
+
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
+
+            if destino:
+                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+            else:
+                condominio = None
+
+            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+
+            if condominio.ip_publica != "":
+
+
+                url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
+
+                headers = {'Content-Type': 'application/json'}
+
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+
+
 
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
