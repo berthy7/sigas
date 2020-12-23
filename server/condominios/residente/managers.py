@@ -220,6 +220,12 @@ class ResidenteManager(SuperManager):
                         list_vehiculo = list()
                         list_acceso = list()
 
+                        if apellidom is None:
+                            apellidom = ""
+
+                        if telefono is None:
+                            telefono = ""
+
                         domicilio = domicilio.replace(" ", "")
 
                         query_domicilio = self.db.query(Domicilio).filter(Domicilio.ubicacion == str(domicilio)).filter(Domicilio.numero == str(numero)).first()
