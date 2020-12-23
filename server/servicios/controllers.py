@@ -1592,7 +1592,7 @@ class ApiCondominioController(ApiController):
 
             mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
 
-            print(str(mov))
+            print(str(mov.id))
 
             MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
             self.respond(response=None, success=True, message='Salida movimiento.')
