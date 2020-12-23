@@ -454,12 +454,15 @@ class ApiCondominioController(ApiController):
                 resp = []
 
                 arraT['objeto'] = InvitadoManager(self.db).listar_todo()
+                cont = 1
                 for item in arraT['objeto']:
+                    print("conteo" + str(cont))
                     obj_dict = item.get_dict()
                     obj_dict['vehiculos'] = None
                     resp.append(obj_dict)
+                    cont = cont + 1
                 self.db.close()
-
+                print("response listar_invitados_todos")
                 self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -484,14 +487,19 @@ class ApiCondominioController(ApiController):
                 arraT = self.manager(self.db).get_page(1, 10, None, None, True)
                 resp = []
 
-                arraT['objeto'] = InvitadoManager(self.db).listar_x_residente(usuario)
-                for item in arraT['objeto']:
-                    obj_dict = item.get_dict()
-                    obj_dict['vehiculos'] = None
-                    resp.append(obj_dict)
+                arraT = InvitadoManager(self.db).listar_x_usuario_dict(usuario)
+                cont = 1
+                # for item in arraT['objeto']:
+                #     print("conteo"+ str(cont))
+                #     obj_dict = item.get_dict()
+                #     obj_dict['vehiculos'] = None
+                #     resp.append(obj_dict)
+                #     cont = cont +1
                 self.db.close()
 
-                self.respond(response=resp, success=True, message="Eventos recuperados correctamente.")
+                print("response listar_invitados")
+
+                self.respond(response=[item.get_dict() for item in arraT['objeto']], success=True, message="Invitados recuperados correctamente.")
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
                              message=Respuestausuario['message'])
@@ -833,6 +841,10 @@ class ApiCondominioController(ApiController):
                     self.funcion_sincronizar(u,data,"sincronizar_invitacion")
 
                 invitacion = resp.get_dict()
+
+                invitacion['evento'] = None
+                invitacion['invitado'] = None
+
                 self.respond(response=invitacion, success=True, message='Insertado correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -874,7 +886,13 @@ class ApiCondominioController(ApiController):
 
                     self.funcion_sincronizar(u, data, "sincronizar_invitacion_rapida")
 
+
+
                 resp_dict = resp.get_dict()
+                resp_dict['residente'] = None
+                resp_dict['domicilio'] = None
+                resp_dict['areasocial'] = None
+
                 self.respond(response=resp_dict,success=True, message='Insertado correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -931,6 +949,9 @@ class ApiCondominioController(ApiController):
                     self.funcion_sincronizar_x_condominio(condominio,data,"sincronizar_movimiento")
 
                 objeto = mov.get_dict()
+                objeto['residente'] = None
+                objeto['domicilio'] = None
+                objeto['areasocial'] = None
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -955,6 +976,9 @@ class ApiCondominioController(ApiController):
                 print("ingreso Peatonal movil ci: " + str(data['ci']))
                 resp = Movimiento_pManager(self.db).insert(data)
                 objeto = resp.get_dict()
+                objeto['residente'] = None
+                objeto['domicilio'] = None
+                objeto['areasocial'] = None
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -977,6 +1001,9 @@ class ApiCondominioController(ApiController):
                 resp = EventoManager(self.db).validar_invitacion_lector(data['codigo'])
                 if resp:
                     invitacion = resp.get_dict()
+                    invitacion['residente'] = None
+                    invitacion['domicilio'] = None
+                    invitacion['areasocial'] = None
                     self.respond(response=invitacion, success=True, message='Codigo Aceptado.')
                 else:
                     self.respond(response=resp, success=False, message='Codigo Denegado.')

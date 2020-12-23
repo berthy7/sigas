@@ -34,6 +34,19 @@ class InvitadoManager(SuperManager):
                 self.entity.apellidop.asc()).all()
 
 
+    def listar_x_usuario_dict(self,usuario):
+
+        if usuario.sigas:
+            return dict(objeto=self.db.query(self.entity).filter(self.entity.estado == True).order_by(
+                self.entity.apellidop.asc()))
+        elif usuario.rol.nombre == "RESIDENTE":
+            return dict(objeto= self.db.query(self.entity).join(Amistad).join(Residente).filter(self.entity.estado == True).filter(
+                Residente.id == usuario.fkresidente).order_by(self.entity.apellidop.asc()))
+        else:
+            return  dict(objeto= self.db.query(self.entity).filter(self.entity.estado == True).order_by(
+                self.entity.apellidop.asc()))
+
+
     def obtener_x_id(self,idinvitado):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.id == idinvitado).first()
 
