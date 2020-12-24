@@ -115,6 +115,8 @@ class RegistrosManager(SuperManager):
 
                                 if invitacion.evento.paselibre:
                                     codigo = "Pase Libre"
+                                elif invitacion.evento.multiple:
+                                    codigo = "Invitacion Grupal"
                                 else:
 
                                     codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
@@ -244,6 +246,8 @@ class RegistrosManager(SuperManager):
 
                                 if invitacion.evento.paselibre:
                                     codigo = "Pase Libre"
+                                elif invitacion.evento.multiple:
+                                    codigo = "Invitacion Grupal"
                                 else:
                                     codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
 
@@ -384,6 +388,8 @@ class RegistrosManager(SuperManager):
 
                                 if invitacion.evento.paselibre:
                                     codigo = "Pase Libre"
+                                elif invitacion.evento.multiple:
+                                    codigo = "Invitacion Grupal"
                                 else:
                                     codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
