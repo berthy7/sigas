@@ -112,7 +112,14 @@ class RegistrosManager(SuperManager):
                             invitacion = self.db.query(Invitacion).filter(
                                 Invitacion.codigoautorizacion == str(reg.codigo)).first()
                             if invitacion:
-                                codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
+
+                                if invitacion.evento.paselibre:
+                                    codigo = "Pase Libre"
+                                else:
+
+                                    codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
+
+
                                 tarjeta = invitacion.tipopase.nombre
                                 autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
@@ -234,7 +241,12 @@ class RegistrosManager(SuperManager):
                             invitacion = self.db.query(Invitacion).filter(
                                 Invitacion.codigoautorizacion == str(reg.codigo)).first()
                             if invitacion:
-                                codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
+
+                                if invitacion.evento.paselibre:
+                                    codigo = "Pase Libre"
+                                else:
+                                    codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
+
                                 tarjeta = invitacion.tipopase.nombre
                                 autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 
@@ -369,7 +381,11 @@ class RegistrosManager(SuperManager):
 
                             invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(reg.codigo)).first()
                             if invitacion:
-                                codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
+
+                                if invitacion.evento.paselibre:
+                                    codigo = "Pase Libre"
+                                else:
+                                    codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
                                 autorizacion = invitacion.evento.residente.nombre + " " + invitacion.evento.residente.apellidop + " Cel:" + invitacion.evento.residente.telefono
 

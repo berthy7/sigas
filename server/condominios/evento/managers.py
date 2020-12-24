@@ -502,6 +502,9 @@ class InvitacionManager(SuperManager):
 
         return a
 
+
+
+
     def delete(self, id,state, user, ip):
         x = self.db.query(Invitacion).filter(Invitacion.id == id).one()
         x.estado = state
