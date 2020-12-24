@@ -445,6 +445,8 @@ class RegistrosManager(SuperManager):
             if not respuesta:
                 print("registro marcacion")
                 object = RegistrosControlador(tarjeta=marcacion[0],codigo=marcacion[1],verificado=marcacion[2],puerta=marcacion[3],evento=marcacion[4],estado=marcacion[5],time=marcacion[6],fkdispositivo=marcaciones['iddispositivo'])
+
+                # ESta funcion tiene que ser asincrona
                 MovimientoManager(self.db).actualizar_movimiento(object)
                 # PorterovirtualManager(self.db).actualizar_marcacion(object)
 
