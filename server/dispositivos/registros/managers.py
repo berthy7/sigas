@@ -109,9 +109,8 @@ class RegistrosManager(SuperManager):
                                     codigo = str(tarjetaObj.tarjeta)
                                     tarjeta = str(tarjetaObj.tipo)
 
-                            codigo_normalizado = int(reg.codigo) - 500000
                             invitacion = self.db.query(Invitacion).filter(
-                                Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                                Invitacion.codigoautorizacion == str(reg.codigo)).first()
                             if invitacion:
                                 codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
@@ -126,8 +125,8 @@ class RegistrosManager(SuperManager):
                                     destino = invitacion.evento.areasocial.nombre
 
                         else:
-                            codigo_normalizado_residente = int(reg.codigo) - 100000
-                            residente_biometrico = self.db.query(Residente).filter(Residente.codigo == codigo_normalizado_residente).first()
+
+                            residente_biometrico = self.db.query(Residente).filter(Residente.codigo == reg.codigo).first()
 
                             if residente_biometrico:
                                 autorizacion = residente_biometrico.nombre + " " + residente_biometrico.apellidop
@@ -232,9 +231,8 @@ class RegistrosManager(SuperManager):
                                     codigo = str(tarjetaObj.tarjeta)
                                     tarjeta = str(tarjetaObj.tipo)
 
-                            codigo_normalizado = int(reg.codigo) - 500000
                             invitacion = self.db.query(Invitacion).filter(
-                                Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                                Invitacion.codigoautorizacion == str(reg.codigo)).first()
                             if invitacion:
                                 codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
@@ -249,8 +247,8 @@ class RegistrosManager(SuperManager):
                                     destino = invitacion.evento.areasocial.nombre
 
                         else:
-                            codigo_normalizado_residente = int(reg.codigo) - 100000
-                            residente_biometrico = self.db.query(Residente).filter(Residente.codigo == codigo_normalizado_residente).first()
+
+                            residente_biometrico = self.db.query(Residente).filter(Residente.codigo == reg.codigo).first()
 
                             if residente_biometrico:
                                 autorizacion = residente_biometrico.nombre + " " + residente_biometrico.apellidop
@@ -369,9 +367,7 @@ class RegistrosManager(SuperManager):
                                     tarjeta = str(tarjetaObj.tipo)
 
 
-
-                            codigo_normalizado = int(reg.codigo) - 500000
-                            invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(codigo_normalizado)).first()
+                            invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(reg.codigo)).first()
                             if invitacion:
                                 codigo = invitacion.invitado.nombre + " " + invitacion.invitado.apellidop
                                 tarjeta = invitacion.tipopase.nombre
@@ -386,10 +382,9 @@ class RegistrosManager(SuperManager):
                                     destino = invitacion.evento.areasocial.nombre
 
                         else:
-                            codigo_normalizado_residente = int(reg.codigo) - 100000
 
                             residente_biometrico = self.db.query(Residente).filter(
-                                Residente.codigo == codigo_normalizado_residente).first()
+                                Residente.codigo == reg.codigo).first()
 
                             if residente_biometrico:
                                 autorizacion = residente_biometrico.nombre + " " + residente_biometrico.apellidop
