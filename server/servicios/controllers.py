@@ -1848,4 +1848,15 @@ class ApiCondominioController(ApiController):
         with transaction() as session:
             return session.query(Usuario).filter(Usuario.id == Usuario_id).first()
     def fecha_actual(self):
-        return datetime.now(pytz.timezone('America/La_Paz'))
+        fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
+        principal = self.db.query(Principal).first()
+
+        if principal.estado:
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+
+        return fechaHora
