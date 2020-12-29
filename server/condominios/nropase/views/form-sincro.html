@@ -1,0 +1,87 @@
+<div id="form-sincro" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document"    style="width:70vw; max-width: 2000px" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="cliente_title" class="modal-title">Sincronizacion de tarjetas</h3>
+
+                <h4 id="cliente_enable" class=""></h4>
+            </div>
+            <div class="modal-body">
+                <div id="cliente_form_body" class="box-body">
+                    <div class="row clearfix">
+                        <div class="col-sm-1">
+                            <button id="guardar_sincro" type="button" class="btn bg-indigo white-own waves-effect" data-toggle="tooltip" data-placement="top" title="Reporte de Horas/Días Totales">
+                                <i class="material-icons">update</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div id="desplegable" class="col-sm-6">
+                            <div class="form-group form-float">
+                                <div class="clearfix m-b-20">
+                                    <div class="dd">
+                                        <ol class="dd-list">
+                                            <li class="dd-item dd-nodrag" data-id="company">
+                                                <div class="dd-handle">
+                                                    <input id="company" type="checkbox" class="module chk-col-deep-purple">
+                                                    <label for="company">Condominios</label>
+                                                </div>
+                                                <ol class="dd-list">
+                                                    {% for condominio_tar in admin %}
+                                                    <li class="dd-item dd-nodrag " data-id="con{{condominio_tar[0]}}">
+                                                        <div class="dd-handle ">
+                                                            <input id="con{{condominio_tar[0]}}" type="checkbox" class="module chk-col-deep-purple empresa" data-id="{{condominio_tar[0]}}">
+                                                            <label for="con{{condominio_tar[0]}}">{{condominio_tar[1]}}</label>
+                                                        </div>
+                                                        <ol class="dd-list">
+                                                        {% if isinstance(admin[condominio_tar], dict) %}
+                                                            {% for tipo_tarjeta in admin[condominio_tar] %}
+                                                                <li class="dd-item dd-collapsed" data-id="suc{{tipo_tarjeta[0]}}">
+                                                                    <div class="dd-handle">
+                                                                        <input id="suc{{tipo_tarjeta[0]}}" type="checkbox" class="module chk-col-deep-purple sucursal" data-id="{{tipo_tarjeta[0]}}" data-empr="{{condominio_tar[0]}}">
+                                                                        <label for="suc{{tipo_tarjeta[0]}}">{{tipo_tarjeta[1]}}</label>
+                                                                    </div>
+                                                                    <ol class="dd-list">
+                                                                        {% if isinstance(admin[condominio_tar][tipo_tarjeta], dict) %}
+
+                                                                            {% for tarjeta in admin[condominio_tar][tipo_tarjeta] %}
+
+                                                                                <li class="dd-item dd-nodrag dd-collapsed" data-id="ge{{tarjeta[0]}}">
+                                                                                    <div class="dd-handle">
+                                                                                        <input id="ge{{tarjeta[0]}}" type="checkbox" class="module chk-col-deep-purple gerencia" data-id="{{tarjeta[0]}}" data-suc="{{tipo_tarjeta[0]}}" data-empr="{{condominio_tar[0]}}">
+                                                                                        <label for="ge{{tarjeta[0]}}">{{tarjeta[1]}}</label>
+                                                                                    </div>
+                                                                                    <ol class="dd-list">
+                                                                                        {% raw admin[condominio_tar][tipo_tarjeta][tarjeta] %}
+                                                                                    </ol>
+
+                                                                                </li>
+                                                                            {% end %}
+                                                                        {% else %}
+                                                                            {% raw admin[condominio_tar][tipo_tarjeta] %}
+                                                                        {% end %}
+                                                                </ol>
+                                                                </li>
+                                                            {% end %}
+                                                        {% else %}
+                                                            {% raw admin[condominio_tar] %}
+                                                        {% end %}
+                                                    </ol>
+                                                    </li>
+                                                    {% end %}
+                                                </ol>
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

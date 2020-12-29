@@ -21,24 +21,124 @@ class NropaseManager(SuperManager):
     def __init__(self, db):
         super().__init__(Nropase, db)
 
+    def get_employees_tree(self):
+        query = self.db.query(Condominio).filter(Condominio.estado == True).all()
+        admin = dict()
+        cont_tipo = 1
+        for condominio in query:
+            con = (condominio.id, condominio.nombre)
+            admin[con] = dict()
 
-    def get_all(self):
-        return self.db.query(self.entity).filter(self.entity.estado == True).all()
+            list_tipo_tarjeta = ['Residente', 'Visita', 'Proveedor', 'Provper', 'Excepcion']
+
+            for tipo_tarjeta in list_tipo_tarjeta:
+
+                tipo = (cont_tipo, tipo_tarjeta)
+
+                cont_tipo = cont_tipo + 1
+
+                admin[con][tipo] = dict()
+
+                list_tarjetas = NropaseManager(self.db).listar_x_condominio_y_tipo(condominio.id,tipo_tarjeta)
+                html_e = ""
+                for tarjeta in list_tarjetas:
 
 
-    def obtener_x_tarjeta(self,tarjeta):
-        return self.db.query(self.entity).filter(self.entity.tarjeta == tarjeta).filter(self.entity.estado == True).first()
+                    html = '<li class="dd-item" data-id="' + str(tarjeta.id) + str(tarjeta.id) + '"><div class="dd-handle"><input id="' + str(tarjeta.id) + str(
+                        tarjeta.id) + '" data-id="' + str(tarjeta.id) + '" data-sex="' + str(tarjeta.numero) + '"type="checkbox" class="module chk-col-deep-purple employee"><label for="' + str(
+                        tarjeta.id) + str(tarjeta.id) + '">' + str(tarjeta.tarjeta) + '</label></div></li>'
 
-    def list_all(self):
-        return dict(objects=self.db.query(self.entity).filter(self.entity.estado == True))
+                    html_e = html_e + html
 
-    def listar_todo(self):
-        return self.db.query(self.entity).filter(self.entity.estado == True).all()
+                    admin[con][tipo] = html_e
 
-    def listar_x_condominio(self, idcondominio):
-        x = self.db.query(self.entity).join(CondominioPases).filter(CondominioPases.fkcondominio == idcondominio).filter(self.entity.estado == True).all()
+        return admin
+
+    def state(self, id, estado, user, ip):
+        x = self.db.query(self.entity).filter(self.entity.id == id).one()
+        x.estado = estado
+
+        if estado:
+            mensaje = "Habilito Tarjeta"
+            sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Acceso", fkdispositivo=id,
+                          fkcondominio=x.condominios[0].fkcondominio)
+        else:
+            mensaje = "Deshabilito Tarjeta"
+            sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Denegado", fkdispositivo=id,
+                          fkcondominio=x.condominios[0].fkcondominio)
+
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(sincro)
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha,
+                     tabla="nropase", identificador=id)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+
+        # if x.rol.nombre == "RESIDENTE":
+        #
+        #     resi = self.db.query(Residente).filter(Residente.id == x.fkresidente).first()
+        #     resiacce = self.db.query(ResidenteAcceso).filter(ResidenteAcceso.fkresidente == x.fkresidente).first()
+        #     resi.estado = estado
+        #     resiacce.estado = estado
+        #     resi = self.db.merge(resi)
+        #     self.db.merge(resiacce)
+        #     self.db.commit()
+        #
+        #     if x.condominio.singuardia:
+        #         UsuarioManager(self.db).sincronizar_dispositivos(x, estado, resi)
+        #
+        # principal = self.db.query(Principal).first()
+        #
+        # if principal.estado:
+        #
+        #     try:
+        #         if x.fkcondominio:
+        #
+        #             if x.condominio.ip_publica != "":
+        #                 diccionary = dict(id=id, estado=estado, user=user, ip=ip)
+        #
+        #                 url = "http://" + x.condominio.ip_publica + ":" + x.condominio.puerto + "/api/v1/sincronizar_usuario_estado"
+        #
+        #                 headers = {'Content-Type': 'application/json'}
+        #                 string = diccionary
+        #                 cadena = json.dumps(string)
+        #                 body = cadena
+        #                 resp = requests.post(url, data=body, headers=headers, verify=False)
+        #                 response = json.loads(resp.text)
+        #
+        #                 print(response)
+        #
+        #
+        #     except Exception as e:
+        #         # Other errors are possible, such as IOError.
+        #         print("Error de conexion: " + str(e))
+
         return x
 
+    def get_all(self):
+        return self.db.query(self.entity).all()
+
+    def obtener_x_tarjeta(self,tarjeta):
+        return self.db.query(self.entity).filter(self.entity.tarjeta == tarjeta).first()
+
+    def list_all(self):
+        return dict(objects=self.db.query(self.entity))
+
+    def listar_todo(self):
+        return self.db.query(self.entity).order_by(self.entity.tarjeta.asc()).all()
+
+    def listar_x_condominio(self, idcondominio):
+        x = self.db.query(self.entity).join(CondominioPases).filter(CondominioPases.fkcondominio == idcondominio).all()
+        return x
+
+    def listar_x_condominio_y_tipo(self, idcondominio,tipo_tarjeta):
+        x = self.db.query(self.entity).join(CondominioPases)\
+            .filter(CondominioPases.fkcondominio == idcondominio)\
+            .filter(self.entity.tipo == tipo_tarjeta) \
+            .order_by(self.entity.tarjeta.asc()).all()
+        return x
 
     def listar_x_tipo(self, usuario,tipopase):
 
@@ -46,12 +146,12 @@ class NropaseManager(SuperManager):
         if usuario.sigas:
 
             if tipopase == "Proveedor" or tipopase == "Taxi":
-                return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                return self.db.query(self.entity).filter(
                     and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Visita")).filter(
                     self.entity.situacion != "Ocupado").order_by(
                     self.entity.numero.asc()).all()
             else:
-                return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                return self.db.query(self.entity).filter(
                     and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Proveedor")).filter(
                     self.entity.situacion != "Ocupado").order_by(
                     self.entity.numero.asc()).all()
@@ -63,12 +163,12 @@ class NropaseManager(SuperManager):
 
                 return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(
                     Condominio.id == usuario.fkcondominio).filter(
-                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Visita")).filter(Nropase.estado == True).filter(
+                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Visita")).filter(
                     self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
             else:
                 return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(
                     Condominio.id == usuario.fkcondominio).filter(
-                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Proveedor")).filter(Nropase.estado == True).filter(
+                    and_(self.entity.tipo != "Residente", self.entity.tipo != "Provper", self.entity.tipo != "Proveedor")).filter(
                     self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
         else:
@@ -77,11 +177,11 @@ class NropaseManager(SuperManager):
     def listar_numero_pases(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(and_(self.entity.tipo != "Residente",self.entity.tipo != "Provper")).filter(self.entity.situacion != "Ocupado").order_by(
+            return self.db.query(self.entity).filter(and_(self.entity.tipo != "Residente",self.entity.tipo != "Provper")).filter(self.entity.situacion != "Ocupado").order_by(
                 self.entity.numero.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(and_(Nropase.tipo != "Residente",Nropase.tipo != "Provper")).filter(Nropase.estado == True).filter(Nropase.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(and_(Nropase.tipo != "Residente",Nropase.tipo != "Provper")).filter(Nropase.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
         else:
             return None
@@ -89,11 +189,11 @@ class NropaseManager(SuperManager):
     def listar_numero_pases_residente(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.tipo == "Residente").filter(self.entity.situacion != "Ocupado").order_by(
+            return self.db.query(self.entity).filter(self.entity.tipo == "Residente").filter(self.entity.situacion != "Ocupado").order_by(
                 self.entity.numero.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(Nropase.tipo == "Residente").filter(Nropase.estado == True).filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(Nropase.tipo == "Residente").filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
         else:
             return None
@@ -101,11 +201,11 @@ class NropaseManager(SuperManager):
     def listar_tarjetas_provper(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.tipo == "Provper").filter(self.entity.situacion != "Ocupado").order_by(
+            return self.db.query(self.entity).filter(self.entity.tipo == "Provper").filter(self.entity.situacion != "Ocupado").order_by(
                 self.entity.numero.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(Nropase.tipo == "Provper").filter(Nropase.estado == True).filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(Nropase.tipo == "Provper").filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
 
         else:
             return None
@@ -115,7 +215,7 @@ class NropaseManager(SuperManager):
         vector = []
         c = 0
 
-        objeto = self.db.query(self.entity).filter(self.entity.estado == True).all()
+        objeto = self.db.query(self.entity).all()
 
         for x in objeto:
 
@@ -125,7 +225,6 @@ class NropaseManager(SuperManager):
             vector.append(x.fecha.year)
 
         return list
-
 
     def insert(self, diccionary):
         if diccionary['tipo'] == "":
@@ -138,6 +237,16 @@ class NropaseManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Nropase.", fecha=fecha,tabla="nropase", identificador=a.id)
         super().insert(b)
         return a
+
+
+    def insert_sincronizacion(self, diccionary):
+
+        for tar in diccionary['tarjetas']:
+            t = self.db.query(self.entity).filter(self.entity.id == tar['id']).first()
+
+            if t.estado != tar['estado']:
+                NropaseManager(self.db).state(tar['id'],tar['estado'],diccionary['user'],diccionary['ip'])
+
 
     def update(self, diccionary):
         objeto = NropaseManager(self.db).entity(**diccionary)
@@ -169,7 +278,6 @@ class NropaseManager(SuperManager):
                 self.db.commit()
 
         return x
-
 
     def importar_excel(self, cname,user,ip):
         try:

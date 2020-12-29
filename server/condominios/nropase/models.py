@@ -18,7 +18,7 @@ class Nropase(Serializable, Base):
     tarjeta = Column(Text, nullable=True)
     tipo = Column(String(200), default="Visita") #tipo = Residente, Visita, Proveedores,provper,Excepcion
     situacion = Column(String(200), default="") #situacion = ocupado,Libre
-    estado = Column(Boolean, default=True)
+    estado = Column(Boolean, default=False)
 
     condominios = relationship('CondominioPases', cascade="save-update, merge, delete, delete-orphan")
 

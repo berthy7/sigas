@@ -347,7 +347,7 @@ class ConfiguraciondispositivoManager(SuperManager):
 
 
     def insert_qr_invitacion(self, diccionary):
-        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['codigo']).first()
+        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(diccionary['tarjeta'])).first()
 
         fkcondominio = None
         if invitacion.evento.fkdomicilio:
@@ -362,7 +362,7 @@ class ConfiguraciondispositivoManager(SuperManager):
 
 
     def denegar_qr_invitacion(self, diccionary):
-        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['codigo']).first()
+        invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == diccionary['tarjeta']).first()
 
         fkcondominio = None
         if invitacion.evento.fkdomicilio:

@@ -8,6 +8,7 @@
 {% block content %}
 
 {% include form.html %}
+{% include form-sincro.html %}
 
 
     <div class="header"><h2 class="title-rg-own">Cant de Tarjetas</h2></div>
@@ -19,6 +20,10 @@
                 {% end %}
                 <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
                     <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
+                </button>
+
+                <button id="sincronizar" type="button" class="btn bg-indigo waves-effect white-own">
+                    Tarjetas <i class="material-icons">credit_card</i>
                 </button>
             </div>
         </div>
@@ -33,10 +38,10 @@
                             <th class="order_by_th" data-name="names">Numero de pase</th>
                             <th class="actions_header">Tarjeta</th>
                             <th class="order_by_th" data-name="names">Tipo</th>
-                            <th class="order_by_th" data-name="names">Estado</th>
-                            <th class="actions_header">Condominios</th>
+                            <th class="order_by_th" data-name="names">Situacion</th>
+                            <th class="order_by_th" data-name="names">Condominios</th>
+                            <th class="actions_header">Estado</th>
                             <th class="actions_header">Editar</th>
-                            <th class="actions_header">Sincronizar</th>
                         </tr>
                     </thead>
 
@@ -57,7 +62,7 @@
         $(document).ready(function () {
 
             var data = [];
-            {% set cont = 0 %}
+
             {% for c in objects %}
                var cond =""
                 {% for co in c.condominios %}
@@ -70,22 +75,17 @@
                     '{{ c.tipo}}',
                     '{{ c.situacion}}',
                     cond,
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect white-own waves-light edit" title="Editar"><i class="material-icons">create</i></button>',
-                    '<button id="sincro" onClick="sincronizacion(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect white-own waves-light sincro" title="Sincronizacion"><i class="material-icons">update</i></button>'
+                    '<input id="{{ c.id }}" onClick="event.preventDefault();estado(this)" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo " {% if c.estado %} {{"checked"}} {% end %} /><label for="{{c.id}}"></label>',
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect white-own waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
 
                 ]);
-            {% set cont = cont + 1 %}
+
             {% end %}
+
             cargar_tabla(data)
         });
 
 
 </script>
 {% end %}
-
-    <td>
-        {% for o in c.objetivos %}
-            <p>{{ o.descripcion}}</p>
-        {% end %}
-    </td>
 

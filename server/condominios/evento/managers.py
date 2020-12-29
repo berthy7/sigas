@@ -81,13 +81,9 @@ class EventoManager(SuperManager):
             Evento.fechaf < fechahoy).filter(Evento.estado == True).filter(Evento.situacion == "Acceso").all()
 
         for even in list_evento_pasados:
-            for invi in even.invitaciones:
-                    diccionary = dict(codigo=invi.id, tarjeta=invi.codigoautorizacion, situacion="Denegado")
 
-                    ConfiguraciondispositivoManager(self.db).insert_qr_invitacion(diccionary)
+            EventoManager(self.db).delete(even.id, False, None, '')
 
-            even.situacion = "Denegado"
-            super().update(even)
 
     def list_all(self):
         return dict(objects=self.db.query(self.entity))
@@ -322,7 +318,7 @@ class EventoManager(SuperManager):
         time_horahoy = datetime.strptime(horahoy, '%H:%M:%S').time()
 
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fecha_date).filter(
-            Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
+            Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == str(codigoautorizacion)).first()
 
         try:
             if x:
@@ -388,7 +384,7 @@ class EventoManager(SuperManager):
         time_horahoy = datetime.strptime(horahoy, '%H:%M:%S').time()
 
         x= self.db.query(Invitacion).join(Evento).filter(Invitacion.estado == True).filter(Evento.fechai <= fecha_date).filter(
-            Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == codigoautorizacion).first()
+            Evento.fechaf >= fecha_date).filter(Invitacion.codigoautorizacion == str(codigoautorizacion)).first()
 
         if x:
             if x.evento.horai:
