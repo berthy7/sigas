@@ -1174,6 +1174,41 @@ $('#filtrar').click(function () {
     })
 });
 
+$('#buscarInvitado').click(function () {
+    obj = JSON.stringify({
+        'ci': $('#ci').val()
+    })
+    ajax_call_get('invitado_buscar', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    }, function (response) {
+        var self = response;
+
+        console.log(self)
+
+        if (self){
+            $('#fkinvitado').val(self.id)
+            $('#nombre').val(self.nombre)
+            $('#apellidop').val(self.apellidop)
+            $('#apellidom').val(self.apellidom)
+            $('#expendido').val(self.expendido)
+            $('#expendido').selectpicker('refresh')
+            validationInputSelects("form")
+
+        }else{
+            $('#fkinvitado').val('')
+            $('#nombre').val('')
+            $('#apellidop').val('')
+            $('#apellidom').val('')
+            $('#expendido').val('')
+            $('#expendido').selectpicker('refresh')
+
+        }
+
+
+
+    })
+})
 
 validationKeyup("form")
 validationSelectChange("form")

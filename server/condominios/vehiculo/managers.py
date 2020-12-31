@@ -19,6 +19,15 @@ class VehiculoManager(SuperManager):
     def __init__(self, db):
         super().__init__(Vehiculo, db)
 
+    def buscar_placa(self,placaVehiculo):
+        i = self.db.query(self.entity).filter(self.entity.placa == placaVehiculo).first()
+
+        if i:
+            i = i.get_dict()
+            return i
+        else:
+            return i
+
     def listar_todo_dict(self):
         return dict(objeto=self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.placa.asc()))
 

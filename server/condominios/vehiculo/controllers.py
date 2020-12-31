@@ -21,7 +21,8 @@ class VehiculoController(CrudController):
         '/vehiculo_delete': {'POST': 'delete'},
         '/vehiculo_obtener': {'POST': 'obtener_x_id'},
         '/vehiculo_importar': {'POST': 'importar'},
-        '/vehiculo_reporte_xls': {'POST': 'imprimirxls'}
+        '/vehiculo_reporte_xls': {'POST': 'imprimirxls'},
+        '/vehiculo_buscar': {'PUT': 'buscar'}
     }
 
 
@@ -96,4 +97,17 @@ class VehiculoController(CrudController):
             self.respond(message=mee['message'], success=mee['success'])
         else:
             self.respond(message='Formato de Archivo no aceptado¡¡', success=False)
+        self.db.close()
+
+
+    def buscar(self):
+        self.set_session()
+        ins_manager = self.manager(self.db)
+        diccionary = json.loads(self.get_argument("object"))
+        indicted_object = ins_manager.buscar_placa(diccionary['placa'])
+
+        if indicted_object:
+            self.respond(response=indicted_object.get_dict(),success=True, message='Operacion exitosa!')
+        else:
+            self.respond(response=None,success=False, message='Operacion exitosa!')
         self.db.close()

@@ -70,6 +70,9 @@ class ApiCondominioController(ApiController):
         '/api/v1/actualizar_vehiculo': {'POST': 'actualizar_vehiculo'},
         '/api/v1/movimiento_salida': {'POST': 'movimiento_salida'},
 
+        '/api/v1/buscar_invitado': {'POST': 'buscar_invitado'},
+        '/api/v1/buscar_vehiculo': {'POST': 'buscar_vehiculo'},
+
         '/api/v1/listar_dispositivos': {'POST': 'listar_dispositivos'},
         '/api/v1/marcaciones_dispositivo': {'POST': 'marcaciones_dispositivo'},
         '/api/v1/listar_nuevas_configuraciones': {'POST': 'listar_nuevas_configuraciones'},
@@ -90,6 +93,66 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'},
         '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'}
     }
+
+    def buscar_invitado(self):
+        print("consulto buscar_invitado")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                indicted_object = InvitadoManager(self.db).buscar_ci(data['ci'])
+
+                self.db.close()
+
+                if indicted_object:
+                    self.respond(response=indicted_object, success=True, message='Resultado Obtenido!')
+                else:
+                    self.respond(response=None, success=False, message='No se encontraron resultados')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+        self.db.close()
+
+    def buscar_vehiculo(self):
+        print("consulto buscar_vehiculo")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                indicted_object = VehiculoManager(self.db).buscar_placa(data['placa'])
+
+                self.db.close()
+
+                if indicted_object:
+                    self.respond(response=indicted_object, success=True, message='Resultado Obtenido!')
+                else:
+                    self.respond(response=None, success=False, message='No se encontraron resultados')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+        self.db.close()
 
 
     def login_movil(self):

@@ -21,7 +21,8 @@ class InvitadoController(CrudController):
         '/invitado_delete': {'POST': 'delete'},
         '/invitado_obtener': {'POST': 'obtener_x_id'},
         '/invitado_importar': {'POST': 'importar'},
-        '/invitado_reporte_xls': {'POST': 'imprimirxls'}
+        '/invitado_reporte_xls': {'POST': 'imprimirxls'},
+        '/invitado_buscar': {'PUT': 'buscar'},
     }
 
     def importar(self):
@@ -127,4 +128,17 @@ class InvitadoController(CrudController):
             self.respond(message=mee['message'], success=mee['success'])
         else:
             self.respond(message='Formato de Archivo no aceptado¡¡', success=False)
+        self.db.close()
+
+
+    def buscar(self):
+        self.set_session()
+        ins_manager = self.manager(self.db)
+        diccionary = json.loads(self.get_argument("object"))
+        indicted_object = ins_manager.buscar_ci(diccionary['ci'])
+
+        if indicted_object:
+            self.respond(response=indicted_object,success=True, message='Resultado Obtenido!')
+        else:
+            self.respond(response=None,success=False, message='No se encontraron resultados')
         self.db.close()

@@ -21,6 +21,18 @@ class InvitadoManager(SuperManager):
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.apellidop.asc()).all()
 
+    def buscar_ci(self,ciInvitado):
+        i =  self.db.query(self.entity).filter(self.entity.ci == ciInvitado).first()
+
+        if i:
+            i = i.get_dict()
+            return i
+        else:
+            return i
+
+
+
+
     def listar_x_residente(self,usuario):
 
         if usuario.sigas:

@@ -245,6 +245,11 @@
                             </br>
                             <div class="row clearfix">
                                 <div class="col-sm-6">
+                                   <input id="fkinvitado" name="fkinvitado"  type="hidden">
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-3">
                                    <label>Tipo de Documento</label>
                                      <select id="fktipodocumento" class="form-control">
                                         {% for tipodoc in tipodocumento %}
@@ -254,16 +259,38 @@
                                     </br>
                                     </br>
                                 </div>
-                                <div class="col-sm-6">
-                                   <label>Buscar Persona</label>
-                                     <select id="fkinvitado" class="form-control">
-                                         <option value="0">Nueva Persona</option>
-                                        {% for invi in invitados %}
-                                            <option value="{{invi.id}}">{{invi.ci}} - {{invi.fullname}}</option>
-                                        {% end %}
+                                <div class="col-sm-3">
+                                    <label for="ci" class="form-label">Ci</label>
+                                        <div class="form-line">
+                                            <input id="ci" name="Ci"  type="text" class="form-control text" required>
+                                        </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label>Expedido</label>
+                                     <select id="expendido"  class="form-control">
+                                        <option value="BN">BN</option>
+                                        <option value="CH">CH</option>
+                                         <option value="CB">CB</option>
+                                         <option value="LP">LP</option>
+                                         <option value="OR">OR</option>
+                                         <option value="PD">PD</option>
+                                         <option value="PT">PT</option>
+                                         <option value="SC">SC</option>
+                                         <option value="TJ">TJ</option>
+
                                      </select>
-                                    </br>
-                                    </br>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="row clearfix">
+                                        <label class="form-label">Buscar</label>
+
+                                    </div>
+                                    <div class="row clearfix">
+
+                                        <button id="buscarInvitado" type="button" class="btn bg-indigo waves-effect white-own">
+                                            <i class="material-icons">youtube_searched_for</i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row clearfix">
@@ -288,28 +315,7 @@
 
                                         </div>
                                 </div>
-                                <div class="col-sm-3">
-                                    <label for="ci" class="form-label">Ci</label>
-                                        <div class="form-line">
-                                            <input id="ci" name="Ci"  type="text" class="form-control text" required>
 
-                                        </div>
-                                </div>
-                                <div class="col-sm-2">
-                                    <label>Expedido</label>
-                                     <select id="expendido"  class="form-control">
-                                        <option value="BN">BN</option>
-                                        <option value="CH">CH</option>
-                                         <option value="CB">CB</option>
-                                         <option value="LP">LP</option>
-                                         <option value="OR">OR</option>
-                                         <option value="PD">PD</option>
-                                         <option value="PT">PT</option>
-                                         <option value="SC">SC</option>
-                                         <option value="TJ">TJ</option>
-
-                                     </select>
-                                </div>
                             </div>
                             </br>
                         </div>

@@ -1036,10 +1036,10 @@ $('#fkvehiculo').change(function () {
     }else{
         // $('#cantpasajeros').val('0')
         $('#placa').val('')
-        $('#tipo').val('')
-        $('#tipo').selectpicker('refresh')
-        $('#color').val('')
-        $('#color').selectpicker('refresh')
+        $('#fktipo').val('')
+        $('#fktipo').selectpicker('refresh')
+        $('#fkcolor').val('')
+        $('#fkcolor').selectpicker('refresh')
         $('#fkmarca').val('')
         $('#fkmarca').selectpicker('refresh')
         $('#fkmodelo').val('')
@@ -1652,6 +1652,122 @@ $('#filtrar').click(function () {
 
     })
 });
+
+
+$('#buscarInvitado').click(function () {
+    obj = JSON.stringify({
+        'ci': $('#ci').val()
+    })
+    ajax_call_get('invitado_buscar', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    }, function (response) {
+        var self = response;
+
+        console.log(self)
+
+        if (self){
+            $('#fkinvitado').val(self.id)
+            $('#nombre').val(self.nombre)
+            $('#apellidop').val(self.apellidop)
+            $('#apellidom').val(self.apellidom)
+            $('#expendido').val(self.expendido)
+            $('#expendido').selectpicker('refresh')
+            validationInputSelects("form")
+
+        }else{
+            $('#fkinvitado').val('')
+            $('#nombre').val('')
+            $('#apellidop').val('')
+            $('#apellidom').val('')
+            $('#expendido').val('')
+            $('#expendido').selectpicker('refresh')
+
+        }
+
+
+
+    })
+})
+
+$('#buscarConductor').click(function () {
+    obj = JSON.stringify({
+        'ci': $('#ci_conductor').val()
+    })
+    ajax_call_get('invitado_buscar', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    }, function (response) {
+        var self = response;
+
+        console.log(self)
+
+        if (self){
+            $('#fkconductor').val(self.id)
+            $('#nombre_conductor').val(self.nombre)
+            $('#apellidop_conductor').val(self.apellidop)
+            $('#apellidom_conductor').val(self.apellidom)
+            $('#expendido_conductor').val(self.expendido)
+            $('#expendido_conductor').selectpicker('refresh')
+            validationInputSelects("form")
+
+        }else{
+            $('#fkconductor').val('')
+            $('#nombre_conductor').val('')
+            $('#apellidop_conductor').val('')
+            $('#apellidom_conductor').val('')
+            $('#expendido_conductor').val('')
+            $('#expendido').selectpicker('refresh')
+
+        }
+
+
+
+    })
+})
+
+
+$('#buscarVehiculo').click(function () {
+    obj = JSON.stringify({
+        'placa': $('#placa').val()
+    })
+    ajax_call_get('vehiculo_buscar', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    }, function (response) {
+        var self = response;
+
+        console.log(self)
+
+        if (self){
+
+            $('#fktipo').val(self.fktipo)
+            $('#fktipo').selectpicker('refresh')
+            $('#fkcolor').val(self.fkcolor)
+            $('#fkcolor').selectpicker('refresh')
+            $('#fkmarca').val(self.fkmarca)
+            $('#fkmarca').selectpicker('refresh')
+            $('#fkmodelo').val(self.fkmodelo)
+            $('#fkmodelo').selectpicker('refresh')
+
+            validationInputSelects("form")
+
+        }else{
+            $('#tipo').val('')
+            $('#tipo').selectpicker('refresh')
+            $('#color').val('')
+            $('#color').selectpicker('refresh')
+            $('#fkmarca').val('')
+            $('#fkmarca').selectpicker('refresh')
+            $('#fkmodelo').val('')
+            $('#fkmodelo').selectpicker('refresh')
+
+        }
+
+
+
+    })
+})
 
 validationKeyup("form")
 validationSelectChange("form")
