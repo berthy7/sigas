@@ -74,6 +74,7 @@ class ApiCondominioController(ApiController):
         '/api/v1/buscar_vehiculo': {'POST': 'buscar_vehiculo'},
 
         '/api/v1/listar_dispositivos': {'POST': 'listar_dispositivos'},
+        '/api/v1/listar_dispositivos_locales': {'POST': 'listar_dispositivos_locales'},
         '/api/v1/marcaciones_dispositivo': {'POST': 'marcaciones_dispositivo'},
         '/api/v1/listar_nuevas_configuraciones': {'POST': 'listar_nuevas_configuraciones'},
         '/api/v1/configuraciones_procesadas': {'POST': 'configuraciones_procesadas'},
@@ -1415,6 +1416,24 @@ class ApiCondominioController(ApiController):
             self.db.close()
 
             self.respond(response=resp,success=True, message="dispositivos recuperados correctamente.")
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+        self.db.close()
+
+    def listar_dispositivos_locales(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            # x = ast.literal_eval(data)
+            x = json.loads(data)
+
+            resp = DispositivoManager(self.db).listar_locales_cant_marcaciones(x)
+            DispositivoManager(self.db).verificar_estado(x)
+
+            self.db.close()
+
+            self.respond(response=resp, success=True, message="dispositivos recuperados correctamente.")
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))

@@ -76,6 +76,36 @@ class DispositivoManager(SuperManager):
 
         return resp
 
+    def listar_locales_cant_marcaciones(self, x):
+
+        dispositivos = self.db.query(Dispositivo).filter(Dispositivo.estado == True).all()
+
+        resp = []
+        resp_config = []
+
+        for dispo in dispositivos:
+
+            config = self.db.query(Configuraciondispositivo) \
+                .filter(Configuraciondispositivo.fkdispositivo == dispo.id) \
+                .filter(Configuraciondispositivo.estado == True) \
+                .order_by(Configuraciondispositivo.id.asc()).all()
+
+            dispo.configuraciondispositivo = config
+
+            for disconfig in dispo.configuraciondispositivo:
+                disconfig = disconfig.get_dict()
+                resp_config.append(disconfig)
+
+            marcaciones = self.db.query(func.count(RegistrosControlador.id)).filter(
+                RegistrosControlador.fkdispositivo == dispo.id)
+
+            cantidad = marcaciones[0][0]
+            resp.append(
+                dict(id=dispo.id, ip=dispo.ip, puerto=dispo.puerto, estado=dispo.estado, tipo=dispo.fktipodispositivo,
+                     cant_marcaciones=cantidad, accesos=resp_config))
+
+        return resp
+
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
