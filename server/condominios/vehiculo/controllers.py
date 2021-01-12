@@ -107,7 +107,7 @@ class VehiculoController(CrudController):
         indicted_object = ins_manager.buscar_placa(diccionary['placa'])
 
         if indicted_object:
-            self.respond(response=indicted_object.get_dict(),success=True, message='Operacion exitosa!')
+            self.respond(response=indicted_object,success=True, message='Operacion exitosa!')
         else:
             self.respond(response=None,success=False, message='Operacion exitosa!')
         self.db.close()
