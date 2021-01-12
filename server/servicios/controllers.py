@@ -1428,6 +1428,7 @@ class ApiCondominioController(ApiController):
             # x = ast.literal_eval(data)
             x = json.loads(data)
 
+            print("servicio local")
             resp = DispositivoManager(self.db).listar_locales_cant_marcaciones(x)
             DispositivoManager(self.db).verificar_estado(x)
 
