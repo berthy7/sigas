@@ -80,7 +80,7 @@ class InvitadoController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
-        cname = self.manager(self.db).invitado_excel(diccionary['datos'])
+        cname = self.manager(self.db).invitado_excel()
         self.respond({'nombre': cname, 'url': 'resources/downloads/invitado/' + cname}, True)
         self.db.close()
 

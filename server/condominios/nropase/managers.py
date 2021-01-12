@@ -294,6 +294,8 @@ class NropaseManager(SuperManager):
                     tipo = row[indices['TIPO']].value
                     cod_condominio = row[indices['COD_CONDOMINIO']].value
 
+                    print(str(nropase) + " " + str(tarjeta))
+
                     if tarjeta is not None:
                         if cod_condominio:
                             cod_condominio = cod_condominio.replace(" ", "")
