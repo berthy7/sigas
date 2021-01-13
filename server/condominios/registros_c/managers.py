@@ -86,7 +86,7 @@ class Registros_cManager(SuperManager):
                                 provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
                                 if provper:
                                     codigo = str(tarjetaObj.tarjeta)
-                                    tarjeta = str(tarjetaObj.tipo)
+                                    tarjeta = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
                                     autorizacion = str(provper.fullname)
 
                             else:
@@ -200,7 +200,7 @@ class Registros_cManager(SuperManager):
                                 provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
                                 if provper:
                                     codigo = str(tarjetaObj.tarjeta)
-                                    tarjeta = str(tarjetaObj.tipo)
+                                    tarjeta = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
                                     autorizacion = str(provper.fullname)
 
                             else:
