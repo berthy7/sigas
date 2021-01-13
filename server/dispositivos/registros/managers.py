@@ -100,14 +100,14 @@ class RegistrosManager(SuperManager):
                                 if tarjetaObj.tipo == "Provper":
                                     provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
                                     if provper:
-                                        codigo = str(tarjetaObj.tarjeta)
-                                        tarjeta = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
+                                        codigo = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
+                                        tarjeta = str(tarjetaObj.tarjeta)
                                         autorizacion = str(provper.nombre) + " " + str(provper.apellidop)
 
                                 else:
                                     autorizacion = ""
-                                    codigo = str(tarjetaObj.tarjeta)
-                                    tarjeta = str(tarjetaObj.tipo)
+                                    codigo = str(tarjetaObj.tipo) + " " + str(tarjetaObj.numero)
+                                    tarjeta = str(tarjetaObj.tarjeta)
 
                             invitacion = self.db.query(Invitacion).filter(
                                 Invitacion.codigoautorizacion == str(reg.codigo)).first()
@@ -231,14 +231,14 @@ class RegistrosManager(SuperManager):
                                 if tarjetaObj.tipo == "Provper":
                                     provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
                                     if provper:
-                                        codigo = str(tarjetaObj.tarjeta)
-                                        tarjeta = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
+                                        codigo = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
+                                        tarjeta = str(tarjetaObj.tarjeta)
                                         autorizacion = str(provper.nombre) + " " + str(provper.apellidop)
 
                                 else:
                                     autorizacion = ""
-                                    codigo = str(tarjetaObj.tarjeta)
-                                    tarjeta = str(tarjetaObj.tipo)
+                                    codigo = str(tarjetaObj.tipo) + " " + str(tarjetaObj.numero)
+                                    tarjeta = str(tarjetaObj.tarjeta)
 
                             invitacion = self.db.query(Invitacion).filter(
                                 Invitacion.codigoautorizacion == str(reg.codigo)).first()
@@ -373,14 +373,14 @@ class RegistrosManager(SuperManager):
                                 if tarjetaObj.tipo == "Provper":
                                     provper = self.db.query(Invitado).filter(Invitado.fknropase == tarjetaObj.id).first()
                                     if provper:
-                                        codigo = str(tarjetaObj.tarjeta)
-                                        tarjeta = str(tarjetaObj.tipo)
+                                        codigo = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
+                                        tarjeta = str(tarjetaObj.tarjeta)
                                         autorizacion = str(provper.nombre) + " " + str(provper.apellidop)
 
                                 else:
                                     autorizacion = ""
-                                    codigo = str(tarjetaObj.tarjeta)
-                                    tarjeta = str(tarjetaObj.tipo) + " " +str(tarjetaObj.numero)
+                                    codigo = str(tarjetaObj.tipo) + " " + str(tarjetaObj.numero)
+                                    tarjeta = str(tarjetaObj.tarjeta)
 
 
                             invitacion = self.db.query(Invitacion).filter(Invitacion.codigoautorizacion == str(reg.codigo)).first()
