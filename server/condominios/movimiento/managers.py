@@ -170,6 +170,8 @@ class MovimientoManager(SuperManager):
 
         if mov :
             print("bloqueo de Registro duplicado ")
+            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador=mov.id)
+            super().insert(b)
             return mov
         else:
             a = super().insert(objeto)
