@@ -164,7 +164,6 @@ class MovimientoManager(SuperManager):
             diccionary['fechar'] = fecha
 
 
-
         objeto = MovimientoManager(self.db).entity(**diccionary)
 
         mov = self.db.query(Nropase).filter(Nropase.id == objeto.fknropase).filter(Nropase.situacion == "Ocupado").first()
