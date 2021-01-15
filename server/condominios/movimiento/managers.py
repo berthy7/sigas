@@ -167,7 +167,7 @@ class MovimientoManager(SuperManager):
 
         objeto = MovimientoManager(self.db).entity(**diccionary)
 
-        mov = self.db.query(self.entity).filter(self.entity.fechar == objeto.fechar).first()
+        mov = self.db.query(Nropase).filter(Nropase.id == objeto.fknropase).filter(Nropase.situacion == "Ocupado").first()
 
         if mov :
             print("bloqueo de Registro duplicado ")
