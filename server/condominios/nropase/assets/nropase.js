@@ -444,6 +444,8 @@ $('#new').click(function () {
     $('#tarjeta').val('')
     $('#tipo').val('')
     $('#tipo').selectpicker('refresh')
+    $('#situacion').val('Libre')
+    $('#situacion').selectpicker('refresh')
 
 
     
@@ -467,6 +469,7 @@ $('#insert').click(function () {
             'numero': $('#numero').val(),
             'tarjeta': $('#tarjeta').val(),
             'tipo': $('#tipo').val(),
+            'situacion': $('#situacion').val(),
             'condominios': get_condominio()
         })
         ajax_call('nropase_insert', {
@@ -501,6 +504,8 @@ function editar(elemento){
         $('#id').val(self.id)
         $('#numero').val(self.numero)
         $('#tarjeta').val(self.tarjeta)
+        $('#situacion').val(self.situacion)
+        $('#situacion').selectpicker('refresh')
         $('#tipo').val(self.tipo)
         $('#tipo').selectpicker('refresh')
 
@@ -572,6 +577,7 @@ $('#update').click(function () {
             'numero': $('#numero').val(),
             'tarjeta': $('#tarjeta').val(),
             'tipo': $('#tipo').val(),
+            'situacion': $('#situacion').val(),
             'condominios': get_condominio()
         })
         ajax_call('nropase_update', {
