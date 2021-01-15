@@ -164,28 +164,35 @@ class MovimientoManager(SuperManager):
             diccionary['fechar'] = fecha
 
 
+
         objeto = MovimientoManager(self.db).entity(**diccionary)
 
-        a = super().insert(objeto)
-        print("registro ingreso Vehicular: " +str(a.id))
-        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento.", fecha=fecha,tabla="movimiento", identificador=a.id)
-        super().insert(b)
+        mov = self.db.query(self.entity).filter(self.entity.fechar == objeto.fechar).first()
+
+        if mov :
+            print("bloqueo de Registro duplicado ")
+            return mov
+        else:
+            a = super().insert(objeto)
+            print("registro ingreso Vehicular: " +str(a.id))
+            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento.", fecha=fecha,tabla="movimiento", identificador=a.id)
+            super().insert(b)
 
 
-        if a.fknropase:
-            # actualizar siuacion
-            NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
+            if a.fknropase:
+                # actualizar siuacion
+                NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
 
-        # deshabilitar invitacion
-        if a.fkinvitacion:
+            # deshabilitar invitacion
+            if a.fkinvitacion:
 
-            if accesos_invitacion['multiacceso'] is False:
-                if accesos_invitacion['multiple'] is False:
-                    if accesos_invitacion['paselibre'] is False:
-                        InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+                if accesos_invitacion['multiacceso'] is False:
+                    if accesos_invitacion['multiple'] is False:
+                        if accesos_invitacion['paselibre'] is False:
+                            InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
-        return a
+            return a
 
     def update(self, objeto):
         fecha = BitacoraManager(self.db).fecha_actual()
