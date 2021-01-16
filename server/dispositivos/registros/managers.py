@@ -305,7 +305,7 @@ class RegistrosManager(SuperManager):
         return list
 
 
-    def listar_todo_diccionario(self,usuario):
+    def listar_todo_diccionario_2(self,usuario):
         print("inicio proceso listar")
 
         fecha = datetime.now(pytz.timezone('America/La_Paz'))
@@ -446,6 +446,61 @@ class RegistrosManager(SuperManager):
                 cerradura =res_cerradura.nombre
 
             list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+            cont = cont + 1
+        print("fin proceso listar")
+        return list
+
+    def listar_todo_diccionario(self, usuario):
+        print("inicio proceso listar")
+
+        fecha = datetime.now(pytz.timezone('America/La_Paz'))
+        fechahoy = str(fecha.day) + "/" + str(fecha.month) + "/" + str(fecha.year)
+        fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+
+        # if usuario.sigas:
+        #     registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
+        #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+        # else:
+        #     registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(
+        #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+
+        if usuario.sigas:
+            registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
+                self.entity.id.desc()).limit(100).all()
+        else:
+            registros = self.db.query(self.entity).join(Dispositivo).filter(
+                Dispositivo.fkcondominio == usuario.fkcondominio).filter(
+                self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).limit(100).all()
+
+        list = []
+        nombre_meses = {1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio', 7: 'Julio',
+                        8: 'Agosto',
+                        9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'}
+
+        print("inicio proceso listar")
+        cont = 1
+        for reg in registros:
+
+            print("registro: " + str(cont))
+
+            codigo = ""
+            tarjeta = ""
+            cerradura = ""
+            autorizacion = ""
+            destino = ""
+
+
+            res_dispotivo = self.db.query(Dispositivo).filter(Dispositivo.id == reg.fkdispositivo).first()
+            res_cerradura = self.db.query(Cerraduras).filter(Cerraduras.fkdispositivo == res_dispotivo.id).filter(
+                Cerraduras.numero == reg.puerta).first()
+
+            if res_cerradura:
+                cerradura = res_cerradura.nombre
+
+            list.append(dict(id=reg.id, evento=reg.evento, alertado=reg.alertado, tarjeta=tarjeta, codigo=codigo,
+                             autorizacion=autorizacion, destino=destino, dia=reg.time.day,
+                             mes=nombre_meses[reg.time.month], año=reg.time.year, hora=reg.time.strftime("%H:%M:%S"),
+                             dispositivo=reg.dispositivo.descripcion, cerradura=cerradura))
             cont = cont + 1
         print("fin proceso listar")
         return list
