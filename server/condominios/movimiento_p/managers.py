@@ -70,7 +70,7 @@ class Movimiento_pManager(SuperManager):
         else:
             if diccionary['visita']:
                 if diccionary['fkinvitado'] == "" or diccionary['fkinvitado'] == "0":
-                    if diccionary['nombre'] != "":
+                    if diccionary['ci'] != "":
                         invitado = InvitadoManager(self.db).registrar_invitado(diccionary)
                         diccionary['fkinvitado'] = invitado.id
                     else:
