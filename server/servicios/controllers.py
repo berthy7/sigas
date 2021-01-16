@@ -1715,11 +1715,15 @@ class ApiCondominioController(ApiController):
 
             mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
 
-            print("mov: " +str(mov.id))
-            print("usuario: " +str(usuario.id))
+            if mov:
 
-            MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
-            self.respond(response=None, success=True, message='Salida movimiento.')
+                print("mov: " +str(mov.id))
+                print("usuario: " +str(usuario.id))
+
+                MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
+                self.respond(response=None, success=True, message='Salida movimiento.')
+            else:
+                self.respond(response=None, success=True, message='No Sincronizo Salida movimiento.')
 
         except Exception as e:
             print(e)
