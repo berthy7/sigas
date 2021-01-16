@@ -306,6 +306,7 @@ class RegistrosManager(SuperManager):
 
 
     def listar_todo_diccionario(self,usuario):
+        print("inicio proceso listar")
 
         fecha = datetime.now(pytz.timezone('America/La_Paz'))
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
@@ -442,6 +443,7 @@ class RegistrosManager(SuperManager):
 
             list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
 
+        print("fin proceso listar")
         return list
 
 
