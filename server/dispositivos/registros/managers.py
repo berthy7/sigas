@@ -466,11 +466,11 @@ class RegistrosManager(SuperManager):
 
         if usuario.sigas:
             registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-                self.entity.id.desc()).limit(100).all()
+                self.entity.id.desc()).all()
         else:
             registros = self.db.query(self.entity).join(Dispositivo).filter(
                 Dispositivo.fkcondominio == usuario.fkcondominio).filter(
-                self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).limit(100).all()
+                self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).all()
 
         list = []
         nombre_meses = {1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio', 7: 'Julio',
