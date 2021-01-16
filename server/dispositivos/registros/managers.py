@@ -320,9 +320,9 @@ class RegistrosManager(SuperManager):
         #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
 
         if usuario.sigas:
-            registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).all()
+            registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).limit(100).all()
         else:
-            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).all()
+            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).limit(100).all()
 
 
         list = []
