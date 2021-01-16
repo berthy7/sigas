@@ -52,7 +52,7 @@ class InvitadoController(CrudController):
 
         aux['objeto'] = objeto
         aux['tipopases'] = TipopaseManager(self.db).listar_todo()
-        aux['invitados'] = InvitadoManager(self.db).listar_x_residente(us)
+        aux['invitados'] = InvitadoManager(self.db).listar_x_usuario_dict(us)
         aux['vehiculos'] = VehiculoManager(self.db).listar_disponibles()
         aux['marcas'] = MarcaManager(self.db).listar_todo()
         aux['modelos'] = ModeloManager(self.db).listar_todo()

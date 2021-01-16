@@ -305,19 +305,12 @@ class RegistrosManager(SuperManager):
         return list
 
 
-    def listar_todo_diccionario_2(self,usuario):
+    def listar_todo_diccionario(self,usuario):
         print("inicio proceso listar")
 
         fecha = datetime.now(pytz.timezone('America/La_Paz'))
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
-
-        # if usuario.sigas:
-        #     registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-        #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
-        # else:
-        #     registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-        #         self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
 
         if usuario.sigas:
             registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(self.entity.id.desc()).limit(100).all()
@@ -450,7 +443,7 @@ class RegistrosManager(SuperManager):
         print("fin proceso listar")
         return list
 
-    def listar_todo_diccionario(self, usuario):
+    def listar_todo_diccionario_2(self, usuario):
         print("inicio proceso listar")
 
         fecha = datetime.now(pytz.timezone('America/La_Paz'))
