@@ -7,7 +7,7 @@ var ult_registro = 0
 
 
 $(document).ready(function () {
-   auxiliar_method()
+   // auxiliar_method()
 });
 
 $(document).ajaxStart(function () { });
