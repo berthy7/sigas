@@ -446,7 +446,7 @@ class RegistrosManager(SuperManager):
                 cerradura =res_cerradura.nombre
 
             list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
-
+            cont = cont + 1
         print("fin proceso listar")
         return list
 
