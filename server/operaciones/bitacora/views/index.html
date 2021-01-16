@@ -51,11 +51,18 @@
             {% for c in objects %}
                 var tabla = "---";
                 var identificador = "---";
+                var usuario = "---";
 
-                {% if c.tabla %}
+                {% if c.usuario %}
                     tabla = '{{ c.tabla }}'
 
                 {% end %}
+
+                {% if c.fkusuario %}
+                    usuario = '{{ c.usuario.username }}'
+
+                {% end %}
+
 
                 {% if c.identificador %}
                     identificador = '{{ c.identificador }}'
@@ -66,7 +73,7 @@
 
                 data.push( [
                     '{{ c.id }}',
-                    '{{ c.usuario.username}}',
+                    usuario,
                     '{{ c.accion }}',
                     '{{ c.ip }}',
                     tabla,
