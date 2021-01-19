@@ -1,10 +1,15 @@
-main_route = '/movimiento'
+main_route = '/movimiento';
 var refrescar = false;
 var sw_visita = false;
 
-var data_lista = []
+var data_lista = [];
 
-var ult_registro = 0
+var ult_registro = 0;
+
+var data_lista_pendientes = [];
+
+
+
 
 $(document).ready(function () {
 
@@ -232,6 +237,7 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
         'fechainicio': fechainicio,
         'fechafin': fechafin, 
         'ult_registro': ult_registro_parametro,
+        'data_lista_pendientes': data_lista_pendientes,
         '_xsrf': getCookie("_xsrf")
     })
     ruta = "movimiento_recargar";
@@ -243,6 +249,8 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
 
     }).done(function (response) {
         response = JSON.parse(response)
+        
+        data_lista_pendientes = [];
 
         var data = [];
         var id;
@@ -336,6 +344,15 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
                 }else{
                     nropase = '-----'
                 }
+            
+                if(fechai == '-----'){
+                    console.log(id)
+                    data_lista_pendientes.push(id)
+                }else if (fechaf == '-----'){
+                    console.log(id)
+                    data_lista_pendientes.push(id)
+                }
+            
 
                 data_lista.push( [
                     id,

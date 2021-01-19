@@ -226,6 +226,7 @@ class MovimientoController(CrudController):
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         ult_registro = data['ult_registro']
+        print(data['data_lista_pendientes'])
         # indicted_object = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
