@@ -34,9 +34,9 @@ class Registros_cManager(SuperManager):
         c = 0
 
         if usuario.sigas:
-            registros = self.db.query(self.entity).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
+            registros = self.db.query(self.entity).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).limit(100).all()
         else:
-            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).all()
+            registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(func.date(self.entity.time).between(fechainicio, fechafin)).order_by(self.entity.id.desc()).limit(100).all()
 
 
         list = []
@@ -145,10 +145,10 @@ class Registros_cManager(SuperManager):
 
         if usuario.sigas:
             registros = self.db.query(self.entity).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-                self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+                self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).limit(100).all()
         else:
             registros = self.db.query(self.entity).join(Dispositivo).filter(Dispositivo.fkcondominio == usuario.fkcondominio).filter(self.entity.time.cast(Date) == fechahoy).order_by(
-                self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).all()
+                self.entity.time.cast(Date).asc(), self.entity.time.cast(Time).asc()).limit(100).all()
 
 
         list = []

@@ -29,6 +29,8 @@ function auxiliar_method() {
     //main_method()
     //setTimeout(auxiliar_method, 10000)
     setInterval(function(){
+
+        console.log(data_lista)
         if($("#form").is(":visible")){
             console.log("actualizar desactivado")
         }else{
