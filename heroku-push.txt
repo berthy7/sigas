@@ -5,6 +5,7 @@ heroku login
 git init
 
 heroku git:remote -a sigas-web
+heroku git:remote -a pruebass-web
 
 git add .
 git commit -am "actualizacion"
