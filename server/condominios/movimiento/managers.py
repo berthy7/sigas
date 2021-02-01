@@ -435,7 +435,12 @@ class MovimientoManager(SuperManager):
                     ws['T' + str(indice)] = None
 
 
-                ws['U' + str(indice)] = i.domicilio.codigo
+                if i.fkdomicilio:
+                    ws['U' + str(indice)] = i.domicilio.codigo
+                elif i.fkareasocial:
+                    ws['U' + str(indice)] = i.areasocial.codigo
+                else:
+                    ws['U' + str(indice)] = ""
                 ws['V' + str(indice)] = i.autorizacion.nombre
                 ws['W' + str(indice)] = i.tipopase.nombre
                 ws['X' + str(indice)] = i.observacion
