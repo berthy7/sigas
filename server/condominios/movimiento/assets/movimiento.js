@@ -482,8 +482,12 @@ $('#fkcolor').selectpicker({
 })
 
     $('#reporte-xls').click(function () {
-        aux = {'datos': ''}
-        obj = JSON.stringify(aux)
+
+        obj = JSON.stringify({
+            'fechainicio': $('#fechai').val(),
+            'fechafin': $('#fechaf').val(),
+            '_xsrf': getCookie("_xsrf")
+        })
         ruta = "/movimiento_reporte_xls";
         $.ajax({
             method: "POST",

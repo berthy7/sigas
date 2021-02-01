@@ -175,6 +175,9 @@ class MovimientoManager(SuperManager):
             return mov
         else:
             a = super().insert(objeto)
+            a.codigo = a.id
+            self.db.merge(a)
+
             print("registro ingreso Vehicular: " +str(a.id))
             b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento.", fecha=fecha,tabla="movimiento", identificador=a.id)
             super().insert(b)
@@ -224,6 +227,16 @@ class MovimientoManager(SuperManager):
         if x.fknropase:
             # actualizar siuacion
             NropaseManager(self.db).situacion(x.fknropase, "Libre")
+
+        return x
+
+    def asignar_codigo(self, id, codigo):
+        x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
+
+        x.codigo = codigo
+
+        self.db.merge(x)
+        self.db.commit()
 
         return x
 
@@ -332,13 +345,15 @@ class MovimientoManager(SuperManager):
 
         return marcacion
 
-    def movimiento_excel(self):
+    def movimiento_excel(self, fechainicio, fechafin):
+        fechainicio = datetime.strptime(fechainicio, '%d/%m/%Y')
+        fechafin = datetime.strptime(fechafin, '%d/%m/%Y')
 
         codigo = BitacoraManager(self.db).generar_codigo()
 
         cname = "movimiento_"+codigo+".xlsx"
 
-        movimientos = self.db.query(self.entity).order_by(self.entity.id.asc()).all()
+        movimientos = self.db.query(self.entity).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).order_by(self.entity.id.asc()).all()
 
         wb = Workbook()
         ws = wb.active
@@ -373,6 +388,7 @@ class MovimientoManager(SuperManager):
         ws['Y' + str(indice)] = 'Tipo'
 
         for i in movimientos:
+            print(str(i.id))
 
             if i.fkinvitado:
                 print("movimiento exportar: "+ str(i.id))

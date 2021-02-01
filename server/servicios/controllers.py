@@ -1676,7 +1676,10 @@ class ApiCondominioController(ApiController):
             if data['fkresidente'] != "":
                 resi = ResidenteManager(self.db).obtener_x_codigo(data['fkresidente'])
                 print("resi: " + str(resi))
-                data['fkresidente'] = resi.id
+                if resi:
+                    data['fkresidente'] = resi.id
+                else:
+                    data['fkresidente'] = None
 
 
             if data['fkdomicilio'] != "":
@@ -1695,9 +1698,10 @@ class ApiCondominioController(ApiController):
                 print("invi: " + str(invi))
                 data['fkinvitacion'] = invi.id
 
+            data['fechar'] = datetime.strptime(data['fechar'], '%d/%m/%Y %H:%M:%S')
 
-            MovimientoManager(self.db).insert(data)
-            self.respond(response=None, success=True, message='Insertado correctamente.')
+            objeto_mov = MovimientoManager(self.db).insert(data)
+            self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))

@@ -112,6 +112,46 @@ class MovimientoController(CrudController):
 
                 print(response)
 
+        else:
+            data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
+            data['nombre_marca'] = mov.vehiculo.marca.nombre
+            data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+            if mov.nropase:
+                data['tarjeta'] = mov.nropase.tarjeta
+            else:
+                data['tarjeta'] = ""
+
+            if mov.fkdomicilio:
+                data['codigo_destino'] = mov.domicilio.codigo
+                condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+
+            elif mov.fkareasocial:
+                data['codigo_destino'] = mov.areasocial.codigo
+                condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+
+            else:
+                data['codigo_destino'] = ""
+                condominio = None
+
+            data['fkinvitado'] = ""
+            data['fkconductor'] = ""
+
+            try:
+                url = "http://pruebass-web.herokuapp.com/api/v1/sincronizar_movimiento"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(data)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+                MovimientoManager(self.db).asignar_codigo(mov.id,response['response'])
+
+            except Exception as e:
+                print(e)
 
         self.respond(success=True, message='Insertado correctamente.')
 
@@ -126,8 +166,9 @@ class MovimientoController(CrudController):
     def imprimirxls(self):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
-
-        cname = self.manager(self.db).movimiento_excel()
+        fechainicio = diccionary['fechai']
+        fechafin = diccionary['fechaf']
+        cname = self.manager(self.db).movimiento_excel(fechainicio, fechafin)
         self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
         self.db.close()
 
@@ -158,8 +199,6 @@ class MovimientoController(CrudController):
             diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
             if condominio.ip_publica != "":
-
-
                 url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
 
                 headers = {'Content-Type': 'application/json'}
@@ -172,7 +211,34 @@ class MovimientoController(CrudController):
 
                 print(response)
 
+        else:
+            diccionary['user'] = self.get_user_id()
+            diccionary['ip'] = self.request.remote_ip
+            diccionary['idmovimiento'] = resp.codigo
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
 
+            if destino:
+                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+            else:
+                condominio = None
+
+            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+
+            try:
+
+                url = "http://pruebass-web.herokuapp.com/api/v1/sincronizar_movimiento_salida"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+            except Exception as e:
+                print(e)
 
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())

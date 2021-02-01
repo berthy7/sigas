@@ -419,6 +419,16 @@ class ConfiguraciondispositivoManager(SuperManager):
             super().insert(objeto)
 
 
+    def funcion_configuracion_tarjeta_dispositivo(self,diccionary):
+
+        dispositivos = DispositivoManager(self.db).listar_x_condominio(diccionary['fkcondominio'])
+
+        for dis in dispositivos:
+            diccionary['fkdispositivo'] = dis.id
+
+            objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
+            super().insert(objeto)
+
     def obtener_codigo_acceso(self, list_cerraduras):
         codigo_acceso = 0
         try:

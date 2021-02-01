@@ -61,13 +61,13 @@ class NropaseManager(SuperManager):
         if estado:
             mensaje = "Habilito Tarjeta"
             sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Acceso", fkdispositivo=id,
-                          fkcondominio=x.condominios[0].fkcondominio)
+                          fkcondominio=x.condominios[0].fkcondominio,codigoacceso="Tarjeta")
         else:
             mensaje = "Deshabilito Tarjeta"
             sincro = dict(codigo=x.id, tarjeta=x.tarjeta, situacion="Denegado", fkdispositivo=id,
-                          fkcondominio=x.condominios[0].fkcondominio)
+                          fkcondominio=x.condominios[0].fkcondominio,codigoacceso="Tarjeta")
 
-        ConfiguraciondispositivoManager(self.db).funcion_configuracion_dispositivo(sincro)
+        ConfiguraciondispositivoManager(self.db).funcion_configuracion_tarjeta_dispositivo(sincro)
 
         fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha,
