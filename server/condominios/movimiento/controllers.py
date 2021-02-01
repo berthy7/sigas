@@ -166,8 +166,8 @@ class MovimientoController(CrudController):
     def imprimirxls(self):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
-        fechainicio = diccionary['fechai']
-        fechafin = diccionary['fechaf']
+        fechainicio = diccionary['fechainicio']
+        fechafin = diccionary['fechafin']
         cname = self.manager(self.db).movimiento_excel(fechainicio, fechafin)
         self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
         self.db.close()
