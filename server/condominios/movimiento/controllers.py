@@ -138,7 +138,7 @@ class MovimientoController(CrudController):
             data['fkconductor'] = ""
 
             try:
-                url = "http://pruebass-web.herokuapp.com/api/v1/sincronizar_movimiento"
+                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"
 
                 headers = {'Content-Type': 'application/json'}
 
@@ -227,7 +227,7 @@ class MovimientoController(CrudController):
 
             try:
 
-                url = "http://pruebass-web.herokuapp.com/api/v1/sincronizar_movimiento_salida"
+                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_salida"
 
                 headers = {'Content-Type': 'application/json'}
 
