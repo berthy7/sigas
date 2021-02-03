@@ -176,8 +176,6 @@ class MovimientoController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
-        print(str(diccionary))
-
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 

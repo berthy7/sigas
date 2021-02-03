@@ -169,7 +169,63 @@ class Movimiento_pController(CrudController):
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
-        MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
+        resp = MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
+
+        principal = self.db.query(Principal).first()
+        if principal.estado:
+            diccionary['user'] = self.get_user_id()
+            diccionary['ip'] = self.request.remote_ip
+            diccionary['idmovimiento'] = diccionary['id']
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
+
+            if destino:
+                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+            else:
+                condominio = None
+
+            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+
+            if condominio.ip_publica != "":
+                url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+
+        else:
+            diccionary['user'] = self.get_user_id()
+            diccionary['ip'] = self.request.remote_ip
+            diccionary['idmovimiento'] = resp.codigo
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
+
+            if destino:
+                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+            else:
+                condominio = None
+
+            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+
+            try:
+
+                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_salida"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(diccionary)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+            except Exception as e:
+                print(e)
 
         arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())

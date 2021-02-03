@@ -269,7 +269,7 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
                 salida= '✓'
             }else{
                 fechaf = '-----'
-                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
+                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida white-own' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
 
             }
 
