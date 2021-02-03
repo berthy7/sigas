@@ -92,7 +92,8 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
         '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
         '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'},
-        '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'}
+        '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'},
+        '/api/v1/sincronizar_movimiento_p': {'POST': 'sincronizar_movimiento_p'}
     }
 
     def buscar_invitado(self):
