@@ -117,6 +117,8 @@ class Movimiento_pManager(SuperManager):
         print("registro ingreso Peatonal: " + str(a.id))
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento_p.", fecha=fecha,tabla="movimiento", identificador=a.id)
         super().insert(b)
+        a.codigo = a.id
+        self.db.merge(a)
 
         if a.fknropase:
             # actualizar siuacion

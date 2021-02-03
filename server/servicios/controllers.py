@@ -1040,8 +1040,38 @@ class ApiCondominioController(ApiController):
                 usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
                 data['user'] = usuario.id
                 print("ingreso Peatonal movil ci: " + str(data['ci']))
-                resp = Movimiento_pManager(self.db).insert(data)
-                objeto = resp.get_dict()
+
+                mov = Movimiento_pManager(self.db).insert(data)
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    mov.codigo = mov.id
+                    data['codigo'] = mov.id
+                    data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
+
+                    if mov.nropase:
+                        data['tarjeta'] = mov.nropase.tarjeta
+                    else:
+                        data['tarjeta'] = ""
+
+                    if mov.fkdomicilio:
+                        data['codigo_destino'] = mov.domicilio.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+
+                    elif mov.fkareasocial:
+                        data['codigo_destino'] = mov.areasocial.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+
+                    else:
+                        data['codigo_destino'] = ""
+                        condominio = None
+
+                    data['fkinvitado'] = ""
+
+                    self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_p")
+
+
+                objeto = mov.get_dict()
                 objeto['residente'] = None
                 objeto['domicilio'] = None
                 objeto['areasocial'] = None
@@ -1707,6 +1737,71 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    def sincronizar_movimiento_p(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            print("sincronizar movimiento peatonal")
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+
+            data['user'] = u.id
+
+            data['fkinvitado'] = ""
+
+            if data['codigoautorizacion'] != "":
+
+                print("codigoautorizacion: " + str(data['codigoautorizacion']))
+                invitacion = InvitacionManager(self.db).obtener_x_codigo(data['codigoautorizacion'])
+                print("invitacion: " + str(invitacion))
+                if invitacion:
+
+                    data['fkinvitacion'] = invitacion.id
+                else:
+                    data['fkinvitacion'] = invitacion
+
+            print("tarjeta: " + str(data['tarjeta']))
+            tarjeta = NropaseManager(self.db).obtener_x_tarjeta(data['tarjeta'])
+            print("tarjeta: " + str(tarjeta))
+
+            if tarjeta:
+
+                data['fknropase'] = tarjeta.id
+            else:
+                data['fknropase'] = tarjeta
+
+
+            if data['fkresidente'] != "":
+                resi = ResidenteManager(self.db).obtener_x_codigo(data['fkresidente'])
+                print("resi: " + str(resi))
+                if resi:
+                    data['fkresidente'] = resi.id
+                else:
+                    data['fkresidente'] = None
+
+            if data['fkdomicilio'] != "":
+                domi = DomicilioManager(self.db).obtener_x_codigo(data['codigo_destino'])
+                print("domi: " + str(domi))
+                data['fkdomicilio'] = domi.id
+
+            elif data['fkareasocial'] != "":
+                domi = AreasocialManager(self.db).obtener_x_codigo(data['codigo_destino'])
+                print("area: " + str(domi))
+                data['fkareasocial'] = domi.id
+
+            if data['codigoautorizacion'] != "":
+                invi = InvitacionManager(self.db).obtener_x_codigoqr(data['codigoautorizacion'])
+                print("invi: " + str(invi))
+                data['fkinvitacion'] = invi.id
+
+            data['fechar'] = datetime.strptime(data['fechar'], '%d/%m/%Y %H:%M:%S')
+
+            objeto_mov = Movimiento_pManager(self.db).insert(data)
+            self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
 
     def sincronizar_movimiento_salida(self):
         try:
