@@ -126,7 +126,7 @@ function preparar_datos_vehicular_visita(datos){
     console.log(datos)
 
     var data = [];
-    for (var i = 0; i < Object.keys(datos).length; i++) {
+    for (var i = 0; i < Object.keys(datos['response']).length; i++) {
 
         data.push( [
             datos['response'][i]['id'],
