@@ -99,58 +99,7 @@ $('#tipo_reporte').change(function () {
 });
 
 
-// $('#generar').click(function () {
-//
-//     obj = JSON.stringify({
-//         'tipo_reporte': $('#tipo_reporte').val(),
-//         'fkcondominio': $('#fkcondominio').val(),
-//         'fechainicio': $('#fechainicio').val(),
-//         'fechafin': $('#fechafin').val()
-//     })
-//
-//     if($('#tipo_reporte').val() && $('#fkcondominio').val()){
-//
-//         ajax_call_get('reporte_'+$('#tipo_reporte').val(), {
-//             _xsrf: getCookie("_xsrf"),
-//             object: obj
-//         }, function (response) {
-//             if ($('#tipo_reporte').val() == "vehicular_visita"){
-//                 preparar_datos_vehicular_visita(response)
-//
-//             }
-//             else if ($('#tipo_reporte').val() == "peatonal_visita"){
-//                 preparar_datos_peatonal_visita(response)
-//
-//             }
-//             else if ($('#tipo_reporte').val() == "vehicular_residente"){
-//                 preparar_datos_vehicular_residente(response)
-//
-//             }
-//             else if ($('#tipo_reporte').val() == "peatonal_residente"){
-//                 preparar_datos_peatonal_residente(response)
-//
-//             }
-//             else if ($('#tipo_reporte').val() == "singuardia_visita"){
-//                 preparar_datos_singuardia_visita(response)
-//
-//             }
-//
-//         })
-//
-//     }else{
-//         swal(
-//             'Faltan Datos',
-//             'Porfavor Seleccione',
-//             'warning'
-//         )
-//
-//
-//     }
-//
-// })
-
-
-$('#reporte-xls').click(function () {
+$('#generar').click(function () {
 
     obj = JSON.stringify({
         'tipo_reporte': $('#tipo_reporte').val(),
@@ -161,20 +110,32 @@ $('#reporte-xls').click(function () {
 
     if($('#tipo_reporte').val() && $('#fkcondominio').val()){
 
-        ruta = "/reporte_general";
-        $.ajax({
-            method: "POST",
-            url: ruta,
-            data:{_xsrf: getCookie("_xsrf"), object: obj},
-            async: false
-        }).done(function(response){
-            response = JSON.parse(response)
+        ajax_call_get('reporte_'+$('#tipo_reporte').val(), {
+            _xsrf: getCookie("_xsrf"),
+            object: obj
+        }, function (response) {
+            if ($('#tipo_reporte').val() == "vehicular_visita"){
+                preparar_datos_vehicular_visita(response)
 
-            if (response.success) {
-                $('#link_excel').attr('href', response.response.url).html(response.response.nombre)
             }
+            else if ($('#tipo_reporte').val() == "peatonal_visita"){
+                preparar_datos_peatonal_visita(response)
+
+            }
+            else if ($('#tipo_reporte').val() == "vehicular_residente"){
+                preparar_datos_vehicular_residente(response)
+
+            }
+            else if ($('#tipo_reporte').val() == "peatonal_residente"){
+                preparar_datos_peatonal_residente(response)
+
+            }
+            else if ($('#tipo_reporte').val() == "singuardia_visita"){
+                preparar_datos_singuardia_visita(response)
+
+            }
+
         })
-        $('#modal-rep-xls').modal('show')
 
     }else{
         swal(
@@ -187,6 +148,45 @@ $('#reporte-xls').click(function () {
     }
 
 })
+
+
+// $('#reporte-xls').click(function () {
+//
+//     obj = JSON.stringify({
+//         'tipo_reporte': $('#tipo_reporte').val(),
+//         'fkcondominio': $('#fkcondominio').val(),
+//         'fechainicio': $('#fechainicio').val(),
+//         'fechafin': $('#fechafin').val()
+//     })
+//
+//     if($('#tipo_reporte').val() && $('#fkcondominio').val()){
+//
+//         ruta = "/reporte_general";
+//         $.ajax({
+//             method: "POST",
+//             url: ruta,
+//             data:{_xsrf: getCookie("_xsrf"), object: obj},
+//             async: false
+//         }).done(function(response){
+//             response = JSON.parse(response)
+//
+//             if (response.success) {
+//                 $('#link_excel').attr('href', response.response.url).html(response.response.nombre)
+//             }
+//         })
+//         $('#modal-rep-xls').modal('show')
+//
+//     }else{
+//         swal(
+//             'Faltan Datos',
+//             'Porfavor Seleccione',
+//             'warning'
+//         )
+//
+//
+//     }
+//
+// })
 
 
     function editar(elemento){

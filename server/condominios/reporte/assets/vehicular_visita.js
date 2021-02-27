@@ -1,113 +1,148 @@
+// function preparar_datos_vehicular_visita(datos){
+//
+//     var data = [];
+//     for (var i = 0; i < Object.keys(datos).length; i++) {
+//         var id
+//         var fechai
+//         var fechaf
+//
+//         var conductor
+//         var cantpasajeros
+//         var placa
+//         var tipo
+//         var marca
+//         var modelo
+//         var color
+//
+//         var domicilio
+//         var autorizacion
+//         var nropase
+//         var salida
+//
+//         id = datos[i].id
+//         if (datos[i].fechai !="None"){
+//             fechai = datos[i]['fechai']
+//         }else{
+//             fechai= '-----'
+//         }
+//
+//         if (datos[i].fechaf !="None"){
+//             fechaf = datos[i]['fechaf']
+//
+//         }else{
+//             fechaf= '-----'
+//         }
+//
+//         if (datos[i].fkconductor !="None"){
+//             conductor = datos[i]['conductor'].apellidop + ' ' + datos[i]['conductor'].apellidom + ' '+datos[i]['conductor'].nombre
+//         }else{
+//             conductor= '-----'
+//         }
+//
+//         if (datos[i].cantpasajeros !="None"){
+//             cantpasajeros = datos[i].cantpasajeros
+//         }else{
+//             cantpasajeros= '-----'
+//         }
+//
+//         if (datos[i].fkvehiculo !="None"){
+//             placa= datos[i]['vehiculo'].placa
+//             tipo= datos[i]['vehiculo'].tipo.nombre
+//             if(datos[i]['vehiculo'].fkmarca !="None"){
+//                 marca= datos[i]['vehiculo']['marca'].nombre
+//             }else{
+//                 marca= '-----'
+//             }
+//             if(datos[i]['vehiculo'].fkmodelo !="None"){
+//                 modelo= datos[i]['vehiculo']['modelo'].nombre
+//             }else{
+//                 modelo= '-----'
+//             }
+//             color= datos[i]['vehiculo'].color.nombre
+//
+//
+//         }else{
+//             placa= '-----'
+//             tipo= '-----'
+//             marca= '-----'
+//             modelo= '-----'
+//             color= '-----'
+//         }
+//
+//         if (datos[i].fkdomicilio !="None"){
+//             domicilio = datos[i]['domicilio'].ubicacion + ' ' +datos[i]['domicilio'].numero
+//         }else if (datos[i].fkareasocial !="None"){
+//             domicilio= datos[i]['areasocial'].nombre
+//         }else{
+//             domicilio= '-----'
+//         }
+//
+//         if (datos[i].fkautorizacion !="None"){
+//             autorizacion = datos[i]['autorizacion'].nombre
+//         }else{
+//             autorizacion= '-----'
+//         }
+//
+//         if (datos[i].fknropase !="None"){
+//             nropase = datos[i]['nropase'].numero
+//         }else{
+//             nropase= '-----'
+//         }
+//
+//
+//
+//         data.push( [
+//             id,
+//             fechai,
+//             fechaf,
+//             datos[i]['tipodocumento'].nombre,
+//             datos[i]['invitado'].ci,
+//             datos[i]['invitado'].apellidop + ' ' + datos[i]['invitado'].apellidom + ' '+datos[i]['invitado'].nombre,
+//             conductor,
+//             cantpasajeros,
+//             placa,
+//             tipo,
+//             marca,
+//             modelo,
+//             color,
+//             domicilio,
+//             autorizacion,
+//             nropase,
+//             datos[i]['tipopase'].nombre,
+//             datos[i].observacion
+//         ]);
+//
+//         console.log(i)
+//     }
+//
+//     console.log("cargar tabla vehicular visita")
+//
+//     cargar_tabla_vehicular_visita(data)
+// }
+
 function preparar_datos_vehicular_visita(datos){
-    
+    console.log("preparar datos")
+
     var data = [];
     for (var i = 0; i < Object.keys(datos).length; i++) {
-        var id
-        var fechai
-        var fechaf
-    
-        var conductor
-        var cantpasajeros
-        var placa
-        var tipo
-        var marca
-        var modelo
-        var color
-    
-        var domicilio
-        var autorizacion
-        var nropase
-        var salida
-        
-        id = datos[i].id
-        if (datos[i].fechai !="None"){
-            fechai = datos[i]['fechai']
-        }else{
-            fechai= '-----'
-        }
-
-        if (datos[i].fechaf !="None"){
-            fechaf = datos[i]['fechaf']
-
-        }else{
-            fechaf= '-----'
-        }
-        
-        if (datos[i].fkconductor !="None"){
-            conductor = datos[i]['conductor'].apellidop + ' ' + datos[i]['conductor'].apellidom + ' '+datos[i]['conductor'].nombre
-        }else{
-            conductor= '-----'
-        }
-
-        if (datos[i].cantpasajeros !="None"){
-            cantpasajeros = datos[i].cantpasajeros
-        }else{
-            cantpasajeros= '-----'
-        }
-        
-        if (datos[i].fkvehiculo !="None"){
-            placa= datos[i]['vehiculo'].placa
-            tipo= datos[i]['vehiculo'].tipo.nombre
-            if(datos[i]['vehiculo'].fkmarca !="None"){
-                marca= datos[i]['vehiculo']['marca'].nombre
-            }else{
-                marca= '-----'
-            }
-            if(datos[i]['vehiculo'].fkmodelo !="None"){
-                modelo= datos[i]['vehiculo']['modelo'].nombre
-            }else{
-                modelo= '-----'
-            }
-            color= datos[i]['vehiculo'].color.nombre
-
-
-        }else{
-            placa= '-----'
-            tipo= '-----'
-            marca= '-----'
-            modelo= '-----'
-            color= '-----'
-        }
-        
-        if (datos[i].fkdomicilio !="None"){
-            domicilio = datos[i]['domicilio'].ubicacion + ' ' +datos[i]['domicilio'].numero
-        }else if (datos[i].fkareasocial !="None"){
-            domicilio= datos[i]['areasocial'].nombre
-        }else{
-            domicilio= '-----'
-        }
-        
-        if (datos[i].fkautorizacion !="None"){
-            autorizacion = datos[i]['autorizacion'].nombre
-        }else{
-            autorizacion= '-----'
-        }
-
-        if (datos[i].fknropase !="None"){
-            nropase = datos[i]['nropase'].numero
-        }else{
-            nropase= '-----'
-        }
-
-
 
         data.push( [
-            id,
-            fechai,
-            fechaf,
+            datos[i].id,
+            datos[i].fechai,
+            datos[i].fechaf,
             datos[i]['tipodocumento'].nombre,
             datos[i]['invitado'].ci,
             datos[i]['invitado'].apellidop + ' ' + datos[i]['invitado'].apellidom + ' '+datos[i]['invitado'].nombre,
-            conductor,
-            cantpasajeros,
-            placa,
-            tipo,
-            marca,
-            modelo,
-            color,
-            domicilio,
-            autorizacion,
-            nropase,
+            datos[i].fkconductor,
+            datos[i].cantpasajeros,
+            datos[i]['vehiculo'].placa,
+            datos[i]['vehiculo'].placa,
+            datos[i]['vehiculo'].placa,
+            datos[i]['vehiculo'].placa,
+            datos[i]['vehiculo'].placa,
+            datos[i].fkdomicilio,
+            datos[i]['autorizacion'].nombre,
+            datos[i]['nropase'].numero,
             datos[i]['tipopase'].nombre,
             datos[i].observacion
         ]);
