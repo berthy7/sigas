@@ -240,7 +240,7 @@ class MovimientoManager(SuperManager):
 
             list.append(dict(id=mov.id, fechai=mov.fechai.strftime('%d/%m/%Y') if mov.fechai else '----', fechaf=mov.fechaf.strftime('%d/%m/%Y') if mov.fechaf else '----', tipodocumento=mov.tipodocumento.nombre, ci_invitado=mov.invitado.ci,
                              nombre_invitado=mov.invitado.fullname,nombre_conductor=mov.conductor.fullname if mov.fkconductor else '',
-                             cantpasajeros=mov.cantpasajeros, placa=mov.vehiculo.placa,tipo_vehiculo=mov.vehiculo.tipo.nombre,marca=mov.vehiculo.marca.nombre,
+                             cantpasajeros=mov.cantpasajeros, placa=mov.vehiculo.placa,tipo_vehiculo=mov.vehiculo.tipo.nombre if mov.vehiculo.fktipo else '',marca=mov.vehiculo.marca.nombre,
                              modelo=mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else '', color=mov.vehiculo.color.nombre, destino=mov.domicilio.nombre if mov.fkdomicilio else 'Area Social',autorizacion=mov.autorizacion.nombre, nropase=mov.nropase.tipo,
                              tipopase=mov.tipopase.nombre,observacion=mov.observacion))
 
