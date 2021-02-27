@@ -84,9 +84,11 @@ class MovimientoManager(SuperManager):
             func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
                 self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
 
+
         for area in areasocial:
             domicilio.append(area)
 
+        print("retorno de movimientos :"+ str(len(domicilio)))
         return domicilio
 
     def listar_todo(self):

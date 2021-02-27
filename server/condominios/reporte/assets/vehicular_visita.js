@@ -88,7 +88,8 @@ function preparar_datos_vehicular_visita(datos){
         }else{
             nropase= '-----'
         }
-        
+
+
 
         data.push( [
             id,
@@ -110,7 +111,11 @@ function preparar_datos_vehicular_visita(datos){
             datos[i]['tipopase'].nombre,
             datos[i].observacion
         ]);
+
+        console.log(i)
     }
+
+    console.log("cargar tabla vehicular visita")
 
     cargar_tabla_vehicular_visita(data)
 }
