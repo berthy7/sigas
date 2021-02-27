@@ -52,7 +52,9 @@ class ReporteController(CrudController):
         # indicted_object = ins_manager.obtain(diccionary['id'])
         arraT = ins_manager.get_page(1, 10, None, None, True)
         arraT['datos'] = ins_manager.reporte_movimientos_vehicular(diccionary)
+        print("entrando al respond")
         self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
+        print("saliendo del respond")
         self.db.close()
 
 

@@ -114,6 +114,7 @@ $('#generar').click(function () {
             _xsrf: getCookie("_xsrf"),
             object: obj
         }, function (response) {
+            console.log("datos en interfaz")
             if ($('#tipo_reporte').val() == "vehicular_visita"){
                 preparar_datos_vehicular_visita(response)
 
