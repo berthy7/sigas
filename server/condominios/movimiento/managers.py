@@ -18,6 +18,125 @@ class MovimientoManager(SuperManager):
     def __init__(self, db):
         super().__init__(Movimiento, db)
 
+
+    def reporte_movimientos_vehicular(self,diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        domicilio = self.db.query(self.entity).join(Domicilio).filter(
+            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+        areasocial = self.db.query(self.entity).join(Areasocial).filter(
+            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+        for area in areasocial:
+            domicilio.append(area)
+
+        print("retorno de movimientos :"+ str(len(domicilio)))
+        codigo = BitacoraManager(self.db).generar_codigo()
+
+        cname = "movimiento_"+codigo+".xlsx"
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'a'
+
+        indice = 1
+
+        ws['A' + str(indice)] = 'ID'
+        ws['B' + str(indice)] = 'Fecha Registro'
+        ws['C' + str(indice)] = 'Fecha Ingreso'
+        ws['D' + str(indice)] = 'Fecha Salida'
+        ws['E' + str(indice)] = 'Tipo documento'
+        ws['F' + str(indice)] = 'Nº documento'
+        ws['G' + str(indice)] = 'Expedido documento'
+        ws['H' + str(indice)] = 'Nombre Invitado'
+        ws['I' + str(indice)] = 'Apellidop Invitado'
+        ws['J' + str(indice)] = 'Apellidom Invitado'
+        ws['K' + str(indice)] = 'Nº documento conductor'
+        ws['L' + str(indice)] = 'Nombre Conductor'
+        ws['M' + str(indice)] = 'Apellidop Conductor'
+        ws['N' + str(indice)] = 'Apellidom Conductor'
+        ws['O' + str(indice)] = 'Cant. Pasajeros'
+        ws['P' + str(indice)] = 'Placa'
+        ws['Q' + str(indice)] = 'Tipo vehiculo'
+        ws['R' + str(indice)] = 'Marca'
+        ws['S' + str(indice)] = 'Modelo'
+        ws['T' + str(indice)] = 'Color'
+        ws['U' + str(indice)] = 'Destino'
+        ws['V' + str(indice)] = 'Autorizacion'
+        ws['W' + str(indice)] = 'Tipo de pase'
+        ws['X' + str(indice)] = 'Observacion'
+        ws['Y' + str(indice)] = 'Tipo'
+
+        for i in domicilio:
+            print(str(i.id))
+
+            if i.fkinvitado:
+                print("movimiento exportar: " + str(i.id))
+
+                indice = indice + 1
+                ws['A' + str(indice)] = i.id
+                ws['B' + str(indice)] = i.fechar
+                ws['C' + str(indice)] = i.fechai
+                ws['D' + str(indice)] = i.fechaf
+                ws['E' + str(indice)] = i.fktipodocumento
+
+                ws['F' + str(indice)] = i.invitado.ci
+                ws['G' + str(indice)] = i.invitado.expendido
+                ws['H' + str(indice)] = i.invitado.nombre
+                ws['I' + str(indice)] = i.invitado.apellidop
+                ws['J' + str(indice)] = i.invitado.apellidom
+
+                if i.fkconductor:
+
+                    ws['K' + str(indice)] = i.conductor.ci
+                    ws['L' + str(indice)] = i.conductor.nombre
+                    ws['M' + str(indice)] = i.conductor.apellidop
+                    ws['N' + str(indice)] = i.conductor.apellidom
+
+                else:
+                    ws['K' + str(indice)] = None
+                    ws['L' + str(indice)] = None
+                    ws['M' + str(indice)] = None
+                    ws['N' + str(indice)] = None
+
+                ws['O' + str(indice)] = i.cantpasajeros
+                if i.tipo == "Vehicular":
+
+                    ws['P' + str(indice)] = i.vehiculo.placa
+                    ws['Q' + str(indice)] = i.vehiculo.tipo.nombre
+                    ws['R' + str(indice)] = i.vehiculo.marca.nombre
+                    ws['S' + str(indice)] = None
+                    ws['T' + str(indice)] = i.vehiculo.color.nombre
+                else:
+                    ws['P' + str(indice)] = None
+                    ws['Q' + str(indice)] = None
+                    ws['R' + str(indice)] = None
+                    ws['S' + str(indice)] = None
+                    ws['T' + str(indice)] = None
+
+                if i.fkdomicilio:
+                    ws['U' + str(indice)] = i.domicilio.codigo
+                elif i.fkareasocial:
+                    ws['U' + str(indice)] = i.areasocial.codigo
+                else:
+                    ws['U' + str(indice)] = ""
+                ws['V' + str(indice)] = i.autorizacion.nombre
+                ws['W' + str(indice)] = i.tipopase.nombre
+                ws['X' + str(indice)] = i.observacion
+                ws['Y' + str(indice)] = i.tipo
+
+        wb.save("server/common/resources/downloads/" + cname)
+        return cname
+
+
+
     def obtener_x_codigo(self, codigo):
         return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
 
@@ -69,27 +188,27 @@ class MovimientoManager(SuperManager):
 
 
 
-    def reporte_movimientos_vehicular(self,diccionario):
-
-        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
-        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
-
-        domicilio = self.db.query(self.entity).join(Domicilio).filter(
-            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
-            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
-
-        areasocial = self.db.query(self.entity).join(Areasocial).filter(
-            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
-            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
-
-
-        for area in areasocial:
-            domicilio.append(area)
-
-        print("retorno de movimientos :"+ str(len(domicilio)))
-        return domicilio
+    # def reporte_movimientos_vehicular(self,diccionario):
+    #
+    #     diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+    #     diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+    #
+    #     domicilio = self.db.query(self.entity).join(Domicilio).filter(
+    #         Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+    #
+    #     areasocial = self.db.query(self.entity).join(Areasocial).filter(
+    #         Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+    #
+    #
+    #     for area in areasocial:
+    #         domicilio.append(area)
+    #
+    #     print("retorno de movimientos :"+ str(len(domicilio)))
+    #     return domicilio
 
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()

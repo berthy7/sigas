@@ -16,6 +16,7 @@ class ReporteController(CrudController):
     html_table = "condominios/reporte/views/table.html"
     routes = {
         '/reporte': {'GET': 'index', 'POST': 'table'},
+        '/reporte_general': {'POST': 'reporte_general'},
         '/reporte_vehicular_visita': {'PUT': 'vehicular_visita'},
         '/reporte_peatonal_visita': {'PUT': 'peatonal_visita'},
         '/reporte_vehicular_residente': {'PUT': 'vehicular_residente'},
@@ -32,6 +33,16 @@ class ReporteController(CrudController):
         aux['condominios'] = CondominioManager(self.db).listar_todo()
 
         return aux
+
+
+    def reporte_general(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        fechainicio = diccionary['fechainicio']
+        fechafin = diccionary['fechafin']
+        cname = self.manager(self.db).reporte_movimientos_vehicular(diccionary)
+        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+        self.db.close()
 
 
     def vehicular_visita(self):
