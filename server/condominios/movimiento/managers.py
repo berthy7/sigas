@@ -188,10 +188,35 @@ class MovimientoManager(SuperManager):
 
 
 
+    # def reporte_movimientos_vehicular(self,diccionario):
+    #
+    #     diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+    #     diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+    #
+    #     domicilio = self.db.query(self.entity).join(Domicilio).filter(
+    #         Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+    #
+    #     areasocial = self.db.query(self.entity).join(Areasocial).filter(
+    #         Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+    #
+    #
+    #     for area in areasocial:
+    #         domicilio.append(area)
+    #
+    #     print("retorno de movimientos :"+ str(len(domicilio)))
+    #     return domicilio
+
+
     def reporte_movimientos_vehicular(self,diccionario):
 
         diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
         diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+
 
         domicilio = self.db.query(self.entity).join(Domicilio).filter(
             Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
@@ -208,7 +233,21 @@ class MovimientoManager(SuperManager):
             domicilio.append(area)
 
         print("retorno de movimientos :"+ str(len(domicilio)))
-        return domicilio
+
+        list = []
+
+        for mov in domicilio:
+
+            list.append(dict(id=mov.id, fechai=mov.fechai.strftime('%d/%m/%Y') if mov.fechai else '----', fechaf=mov.fechaf.strftime('%d/%m/%Y') if mov.fechaf else '----', tipodocumento=mov.tipodocumento.nombre, ci_invitado=mov.invitado.ci,
+                             nombre_invitado=mov.invitado.fullname,nombre_conductor=mov.conductor.fullname if mov.fkconductor else '',
+                             cantpasajeros=mov.cantpasajeros, placa=mov.vehiculo.placa,tipo_vehiculo=mov.vehiculo.tipo.nombre,marca=mov.vehiculo.marca.nombre,
+                             modelo=mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else '', color=mov.vehiculo.color.nombre, destino=mov.domicilio.nombre if mov.fkdomicilio else 'Area Social',autorizacion=mov.autorizacion.nombre, nropase=mov.nropase.tipo,
+                             tipopase=mov.tipopase.nombre,observacion=mov.observacion))
+
+        print("registros: " + str(len(domicilio)))
+
+
+        return list
 
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()

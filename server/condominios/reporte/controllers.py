@@ -17,7 +17,7 @@ class ReporteController(CrudController):
     routes = {
         '/reporte': {'GET': 'index', 'POST': 'table'},
         '/reporte_general': {'POST': 'reporte_general'},
-        '/reporte_vehicular_visita': {'PUT': 'vehicular_visita'},
+        '/reporte_vehicular_visita': {'POST': 'vehicular_visita'},
         '/reporte_peatonal_visita': {'PUT': 'peatonal_visita'},
         '/reporte_vehicular_residente': {'PUT': 'vehicular_residente'},
         '/reporte_peatonal_residente': {'PUT': 'peatonal_residente'},
@@ -44,19 +44,39 @@ class ReporteController(CrudController):
         self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
         self.db.close()
 
+    # def vehicular_visita(self):
+    #     self.set_session()
+    #     ins_manager = self.manager(self.db)
+    #     diccionary = json.loads(self.get_argument("object"))
+    #     # indicted_object = ins_manager.obtain(diccionary['id'])
+    #     arraT = ins_manager.get_page(1, 10, None, None, True)
+    #     arraT['datos'] = ins_manager.reporte_movimientos_vehicular(diccionary)
+    #     print("entrando al respond")
+    #     self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
+    #     print("saliendo del respond")
+    #     self.db.close()
+
 
     def vehicular_visita(self):
         self.set_session()
         ins_manager = self.manager(self.db)
         diccionary = json.loads(self.get_argument("object"))
-        # indicted_object = ins_manager.obtain(diccionary['id'])
-        arraT = ins_manager.get_page(1, 10, None, None, True)
-        arraT['datos'] = ins_manager.reporte_movimientos_vehicular(diccionary)
-        print("entrando al respond")
-        self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
-        print("saliendo del respond")
+
+        indicted_object = ins_manager.reporte_movimientos_vehicular(diccionary)
+        self.respond(indicted_object, message='Operacion exitosa!')
         self.db.close()
 
+
+    def filtrar(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+        us = self.get_user()
+        ins_manager = self.manager(self.db)
+        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
+        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
+        indicted_object = ins_manager.filtrar(fechainicio, fechafin,us)
+        self.respond(indicted_object, message='Operacion exitosa!')
+        self.db.close()
 
     def peatonal_visita(self):
         self.set_session()

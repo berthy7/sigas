@@ -49,35 +49,14 @@
 
 
             {% for c in objects %}
-                var tabla = "---";
-                var identificador = "---";
-                var usuario = "---";
-
-                {% if c.usuario %}
-                    tabla = '{{ c.tabla }}'
-
-                {% end %}
-
-                {% if c.fkusuario %}
-                    usuario = '{{ c.usuario.username }}'
-
-                {% end %}
-
-
-                {% if c.identificador %}
-                    identificador = '{{ c.identificador }}'
-
-                {% end %}
-
-
 
                 data.push( [
                     '{{ c.id }}',
-                    usuario,
+                    '{{ c.usuario.username }}',
                     '{{ c.accion }}',
                     '{{ c.ip }}',
-                    tabla,
-                    identificador,
+                    '{{ c.tabla }}',
+                    '{{ c.identificador }}',
                     '{{ c.fecha.strftime("%d/%m/%Y %H:%M:%S") }}',
 
                 ]);

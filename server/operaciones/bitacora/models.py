@@ -18,10 +18,10 @@ class Bitacora(Serializable, Base):
 
     id = Column(BigInteger,  primary_key=True)
     fkusuario = Column(Integer, ForeignKey('usuario.id'), nullable=True)
-    ip = Column(String(100), nullable=True)
-    accion = Column(String(200), nullable=True)
+    ip = Column(String(100), nullable=True, default="")
+    accion = Column(String(200), nullable=True, default="")
     fecha = Column(DateTime, nullable=False, default=fecha_zona)
-    tabla = Column(String(200), nullable=True)
+    tabla = Column(String(200), nullable=True, default="")
     identificador = Column(Integer, nullable=True)
 
     usuario = relationship('Usuario')

@@ -109,34 +109,56 @@ $('#generar').click(function () {
     })
 
     if($('#tipo_reporte').val() && $('#fkcondominio').val()){
-
-        ajax_call_get('reporte_'+$('#tipo_reporte').val(), {
-            _xsrf: getCookie("_xsrf"),
-            object: obj
-        }, function (response) {
+        
+        
+        ruta = 'reporte_'+$('#tipo_reporte').val();
+        $.ajax({
+            method: "POST",
+            url: ruta,
+            data: {_xsrf: getCookie("_xsrf"), object: obj},
+            async: true,
+    
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+            }
+    
+    
+        }).done(function (response) {
+            response = JSON.parse(response)
+            
+            
             console.log("datos en interfaz")
+            
             if ($('#tipo_reporte').val() == "vehicular_visita"){
                 preparar_datos_vehicular_visita(response)
-
+    
             }
             else if ($('#tipo_reporte').val() == "peatonal_visita"){
                 preparar_datos_peatonal_visita(response)
-
+    
             }
             else if ($('#tipo_reporte').val() == "vehicular_residente"){
                 preparar_datos_vehicular_residente(response)
-
+    
             }
             else if ($('#tipo_reporte').val() == "peatonal_residente"){
                 preparar_datos_peatonal_residente(response)
-
+    
             }
             else if ($('#tipo_reporte').val() == "singuardia_visita"){
                 preparar_datos_singuardia_visita(response)
-
+    
             }
-
+            
+            
+            
         })
+        
 
     }else{
         swal(
@@ -149,6 +171,65 @@ $('#generar').click(function () {
     }
 
 })
+
+
+$('#filtrar').click(function () {
+
+    actualizar_tabla_filtrar($('#fechai').val(),$('#fechaf').val())
+    
+});
+
+
+function actualizar_tabla_filtrar(fechainicio,fechafin) {
+        obj = JSON.stringify({
+        'fechainicio': fechainicio,
+        'fechafin': fechafin,
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "registros_filtrar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
+
+        beforeSend: function () {
+           $("#rproc-loader").fadeIn(800);
+           $("#new").hide();
+        },
+        success: function () {
+           $("#rproc-loader").fadeOut(800);
+           $("#new").show();
+        }
+
+
+    }).done(function (response) {
+        response = JSON.parse(response)
+
+        var data = [];
+        for (var i = 0; i < Object.keys(response.response).length; i++) {
+
+            // console.log(response['response'][i]["autorizacion"])
+
+            data.push( [
+                response['response'][i]["id"],
+                response['response'][i]["tarjeta"],
+                response['response'][i]["codigo"],
+                response['response'][i]["autorizacion"],
+                response['response'][i]["destino"],
+                response['response'][i]["dia"],
+                response['response'][i]["mes"],
+                response['response'][i]["año"],
+                response['response'][i]["hora"],
+                response['response'][i]['dispositivo'],
+                response['response'][i]["cerradura"],
+            ]);
+        }
+
+        cargar_tabla(data)
+    })
+}
+
 
 
 // $('#reporte-xls').click(function () {

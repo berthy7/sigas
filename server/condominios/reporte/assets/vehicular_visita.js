@@ -123,28 +123,30 @@
 function preparar_datos_vehicular_visita(datos){
     console.log("preparar datos")
 
+    console.log(datos)
+
     var data = [];
     for (var i = 0; i < Object.keys(datos).length; i++) {
 
         data.push( [
-            datos[i].id,
-            datos[i].fechai,
-            datos[i].fechaf,
-            datos[i]['tipodocumento'].nombre,
-            datos[i]['invitado'].ci,
-            datos[i]['invitado'].apellidop + ' ' + datos[i]['invitado'].apellidom + ' '+datos[i]['invitado'].nombre,
-            datos[i].fkconductor,
-            datos[i].cantpasajeros,
-            datos[i]['vehiculo'].placa,
-            datos[i]['vehiculo'].placa,
-            datos[i]['vehiculo'].placa,
-            datos[i]['vehiculo'].placa,
-            datos[i]['vehiculo'].placa,
-            datos[i].fkdomicilio,
-            datos[i]['autorizacion'].nombre,
-            datos[i]['nropase'].numero,
-            datos[i]['tipopase'].nombre,
-            datos[i].observacion
+            datos['response'][i]['id'],
+            datos['response'][i]['fechai'],
+            datos['response'][i]['fechaf'],
+            datos['response'][i]['tipodocumento'],
+            datos['response'][i]['ci_invitado'],
+            datos['response'][i]['nombre_invitado'],
+            datos['response'][i]['nombre_conductor'],
+            datos['response'][i]['cantpasajeros'],
+            datos['response'][i]['placa'],
+            datos['response'][i]['tipo_vehiculo'],
+            datos['response'][i]['marca'],
+            datos['response'][i]['modelo'],
+            datos['response'][i]['color'],
+            datos['response'][i]['destino'],
+            datos['response'][i]['autorizacion'],
+            datos['response'][i]['nropase'],
+            datos['response'][i]['tipopase'],
+            datos['response'][i]['observacion']
         ]);
 
         console.log(i)
