@@ -17,10 +17,12 @@ class UsuarioCondominioController(CrudController):
     routes = {
         '/usuarioCondominio': {'GET': 'index', 'POST': 'table'},
         '/usuarioCondominio_insert': {'POST': 'insert'},
+        '/usuarioCondominio_insert_sincro': {'POST': 'insert_sincro'},
         '/usuarioCondominio_update': {'PUT': 'edit', 'POST': 'update'},
         '/usuarioCondominio_state': {'POST': 'state'},
         '/usuarioCondominio_delete': {'POST': 'delete'},
-        '/usuarioCondominio_sesion': {'POST': 'sesion'}
+        '/usuarioCondominio_sesion': {'POST': 'sesion'},
+        '/usuarioCondominio_listar_todo': {'PUT': 'listar_todo'}
     }
 
 
@@ -36,7 +38,17 @@ class UsuarioCondominioController(CrudController):
         aux['usuarios_condominio'] = UsuarioManager(self.db).usuarios_condominio(us)
         aux['roles'] = RolManager(self.db).listar_x_condominio(us)
 
+        aux['admin'] = UsuarioManager(self.db).get_employees_tree()
+
         return aux
+
+    def insert_sincro(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        diccionary['user'] = self.get_user_id()
+        diccionary['ip'] = self.request.remote_ip
+        UsuarioManager(self.db).insert_sincronizacion(diccionary)
+        self.respond(success=True, message='Sincronizado correctamente.')
 
     def insert(self):
         self.set_session()
@@ -155,3 +167,14 @@ class UsuarioCondominioController(CrudController):
         resp = UsuarioManager(self.db).exit_user(id, self.get_user_id(), self.request.remote_ip)
 
         self.respond(success=True, message="Cierre de session")
+
+
+    def listar_todo(self):
+        self.set_session()
+        us = self.get_user()
+
+        data = json.loads(self.get_argument("object"))
+        arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+        arraT['objeto'] = UsuarioManager(self.db).listar_todo_arbol()
+        self.respond([item.get_dict() for item in arraT['objeto']])
+        self.db.close()

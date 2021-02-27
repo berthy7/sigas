@@ -1,5 +1,6 @@
 from .managers import *
 from server.common.controllers import CrudController
+from server.condominios.condominio.managers import CondominioManager
 from ..movimiento.managers import *
 from ..movimiento_p.managers import *
 
@@ -28,6 +29,7 @@ class ReporteController(CrudController):
         us = self.get_user()
         objeto = []
         aux['movimientos'] = MovimientoManager(self.db).list_all()
+        aux['condominios'] = CondominioManager(self.db).listar_todo()
 
         return aux
 
@@ -38,7 +40,7 @@ class ReporteController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
         # indicted_object = ins_manager.obtain(diccionary['id'])
         arraT = ins_manager.get_page(1, 10, None, None, True)
-        arraT['datos'] = ins_manager.list_all_reporte()
+        arraT['datos'] = ins_manager.reporte_movimientos_vehicular(diccionary)
         self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
         self.db.close()
 
@@ -49,7 +51,7 @@ class ReporteController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
         # indicted_object = ins_manager.obtain(diccionary['id'])
         arraT = ins_manager.get_page(1, 10, None, None, True)
-        arraT['datos'] = Movimiento_pManager(self.db).list_all_reporte()
+        arraT['datos'] = Movimiento_pManager(self.db).reporte_movimientos_peatonal(diccionary)
         self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
         self.db.close()
 

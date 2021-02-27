@@ -18,6 +18,27 @@ class Movimiento_pManager(SuperManager):
     def __init__(self, db):
         super().__init__(Movimiento, db)
 
+
+    def reporte_movimientos_peatonal(self,diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        domicilio = self.db.query(self.entity).join(Domicilio).filter(
+            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Peatonal").filter(self.entity.estado == True).all()
+
+        areasocial = self.db.query(self.entity).join(Areasocial).filter(
+            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Peatonal").filter(self.entity.estado == True).all()
+
+        for area in areasocial:
+            domicilio.append(area)
+
+        return domicilio
+
     def get_all(self):
         return self.db.query(self.entity)
 

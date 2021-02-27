@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Sequence,Text
+from sqlalchemy import Column, Integer, String, Boolean, Sequence,Text,DateTime
 from sqlalchemy.sql.schema import ForeignKey, Table
 from sqlalchemy.orm import relationship
 
@@ -25,6 +25,7 @@ class Usuario(Serializable, Base):
     password = Column(String(150), nullable=False)
     default = Column(String(150), nullable=True)
     token = Column(String(2000), nullable=True, default='Sin Token')
+    token_notificacion = Column(Text, nullable=True)
     fkrol = Column(Integer, ForeignKey('rol.id'), nullable=False)
     fkcondominio = Column(Integer, ForeignKey('condominio.id'), nullable=True)
     fkresidente = Column(Integer, ForeignKey('residente.id'), nullable=True)
@@ -121,3 +122,22 @@ class VersionMovil(Serializable, Base):
     id = Column(Integer, primary_key=True)
     version = Column(String(50), default='')
     estado = Column(Boolean, default=True)
+
+
+
+class Notificacion(Serializable, Base):
+    way = {'remitente': {},'receptor': {}}
+
+    __tablename__ = 'notificacion'
+
+    id = Column( Integer, primary_key=True)
+    fkremitente = Column(Integer, ForeignKey('usuario.id'), nullable=True)
+    fkreceptor = Column(Integer, ForeignKey('usuario.id'), nullable=True)
+    mensaje = Column(Text, default='')
+    titulo = Column(String(150), default='')
+    fecha = Column(DateTime, nullable=True)
+
+    estado = Column(Boolean, default=False)
+    enabled = Column(Boolean, default=True)
+    remitente = relationship('Usuario', foreign_keys=[fkremitente])
+    receptor = relationship('Usuario', foreign_keys=[fkreceptor])

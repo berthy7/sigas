@@ -18,3 +18,4 @@ cx_oracle
 pymssql
 psutil
 ctypes-callable
+onesignal-sdk

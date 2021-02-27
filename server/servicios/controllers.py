@@ -69,9 +69,16 @@ class ApiCondominioController(ApiController):
         '/api/v1/actualizar_invitado': {'POST': 'actualizar_invitado'},
         '/api/v1/actualizar_vehiculo': {'POST': 'actualizar_vehiculo'},
         '/api/v1/movimiento_salida': {'POST': 'movimiento_salida'},
+        '/api/v1/cambiar_estado': {'POST': 'cambiar_estado'},
 
         '/api/v1/buscar_invitado': {'POST': 'buscar_invitado'},
         '/api/v1/buscar_vehiculo': {'POST': 'buscar_vehiculo'},
+
+        '/api/v1/registrar_token': {'POST': 'registrar_token'},
+        '/api/v1/eliminar_token': {'POST': 'eliminar_token'},
+        '/api/v1/listar_notificacion': {'POST': 'listar_notificacion'},
+        '/api/v1/estado_notificacion': {'POST': 'estado_notificacion'},
+        '/api/v1/eliminar_notificacion': {'POST': 'eliminar_notificacion'},
 
         '/api/v1/listar_dispositivos': {'POST': 'listar_dispositivos'},
         '/api/v1/listar_dispositivos_locales': {'POST': 'listar_dispositivos_locales'},
@@ -95,6 +102,152 @@ class ApiCondominioController(ApiController):
         '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'},
         '/api/v1/sincronizar_movimiento_p': {'POST': 'sincronizar_movimiento_p'}
     }
+
+    # Notificaciones
+
+    def registrar_token(self):
+        print("consulto registrar_token")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+
+                indicted_object = UsuarioManager(self.db).registrar_token(data['user'],data['token_notificacion'])
+
+                self.db.close()
+
+                if indicted_object:
+                    self.respond(response="", success=True, message='Token de notificacion registrado')
+                else:
+                    self.respond(response=None, success=False, message='No se encontraron resultados')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+        self.db.close()
+
+
+    def eliminar_token(self):
+        print("consulto eliminar_token")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+
+                indicted_object = UsuarioManager(self.db).eliminar_token(data['user'])
+
+                self.db.close()
+
+                if indicted_object:
+                    self.respond(response="", success=True, message='Token de notificacion eliminado')
+                else:
+                    self.respond(response=None, success=False, message='No se encontraron resultados')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+        self.db.close()
+
+    def listar_notificacion(self):
+        print("consulto listar_notificacion")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+
+                arraT = self.manager(self.db).get_page(1, 10, None, None, True)
+                resp = []
+
+                arraT['objeto'] = UsuarioManager(self.db).listar_notificacion(usuario.id)
+                for item in arraT['objeto']:
+                    obj_dict = item.get_dict()
+                    obj_dict['remitente'] = None
+                    obj_dict['receptor'] = None
+                    resp.append(obj_dict)
+                self.db.close()
+
+                self.respond(response=resp, success=True, message="Notificaciones recuperadas correctamente.")
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+        self.db.close()
+
+    def estado_notificacion(self):
+        print("consulto estado_notificacion")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+
+                resp = UsuarioManager(self.db).estado_notificacion(data['idnotificacion'], data['user'], data['ip'])
+
+
+                self.respond(response=None, success=True, message='Notificacion leida.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def eliminar_notificacion(self):
+        print("consulto eliminar_notificacion")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            Respuestausuario = self.verificar_usuario(data)
+
+            if Respuestausuario['success']:
+
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+
+                resp = UsuarioManager(self.db).eliminar_notificacion(data['idnotificacion'], data['user'], data['ip'])
+
+
+                self.respond(response=None, success=True, message='Notificacion Eliminada.')
+            else:
+                self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
+                             message=Respuestausuario['message'])
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+
+
 
     def buscar_invitado(self):
         print("consulto buscar_invitado")

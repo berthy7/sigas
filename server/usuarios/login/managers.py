@@ -75,7 +75,8 @@ class LoginManager:
                         joinedload('children')).\
                 filter(Usuario.username == username).\
                 filter(Usuario.password == password).\
-                filter(Usuario.enabled).\
+                filter(Usuario.estado). \
+                filter(Usuario.enabled). \
                 first()
             if not usuario:
                 return None

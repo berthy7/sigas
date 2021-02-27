@@ -16,6 +16,13 @@ var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYe
 document.getElementById("fechainicio").value=hoy
 document.getElementById("fechafin").value=hoy
 
+$('#fkcondominio').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
 $('.date').bootstrapMaterialDatePicker({
     format: 'DD/MM/YYYY',
     clearButton: false,
@@ -96,11 +103,12 @@ $('#generar').click(function () {
 
     obj = JSON.stringify({
         'tipo_reporte': $('#tipo_reporte').val(),
+        'fkcondominio': $('#fkcondominio').val(),
         'fechainicio': $('#fechainicio').val(),
         'fechafin': $('#fechafin').val()
     })
 
-    if($('#tipo_reporte').val()){
+    if($('#tipo_reporte').val() && $('#fkcondominio').val()){
 
         ajax_call_get('reporte_'+$('#tipo_reporte').val(), {
             _xsrf: getCookie("_xsrf"),
@@ -132,7 +140,7 @@ $('#generar').click(function () {
     }else{
         swal(
             'Faltan Datos',
-            'Porfavor Seleccione tipo de reporte',
+            'Porfavor Seleccione',
             'warning'
         )
 

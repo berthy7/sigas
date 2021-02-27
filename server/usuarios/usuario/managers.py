@@ -34,6 +34,111 @@ class UsuarioManager(SuperManager):
     def __init__(self, db):
         super().__init__(Usuario, db)
 
+    def listar_todo_arbol(self):
+        return  self.db.query(self.entity) \
+            .filter(self.entity.fkcondominio != None) \
+            .order_by(self.entity.username.asc()).all()
+
+    def get_employees_tree(self):
+        query = self.db.query(Condominio).filter(Condominio.estado == True).all()
+        admin = dict()
+        cont_tipo = 1
+        for condominio in query:
+            con = (condominio.id, condominio.nombre)
+            admin[con] = dict()
+
+            list_tipo_tarjeta = ['Residente', 'Visita', 'Proveedor', 'Provper', 'Excepcion']
+            list_rol = self.db.query(Rol).filter(Rol.enabled == True).filter(Rol.id != 1).filter(Rol.id != 3).filter(Rol.id != 5).all()
+
+            for role in list_rol:
+
+                rol = (cont_tipo, role.nombre)
+
+                cont_tipo = cont_tipo + 1
+
+                admin[con][rol] = dict()
+
+                listar_usuarios = UsuarioManager(self.db).listar_usuarios_x_rol(condominio.id, role.id)
+                html_e = ""
+                for usuario in listar_usuarios:
+                    html = '<li class="dd-item" data-id="' + str(usuario.id) + str(
+                        usuario.id) + '"><div class="dd-handle"><input id="' + str(usuario.id) + str(
+                        usuario.id) + '" data-id="' + str(usuario.id) + '" data-sex="' + str(usuario.nombre) + \
+                           '"type="checkbox" class="module chk-col-deep-purple employee"><label for="' + str(usuario.id) + str(usuario.id) + \
+                           '">' + str(usuario.username) + '</label></div></li>'
+
+                    html_e = html_e + html
+
+                    admin[con][rol] = html_e
+
+        return admin
+
+    def listar_usuarios_x_rol(self, idcondominio,idRole):
+
+        x = self.db.query(self.entity) \
+            .filter(self.entity.fkcondominio != None) \
+            .filter(self.entity.fkcondominio == idcondominio) \
+            .filter(self.entity.fkrol == idRole) \
+            .order_by(self.entity.username.asc()).all()
+
+        return x
+
+    def insert_sincronizacion(self, diccionary):
+
+        for tar in diccionary['usuarios']:
+            t = self.db.query(self.entity).filter(self.entity.id == tar['id']).first()
+
+            if t.estado != tar['estado']:
+                UsuarioManager(self.db).state(tar['id'],tar['estado'],diccionary['user'],diccionary['ip'])
+
+
+    def registrar_token(self, user,token):
+        usuario = UsuarioManager(self.db).get_by_pass(user)
+        usuario.token_notificacion = token
+
+        return super().update(usuario)
+
+
+    def eliminar_token(self, user):
+        usuario = UsuarioManager(self.db).get_by_pass(user)
+        usuario.token_notificacion = ""
+
+        return super().update(usuario)
+
+
+    def listar_notificacion(self,Idusuario):
+
+        return self.db.query(Notificacion).filter(Notificacion.fkremitente == Idusuario).filter(Notificacion.enabled).all()
+
+    def estado_notificacion(self, id, user, ip):
+        x = self.db.query(Notificacion).filter(Notificacion.id == id).first()
+
+        x.estado = True
+        mensaje = "Leyo Notificacion"
+
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha, tabla="notificacion", identificador=id)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+
+        return mensaje
+
+    def eliminar_notificacion(self, id, user, ip):
+        x = self.db.query(Notificacion).filter(Notificacion.id == id).first()
+
+        x.enabled = False
+        mensaje = "Elimino Notificacion"
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+        b = Bitacora(fkusuario=user, ip=ip, accion=mensaje, fecha=fecha, tabla="notificacion", identificador=id)
+        super().insert(b)
+        self.db.merge(x)
+        self.db.commit()
+
+        return mensaje
+
     def generar_contraseña(self):
         longitud = 6
         valores = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

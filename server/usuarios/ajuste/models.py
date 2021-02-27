@@ -18,3 +18,7 @@ class Ajuste(Serializable, Base):
 
     enabled = Column(Boolean, default=True)
 
+
+
+
+

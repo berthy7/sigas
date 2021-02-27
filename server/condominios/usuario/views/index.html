@@ -7,6 +7,7 @@
 
 {% block content %}
     {% include form.html %}
+    {% include form-sincro.html %}
 
 {#    <div class="header bg-page-own"><h2>Invitados</h2></div>#}
     <div class="header"><h2 class="title-rg-own">Usuarios de Condominio</h2></div>
@@ -15,8 +16,14 @@
             <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
                 {% if 'usuarioCondominio_insert' in privileges %}
                     <button id="new" type="button" class="btn bg-indigo waves-effect white-own">Nuevo <i class="material-icons"></i></button>
+
+                    <button id="sincronizar" type="button" class="btn bg-indigo waves-effect white-own">
+                        Usuarios <i class="material-icons">group</i>
+                    </button>
                 {% end %}
+
             </div>
+
         </div>
 
         {% if 'usuarioCondominio_query' in privileges %}

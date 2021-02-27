@@ -67,6 +67,28 @@ class MovimientoManager(SuperManager):
     def list_all_reporte(self):
         return self.db.query(self.entity).filter(self.entity.tipo == "Vehicular").all()
 
+
+
+    def reporte_movimientos_vehicular(self,diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        domicilio = self.db.query(self.entity).join(Domicilio).filter(
+            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+        areasocial = self.db.query(self.entity).join(Areasocial).filter(
+            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+        for area in areasocial:
+            domicilio.append(area)
+
+        return domicilio
+
     def listar_todo(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 

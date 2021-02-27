@@ -10,6 +10,9 @@ from ..areasocial.managers import *
 from ..nropase.managers import *
 from ..movimiento.managers import *
 from ..condominio.managers import *
+from onesignal_sdk.client import Client
+
+
 
 import os.path
 import uuid
@@ -175,7 +178,7 @@ class Movimiento_pController(CrudController):
         if principal.estado:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = diccionary['id']
+            # diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -201,8 +204,8 @@ class Movimiento_pController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = resp.codigo
-            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
+            diccionary['id'] = resp.codigo
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
                 condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)

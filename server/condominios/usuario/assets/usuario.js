@@ -14,6 +14,104 @@ $(document).ready(function () {
     }
 });
 
+$('.show-tick').selectpicker()
+
+$('.dd').nestable({
+    group:'categories',
+    maxDepth:0,
+    reject: [{
+        rule: function () {
+            // The this object refers to dragRootEl i.e. the dragged element.
+            // The drag action is cancelled if this function returns true
+            var ils = $(this).find('>ol.dd-list > li.dd-item');
+            for (var i = 0; i < ils.length; i++) {
+                var datatype = $(ils[i]).data('type');
+                if (datatype === 'child')
+                    return true;
+            }
+            return false;
+        },
+        action: function (nestable) {
+            // This optional function defines what to do when such a rule applies. The this object still refers to the dragged element,
+            // and nestable is, well, the nestable root element
+            alert('Can not move this item to the root');
+        }
+    }]
+});
+
+$('.module').click(function () {
+    var checked = $(this).prop('checked')
+    //$('.module').prop('checked', false)
+    empresa_id = null
+    sucursal_id = null
+    gerencia_id = null
+    grupo_id = null
+    emp_id = null
+    if ($(this).hasClass('employee')){
+        emp_id = parseInt($(this).attr('data-id'))
+    } else {
+        if ($(this).hasClass('grupo')){
+            grupo_id = parseInt($(this).attr('data-id'))
+            gerencia_id = parseInt($(this).attr('data-ger'))
+            sucursal_id = parseInt($(this).attr('data-suc'))
+            empresa_id = parseInt($(this).attr('data-empr'))
+        } else {
+            if ($(this).hasClass('gerencia')){
+                gerencia_id = parseInt($(this).attr('data-id'))
+                sucursal_id = parseInt($(this).attr('data-suc'))
+                empresa_id = parseInt($(this).attr('data-empr'))
+            }else {
+                if($(this).hasClass('sucursal')){
+                    sucursal_id = parseInt($(this).attr('data-id'))
+                    empresa_id = parseInt($(this).attr('data-empr'))
+                }else {
+                    if($(this).hasClass('empresa')){
+                        empresa_id_id = parseInt($(this).attr('data-id'))
+                    }
+                }
+            }
+        }
+    }
+    $(this).prop('checked', checked)
+    $(this).parent().next().find('.module').prop('checked', $(this).prop('checked'))
+    analizar($(this).parent().parent().closest('.dd-list').prev().find('.module'))
+})
+
+function analizar(parent) {
+    children = $(parent).parent().next().find('.module:checked')
+    //console.log(children.length)
+    $(parent).prop('checked', (children.length > 0))
+    grand_parent = $(parent).parent().parent().closest('.dd-list').prev().find('.module')
+    //console.log(grand_parent.length)
+    if (grand_parent.length > 0){
+        analizar(grand_parent)
+    }
+}
+
+function obtener_usuarios_id() {
+    aux = []
+    $('.employee').each(function () {
+
+        var a = parseInt($(this).attr('data-id'))
+        var check = $(this).prop('checked')
+
+        console.log("usuario id : "+ a)
+        console.log("usuario estado : "+check)
+
+        aux.push((function add(a,check) {
+
+            return {
+                'id': a,
+                'estado': check
+            }
+
+
+        })(a,check))
+
+    })
+    return aux
+}
+
 
 $(document).ajaxStart(function () { });
 
@@ -313,7 +411,7 @@ $('#insert').click(function () {
 
     if (parseInt($('#fkrol').val())===7) {
         swal(
-            'El registro de usuarios para residentes, se debe realizar en el modulo de Residentes',
+            'El registro de usuarios para residentes, se debe realizar en el menu de Residentes',
              '',
             'warning'
         )
@@ -632,6 +730,49 @@ $('#fcondominio').change(function () {
         cargar_tabla(data)
     })
 });
+
+$('#sincronizar').click(function () {
+    console.log("sincronizar")
+    $('.module').prop('checked', false)
+    $('#desplegable').show()
+    $('#form-sincro').modal('show')
+
+    obj = JSON.stringify({
+
+    })
+    ajax_call_get('usuarioCondominio_listar_todo', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    }, function (response) {
+        var self = response;
+
+        for(i in self){
+
+            employe_cb = $('.employee[data-id="'+self[i].id+'"]')
+            employe_cb.prop('checked', self[i].estado)
+            analizar(employe_cb.parent().parent().closest('.dd-list').prev().find('.module'))
+        }
+    })
+
+})
+
+$('#guardar_sincro').click(function () {
+    obj = JSON.stringify({
+        'usuarios': obtener_usuarios_id()
+    })
+    ajax_call('usuarioCondominio_insert_sincro', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    },null, function () {
+        setTimeout(function () {
+            window.location = main_route
+        }, 2000);
+    })
+
+    $('#desplegable').hide()
+    $('#form-sincro').modal('hide')
+
+})
 
 validationKeyup("form")
 validationSelectChange("form")

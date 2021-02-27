@@ -12,14 +12,25 @@
 
     <div class="header"><h2 class="title-rg-own">Reportes</h2></div>
     <div class="body">
+        <div class="row clearfix">
+            <div class="col-sm-4">
+                <label>Clientes</label>
+                 <select id="fkcondominio" class="form-control" required>
+                    {% for con in condominios %}
+                        <option value="{{con.id}}">{{con.nombre}}</option>
+                    {% end %}
+                 </select>
+            </div>
+        </div>
+        </br>
 
         <div class="row clearfix">
             <div class="col-sm-4">
                 <label>Tipo de Reportes</label>
                  <select id="tipo_reporte" class="form-control">
                      <option value="vehicular_visita">Control y Registro Vehicular Visitas</option>
-                     <option value="peatonal_visita">Control y Registro Peatonal Visitas</option>
                      <option value="vehicular_residente">Control y Registro Vehicular Residentes</option>
+                     <option value="peatonal_visita">Control y Registro Peatonal Visitas</option>
                      <option value="peatonal_residente">Control y Registro Peatonal Residentes</option>
                      <option value="singuardia_visita">Control y Registro Sin Guardia Visitas</option>
                  </select>

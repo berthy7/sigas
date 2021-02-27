@@ -24,7 +24,7 @@ class NropaseController(CrudController):
         '/nropase_sincronizacion': {'POST': 'sincronizacion'},
         '/nropase_listar_condominio': {'POST': 'listar_x_condominio'},
         '/nropase_listar_tipo': {'POST': 'listar_x_tipo'},
-        '/nropase_listar_todo': {'PUT': 'listar_todo'},
+        '/nropase_listar_todo': {'PUT': 'listar_todo'}
     }
 
 

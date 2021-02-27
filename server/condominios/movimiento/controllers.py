@@ -185,7 +185,7 @@ class MovimientoController(CrudController):
         if principal.estado:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = diccionary['id']
+            # diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -212,8 +212,8 @@ class MovimientoController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = resp.codigo
-            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
+            diccionary['id'] = resp.codigo
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
                 condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)

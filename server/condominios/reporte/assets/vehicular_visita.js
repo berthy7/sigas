@@ -133,7 +133,7 @@ function cargar_tabla_vehicular_visita(data){
             {  extend : 'excelHtml5',
                exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7,8,9,10,11,12,13,14,15,16,17]},
                 sheetName: 'Reporte Control y Registro',
-               title: 'Control y Registro Vehicular Visita'  },
+               title: 'Registro Vehicular Visita'  },
             {  extend : 'pdfHtml5',
                 orientation: 'landscape',
                customize: function(doc) {
@@ -150,7 +150,7 @@ function cargar_tabla_vehicular_visita(data){
 
 
         },
-        "order": [[ 1, "desc" ]],
+        "order": [[ 0, "desc" ]],
         language : {
             'url': '/resources/js/spanish.json',
         },

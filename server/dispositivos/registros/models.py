@@ -22,6 +22,10 @@ class RegistrosControlador(Serializable, Base):
     fkdispositivo = Column(Integer, ForeignKey('dispositivo.id'), nullable=True)
     sincronizado = Column(Boolean, default=False)
     alertado = Column(Boolean, default=False)
+    codigo_descripcion = Column(String(255), nullable=True)
+    evento_descripcion = Column(String(255), nullable=True)
+    autorizacion = Column(String(255), nullable=True)
+    destino = Column(String(255), nullable=True)
 
     dispositivo = relationship('Dispositivo')
 
