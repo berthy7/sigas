@@ -129,7 +129,7 @@ $('#generar').click(function () {
     
     
         }).done(function (response) {
-            response = JSON.parse(response)
+            // response = JSON.parse(response)
             
             
             console.log("datos en interfaz")

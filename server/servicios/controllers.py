@@ -914,6 +914,7 @@ class ApiCondominioController(ApiController):
     # parametro: user
     def listar_movimientos(self):
         print("consulto listar_movimientos")
+
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))

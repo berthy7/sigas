@@ -120,41 +120,78 @@
 //     cargar_tabla_vehicular_visita(data)
 // }
 
+// function preparar_datos_vehicular_visita(datos){
+//     console.log("preparar datos")
+//
+//     console.log(datos)
+//
+//     var data = [];
+//     for (var i = 0; i < Object.keys(datos['response']).length; i++) {
+//
+//         data.push( [
+//             datos['response'][i]['id'],
+//             datos['response'][i]['fechai'],
+//             datos['response'][i]['fechaf'],
+//             datos['response'][i]['tipodocumento'],
+//             datos['response'][i]['ci_invitado'],
+//             datos['response'][i]['nombre_invitado'],
+//             datos['response'][i]['nombre_conductor'],
+//             datos['response'][i]['cantpasajeros'],
+//             datos['response'][i]['placa'],
+//             datos['response'][i]['tipo_vehiculo'],
+//             datos['response'][i]['marca'],
+//             datos['response'][i]['modelo'],
+//             datos['response'][i]['color'],
+//             datos['response'][i]['destino'],
+//             datos['response'][i]['autorizacion'],
+//             datos['response'][i]['nropase'],
+//             datos['response'][i]['tipopase'],
+//             datos['response'][i]['observacion']
+//         ]);
+//
+//         console.log(i)
+//     }
+//
+//     console.log("cargar tabla vehicular visita")
+//
+//     cargar_tabla_vehicular_visita(data)
+// }
+
 function preparar_datos_vehicular_visita(datos){
     console.log("preparar datos")
 
     console.log(datos)
 
     var data = [];
-    for (var i = 0; i < Object.keys(datos['response']).length; i++) {
+    for (var i = 0; i < datos; i++) {
 
-        data.push( [
-            datos['response'][i]['id'],
-            datos['response'][i]['fechai'],
-            datos['response'][i]['fechaf'],
-            datos['response'][i]['tipodocumento'],
-            datos['response'][i]['ci_invitado'],
-            datos['response'][i]['nombre_invitado'],
-            datos['response'][i]['nombre_conductor'],
-            datos['response'][i]['cantpasajeros'],
-            datos['response'][i]['placa'],
-            datos['response'][i]['tipo_vehiculo'],
-            datos['response'][i]['marca'],
-            datos['response'][i]['modelo'],
-            datos['response'][i]['color'],
-            datos['response'][i]['destino'],
-            datos['response'][i]['autorizacion'],
-            datos['response'][i]['nropase'],
-            datos['response'][i]['tipopase'],
-            datos['response'][i]['observacion']
-        ]);
+        // data.push( [
+        //     datos['response'][i]['id'],
+        //     datos['response'][i]['fechai'],
+        //     datos['response'][i]['fechaf'],
+        //     datos['response'][i]['tipodocumento'],
+        //     datos['response'][i]['ci_invitado'],
+        //     datos['response'][i]['nombre_invitado'],
+        //     datos['response'][i]['nombre_conductor'],
+        //     datos['response'][i]['cantpasajeros'],
+        //     datos['response'][i]['placa'],
+        //     datos['response'][i]['tipo_vehiculo'],
+        //     datos['response'][i]['marca'],
+        //     datos['response'][i]['modelo'],
+        //     datos['response'][i]['color'],
+        //     datos['response'][i]['destino'],
+        //     datos['response'][i]['autorizacion'],
+        //     datos['response'][i]['nropase'],
+        //     datos['response'][i]['tipopase'],
+        //     datos['response'][i]['observacion']
+        // ]);
 
         console.log(i)
     }
 
     console.log("cargar tabla vehicular visita")
 
-    cargar_tabla_vehicular_visita(data)
+    // cargar_tabla_vehicular_visita(data)
 }
 
 

@@ -34,6 +34,7 @@ class UsuarioManager(SuperManager):
     def __init__(self, db):
         super().__init__(Usuario, db)
 
+
     def listar_todo_arbol(self):
         return  self.db.query(self.entity) \
             .filter(self.entity.fkcondominio != None) \
@@ -547,6 +548,9 @@ class UsuarioManager(SuperManager):
     def obtener_x_id(self, user):
         return self.db.query(Usuario).filter(Usuario.id == user).first()
 
+    def obtener_x_fkresidente(self, resi):
+        return self.db.query(Usuario).filter(Usuario.fkresidente == resi).first()
+
 
     def update_profile(self, Usuarioprf, ip):
         usuario = self.db.query(Usuario).filter_by(id=Usuarioprf.id).first()
@@ -780,3 +784,20 @@ class VersionMovilManager:
         else:
 
             return dict(respuesta=False, mensaje=self.version_actual())
+
+
+class NotificacionManager(SuperManager):
+
+    def __init__(self, db):
+        super().__init__(Notificacion, db)
+
+
+    def insert(self, diccionary):
+        objeto = NotificacionManager(self.db).entity(**diccionary)
+        fecha = BitacoraManager(self.db).fecha_actual()
+
+        a = super().insert(objeto)
+        b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Notificacion.", fecha=fecha, tabla="notificacion",
+                     identificador=a.id)
+        super().insert(b)
+        return a

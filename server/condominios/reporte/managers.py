@@ -17,6 +17,7 @@ class ReporteManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity).filter(self.entity.estado == True).all()
 
+
     def list_all(self):
         return dict(objects=self.db.query(self.entity).filter(self.entity.estado == True))
 

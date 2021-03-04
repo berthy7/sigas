@@ -7,13 +7,14 @@ from ..movimiento_p.managers import *
 import os.path
 import uuid
 import json
+import threading
 
 
 class ReporteController(CrudController):
 
     manager = MovimientoManager
     html_index = "condominios/reporte/views/index.html"
-    html_table = "condominios/reporte/views/table.html"
+
     routes = {
         '/reporte': {'GET': 'index', 'POST': 'table'},
         '/reporte_general': {'POST': 'reporte_general'},
@@ -34,15 +35,64 @@ class ReporteController(CrudController):
 
         return aux
 
+    # def table(self):
+    #     self.set_session()
+    #     self.verif_privileges()
+    #     data = json.loads(self.get_argument('data'))
+    #     employees_id = data['employees'][:]
+    #     i_date = datetime.strptime(data['i_date'], '%d/%m/%Y').date()
+    #     f_date = datetime.strptime(data['f_date'], '%d/%m/%Y').date()
+    #     report = self.reports[data['type_rp']]
+    #     if report == 'temporal':
+    #         self.render('attendance/views/report_' + report + '.html',
+    #                     report=getattr(AttendanceReport(self.db),self.reports[data['type_rp']])(i_date, f_date,
+    #                                                                   employees_id,
+    #                                                                   data['empresa_id'],
+    #                                                                   data['sucursal_id'],
+    #                                                                   data['mngmn_id'],
+    #                                                                   data['group_id'],
+    #                                                                   data['emp_id'],
+    #                                                                   data['h_tipo']))
+    #     else:
+    #         self.render('attendance/views/report_' + report + '.html',
+    #                     report=getattr(AttendanceReport(self.db),
+    #                                    self.reports[data['type_rp']])(i_date, f_date,
+    #                                                                   employees_id,
+    #                                                                   data['mngmn_id'],
+    #                                                                   data['group_id'],
+    #                                                                   data['emp_id'],
+    #                                                                   data['sucursal_id'],
+    #                                                                   data['empresa_id']))
+    #     self.db.close()
 
-    def reporte_general(self):
-        self.set_session()
-        diccionary = json.loads(self.get_argument("object"))
-        fechainicio = diccionary['fechainicio']
-        fechafin = diccionary['fechafin']
-        cname = self.manager(self.db).reporte_movimientos_vehicular(diccionary)
-        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
-        self.db.close()
+    # def reporte_general(self):
+    #     self.set_session()
+    #     diccionary = json.loads(self.get_argument("object"))
+    #     fechainicio = diccionary['fechainicio']
+    #     fechafin = diccionary['fechafin']
+    #
+    #
+    #     cname = self.manager(self.db).reporte_movimientos_vehicular(diccionary)
+    #
+    #
+    #
+    #     self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+    #     self.render('attendance/views/tabla_vehicular_visita+.html',report=self.manager(self.db).delay(diccionary))
+    #     self.db.close()
+
+    # def reporte_general(self):
+    #     self.set_session()
+    #     diccionary = json.loads(self.get_argument("object"))
+    #     fechainicio = diccionary['fechainicio']
+    #     fechafin = diccionary['fechafin']
+    #
+    #delay
+    #     cname = self.manager(self.db).reporte_movimientos_vehicular(diccionary)
+    #
+    #
+    #
+    #     self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+    #     self.db.close()
 
     # def vehicular_visita(self):
     #     self.set_session()
@@ -57,13 +107,28 @@ class ReporteController(CrudController):
     #     self.db.close()
 
 
+    # def index(self):
+    #     self.set_session()
+    #     self.verif_privileges()
+    #     usuario = self.get_user()
+    #     result = self.manager(self.db).list_all()
+    #     result['privileges'] = UsuarioManager(self.db).get_privileges(self.get_user_id(), self.request.uri)
+    #     result['condominio'] = CondominioManager(self.db).obtener_condominio_x_usuario(usuario)
+    #     result.update(self.get_extra_data())
+    #     self.render(self.html_index, **result)
+    #     self.db.close()
+
+
     def vehicular_visita(self):
         self.set_session()
         ins_manager = self.manager(self.db)
         diccionary = json.loads(self.get_argument("object"))
 
-        indicted_object = ins_manager.reporte_movimientos_vehicular(diccionary)
-        self.respond(indicted_object, message='Operacion exitosa!')
+        # indicted_object = ins_manager.delay(diccionary)
+
+        # self.respond(indicted_object, message='Operacion exitosa!')
+        # self.render(self.html_table, **indicted_object)
+        self.render('condominios/reporte/views/tabla_vehicular_visita.html', report=self.manager(self.db).delay(diccionary))
         self.db.close()
 
 

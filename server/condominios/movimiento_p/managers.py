@@ -13,6 +13,9 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
+from onesignal_sdk.client import Client
+from onesignal_sdk.error import OneSignalHTTPError
+
 
 class Movimiento_pManager(SuperManager):
     def __init__(self, db):
@@ -156,7 +159,61 @@ class Movimiento_pManager(SuperManager):
                         InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
+            usuario = UsuarioManager(self.db).obtener_x_fkresidente(a.invitacion.evento.fkresidente)
+            notificacion = NotificacionManager(self.db).insert(dict(fkremitente=1,fkreceptor=usuario.id,mensaje="llego su visita",
+            titulo="Notificacion de llegada",fecha =fecha,user =objeto.user,ip=objeto.ip))
+
+            Movimiento_pManager(self.db).enviar_notificacion_onesignal(notificacion)
+
+
         return a
+
+    def enviar_notificacion_onesignal(self, notificacion):
+        # print("Enviando Notificacion a un solo cliente")
+
+        try:
+            # Parametros
+            APP_ID = 'd99d9fe9-1f01-4b4a-a929-069a9813788c'
+            REST_API_KEY = 'NzU2ODJkYWUtYjI3MC00MGU2LTk3NmUtNmExZDFlYjk0YmJl'
+            CHANNEL_ID = ''  # DE LA CATEGORIA PRIORITARY
+            cli = notificacion.receptor.token_notificacion
+            if cli and cli != 'undefined' and cli != '0':
+                print('Token..:')
+                print(cli)
+
+                client = Client(app_id=APP_ID, rest_api_key=REST_API_KEY)
+                img = ''
+                notification_body = {
+                    'contents': {'en': notificacion.mensaje, 'es': notificacion.mensaje},
+                    # 'subtitle': {'en': n.subtitle, 'es': n.subtitle}, // Si se quiere agregar un subtitulo
+                    'headings': {'en': notificacion.titulo, 'es': notificacion.titulo},
+                    # 'included_segments': ['Active Users', 'Inactive Users'], // cuando se especifica el include_player_ids, los segmentos ya no se envian
+                    'include_player_ids': [cli],
+                    'big_picture': img,  # Foto cuando la notificacion se expande
+                    'small_icon': 'icon',  # Icono de la notificacion
+                    # 'android_accent_color': '0065ab',# Color de fondo del small_icon
+                    # 'huawei_accent_color': '0065ab',# Color de fondo del small_icon
+                    'huawei_small_icon': 'icon',
+                    'large_icon': img,  # Foto con la notificacion sin expandirse
+                    'huawei_large_icon': img,  # Foto con la notificacion sin expandirse
+                    'android_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
+                    'huawei_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
+                    'android_background_layout': '{"headings_color": "FFFF0000", "contents_color": "FF00FF00"}'
+                }
+                print('Cuerpo de la Notificacion..')
+                print('..')
+                print('..')
+                print(notification_body)
+                print('..')
+                print('..')
+                response = client.send_notification(notification_body)
+                # print('Notificacion enviada: ')
+                # print(response)
+                # self.deshabilitar_notificacion(n)
+        except OneSignalHTTPError as e:
+            print("Error al enviar la notificacion: " + str(notificacion.id) + ' ' + str(notificacion.titulo))
+            print(e)
+            print(e.message)
 
     def update(self, objeto):
         fecha = BitacoraManager(self.db).fecha_actual()
@@ -166,6 +223,8 @@ class Movimiento_pManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Modifico Movimiento_p.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)
         return a
+
+
 
     def salida(self, id, user, ip):
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
