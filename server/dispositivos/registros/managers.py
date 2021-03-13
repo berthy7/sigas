@@ -157,6 +157,7 @@ class RegistrosManager(SuperManager):
             else:
 
                 evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
+                tarjeta = reg.tarjeta
 
                 if evento:
                     codigo = evento.nombre
@@ -286,6 +287,7 @@ class RegistrosManager(SuperManager):
             else:
 
                 evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
+                tarjeta = reg.tarjeta
 
                 if evento:
                     codigo = evento.nombre
@@ -425,6 +427,7 @@ class RegistrosManager(SuperManager):
             else:
 
                 evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
+                tarjeta = reg.tarjeta
 
                 if evento:
                     codigo = evento.nombre
@@ -438,7 +441,9 @@ class RegistrosManager(SuperManager):
             if res_cerradura:
                 cerradura =res_cerradura.nombre
 
-            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,cerradura=cerradura))
+            list.append(dict(id=reg.id,evento=reg.evento,alertado=reg.alertado,tarjeta=tarjeta,codigo=codigo,autorizacion=autorizacion,destino=destino,
+                             dia=reg.time.day,mes=nombre_meses[reg.time.month],año=reg.time.year,hora=reg.time.strftime("%H:%M:%S"),dispositivo=reg.dispositivo.descripcion,
+                             cerradura=cerradura))
             cont = cont + 1
         print("fin proceso listar")
         return list
