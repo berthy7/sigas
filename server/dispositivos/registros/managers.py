@@ -157,7 +157,8 @@ class RegistrosManager(SuperManager):
             else:
 
                 evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
-                tarjeta = reg.tarjeta
+                if reg.codigo == 0:
+                    tarjeta = reg.tarjeta
 
                 if evento:
                     codigo = evento.nombre
@@ -287,7 +288,8 @@ class RegistrosManager(SuperManager):
             else:
 
                 evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
-                tarjeta = reg.tarjeta
+                if reg.codigo == 0:
+                    tarjeta = reg.tarjeta
 
                 if evento:
                     codigo = evento.nombre
@@ -427,7 +429,8 @@ class RegistrosManager(SuperManager):
             else:
 
                 evento = DispositivoeventosManager(self.db).obtener_x_codigo(reg.evento)
-                tarjeta = reg.tarjeta
+                if reg.codigo == 0:
+                    tarjeta = reg.tarjeta
 
                 if evento:
                     codigo = evento.nombre
