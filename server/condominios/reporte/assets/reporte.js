@@ -232,43 +232,43 @@ function actualizar_tabla_filtrar(fechainicio,fechafin) {
 
 
 
-// $('#reporte-xls').click(function () {
-//
-//     obj = JSON.stringify({
-//         'tipo_reporte': $('#tipo_reporte').val(),
-//         'fkcondominio': $('#fkcondominio').val(),
-//         'fechainicio': $('#fechainicio').val(),
-//         'fechafin': $('#fechafin').val()
-//     })
-//
-//     if($('#tipo_reporte').val() && $('#fkcondominio').val()){
-//
-//         ruta = "/reporte_general";
-//         $.ajax({
-//             method: "POST",
-//             url: ruta,
-//             data:{_xsrf: getCookie("_xsrf"), object: obj},
-//             async: false
-//         }).done(function(response){
-//             response = JSON.parse(response)
-//
-//             if (response.success) {
-//                 $('#link_excel').attr('href', response.response.url).html(response.response.nombre)
-//             }
-//         })
-//         $('#modal-rep-xls').modal('show')
-//
-//     }else{
-//         swal(
-//             'Faltan Datos',
-//             'Porfavor Seleccione',
-//             'warning'
-//         )
-//
-//
-//     }
-//
-// })
+$('#reporte-xls').click(function () {
+
+    obj = JSON.stringify({
+        'tipo_reporte': $('#tipo_reporte').val(),
+        'fkcondominio': $('#fkcondominio').val(),
+        'fechainicio': $('#fechainicio').val(),
+        'fechafin': $('#fechafin').val()
+    })
+
+    if($('#tipo_reporte').val() && $('#fkcondominio').val()){
+
+        ruta = "/reporte_"+$('#tipo_reporte').val();
+        $.ajax({
+            method: "POST",
+            url: ruta,
+            data:{_xsrf: getCookie("_xsrf"), object: obj},
+            async: false
+        }).done(function(response){
+            response = JSON.parse(response)
+
+            if (response.success) {
+                $('#link_excel').attr('href', response.response.url).html(response.response.nombre)
+            }
+        })
+        $('#modal-rep-xls').modal('show')
+
+    }else{
+        swal(
+            'Faltan Datos',
+            'Porfavor Seleccione',
+            'warning'
+        )
+
+
+    }
+
+})
 
 
     function editar(elemento){

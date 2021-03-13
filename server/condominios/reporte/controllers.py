@@ -17,7 +17,7 @@ class ReporteController(CrudController):
 
     routes = {
         '/reporte': {'GET': 'index', 'POST': 'table'},
-        '/reporte_general': {'POST': 'reporte_general'},
+        '/reporte_general': {'POST': 'reporte_general_excel'},
         '/reporte_vehicular_visita': {'POST': 'vehicular_visita'},
         '/reporte_peatonal_visita': {'PUT': 'peatonal_visita'},
         '/reporte_vehicular_residente': {'PUT': 'vehicular_residente'},
@@ -34,6 +34,17 @@ class ReporteController(CrudController):
         aux['condominios'] = CondominioManager(self.db).listar_todo()
 
         return aux
+
+    def vehicular_visita(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+
+        cname = self.manager(self.db).reporte_movimientos_vehicular(diccionary)
+
+
+        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+        self.db.close()
+
 
     # def table(self):
     #     self.set_session()
@@ -119,17 +130,17 @@ class ReporteController(CrudController):
     #     self.db.close()
 
 
-    def vehicular_visita(self):
-        self.set_session()
-        ins_manager = self.manager(self.db)
-        diccionary = json.loads(self.get_argument("object"))
-
-        # indicted_object = ins_manager.delay(diccionary)
-
-        # self.respond(indicted_object, message='Operacion exitosa!')
-        # self.render(self.html_table, **indicted_object)
-        self.render('condominios/reporte/views/tabla_vehicular_visita.html', report=self.manager(self.db).delay(diccionary))
-        self.db.close()
+    # def vehicular_visita(self):
+    #     self.set_session()
+    #     ins_manager = self.manager(self.db)
+    #     diccionary = json.loads(self.get_argument("object"))
+    #
+    #     # indicted_object = ins_manager.delay(diccionary)
+    #
+    #     # self.respond(indicted_object, message='Operacion exitosa!')
+    #     # self.render(self.html_table, **indicted_object)
+    #     self.render('condominios/reporte/views/tabla_vehicular_visita.html', report=self.manager(self.db).delay(diccionary))
+    #     self.db.close()
 
 
     def filtrar(self):
