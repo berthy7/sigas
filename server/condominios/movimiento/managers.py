@@ -324,6 +324,77 @@ class MovimientoManager(SuperManager):
         wb.save("server/common/resources/downloads/" + cname)
         return cname
 
+    def reporte_movimientos_peatonal_visita(self, diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        codigo = BitacoraManager(self.db).generar_codigo()
+
+        cname = "movimiento_" + codigo + ".xlsx"
+
+        movimientos = self.db.query(self.entity).filter(
+            self.entity.tipo == "Peatonal").filter(func.date(self.entity.fechar)
+                                                    .between(diccionario['fechainicio'], diccionario['fechafin'])) \
+            .order_by(self.entity.id.asc()).all()
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'a'
+
+        indice = 1
+
+        ws['A' + str(indice)] = 'ID'
+        ws['B' + str(indice)] = 'Fecha Registro'
+        ws['C' + str(indice)] = 'Fecha Ingreso'
+        ws['D' + str(indice)] = 'Fecha Salida'
+        ws['E' + str(indice)] = 'Tipo documento'
+        ws['F' + str(indice)] = 'Nº documento'
+        ws['G' + str(indice)] = 'Expedido documento'
+        ws['H' + str(indice)] = 'Nombre Invitado'
+        ws['I' + str(indice)] = 'Apellidop Invitado'
+        ws['J' + str(indice)] = 'Apellidom Invitado'
+        ws['K' + str(indice)] = 'Destino'
+        ws['L' + str(indice)] = 'Autorizacion'
+        ws['M' + str(indice)] = 'Tipo de pase'
+        ws['N' + str(indice)] = 'Observacion'
+        ws['O' + str(indice)] = 'Tipo'
+
+        for i in movimientos:
+            print(str(i.id))
+
+            if i.fkinvitado:
+                print("movimiento exportar: " + str(i.id))
+
+                indice = indice + 1
+                ws['A' + str(indice)] = i.id
+                ws['B' + str(indice)] = i.fechar
+                ws['C' + str(indice)] = i.fechai
+                ws['D' + str(indice)] = i.fechaf
+                ws['E' + str(indice)] = i.fktipodocumento
+
+                ws['F' + str(indice)] = i.invitado.ci
+                ws['G' + str(indice)] = i.invitado.expendido
+                ws['H' + str(indice)] = i.invitado.nombre
+                ws['I' + str(indice)] = i.invitado.apellidop
+                ws['J' + str(indice)] = i.invitado.apellidom
+
+
+                if i.fkdomicilio:
+                    ws['K' + str(indice)] = i.domicilio.codigo
+                elif i.fkareasocial:
+                    ws['K' + str(indice)] = i.areasocial.codigo
+                else:
+                    ws['K' + str(indice)] = ""
+
+                ws['L' + str(indice)] = i.autorizacion.nombre
+                ws['M' + str(indice)] = i.tipopase.nombre
+                ws['N' + str(indice)] = i.observacion
+                ws['O' + str(indice)] = i.tipo
+
+        wb.save("server/common/resources/downloads/" + cname)
+        return cname
+
 
     # def reporte_movimientos_vehicular(self,diccionario):
     #

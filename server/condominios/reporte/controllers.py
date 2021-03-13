@@ -19,7 +19,7 @@ class ReporteController(CrudController):
         '/reporte': {'GET': 'index', 'POST': 'table'},
         '/reporte_general': {'POST': 'reporte_general_excel'},
         '/reporte_vehicular_visita': {'POST': 'vehicular_visita'},
-        '/reporte_peatonal_visita': {'PUT': 'peatonal_visita'},
+        '/reporte_peatonal_visita': {'POST': 'peatonal_visita'},
         '/reporte_vehicular_residente': {'PUT': 'vehicular_residente'},
         '/reporte_peatonal_residente': {'PUT': 'peatonal_residente'},
         '/reporte_singuardia_visita': {'PUT': 'singuardia_visita'}
@@ -40,6 +40,16 @@ class ReporteController(CrudController):
         diccionary = json.loads(self.get_argument("object"))
 
         cname = self.manager(self.db).reporte_movimientos_vehicular_visita(diccionary)
+
+
+        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+        self.db.close()
+
+    def peatonal_visita(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+
+        cname = self.manager(self.db).reporte_movimientos_peatonal_visita(diccionary)
 
 
         self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
@@ -154,15 +164,15 @@ class ReporteController(CrudController):
         self.respond(indicted_object, message='Operacion exitosa!')
         self.db.close()
 
-    def peatonal_visita(self):
-        self.set_session()
-        ins_manager = self.manager(self.db)
-        diccionary = json.loads(self.get_argument("object"))
-        # indicted_object = ins_manager.obtain(diccionary['id'])
-        arraT = ins_manager.get_page(1, 10, None, None, True)
-        arraT['datos'] = Movimiento_pManager(self.db).reporte_movimientos_peatonal(diccionary)
-        self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
-        self.db.close()
+    # def peatonal_visita(self):
+    #     self.set_session()
+    #     ins_manager = self.manager(self.db)
+    #     diccionary = json.loads(self.get_argument("object"))
+    #     # indicted_object = ins_manager.obtain(diccionary['id'])
+    #     arraT = ins_manager.get_page(1, 10, None, None, True)
+    #     arraT['datos'] = Movimiento_pManager(self.db).reporte_movimientos_peatonal(diccionary)
+    #     self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
+    #     self.db.close()
 
     def vehicular_residente(self):
         self.set_session()
