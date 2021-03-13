@@ -282,7 +282,7 @@
                                     <div class="row clearfix">
                                         <div class="col-sm-2">
                                            <label>Tipo de Vehiculo</label>
-                                         <select id="fktipo" class="form-control" required>
+                                         <select id="fktipo" class="form-control">
                                             {% for tipove in tipovehiculos %}
                                                 <option value="{{tipove.id}}">{{tipove.nombre}}</option>
                                             {% end %}
@@ -298,7 +298,7 @@
                                         </div>
                                          <div class="col-sm-2">
                                             <label>Color</label>
-                                             <select id="fkcolor" class="form-control" required>
+                                             <select id="fkcolor" class="form-control">
                                                 {% for color in colores %}
                                                     <option value="{{color.id}}">{{color.nombre}}</option>
                                                 {% end %}
