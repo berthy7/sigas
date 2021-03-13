@@ -10,3 +10,5 @@ class BitacoraController(CrudController):
     routes = {
         '/bitacora': {'GET': 'index', 'POST': 'table'}
     }
+
+

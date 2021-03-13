@@ -93,6 +93,13 @@ class UsuarioManager(SuperManager):
                 UsuarioManager(self.db).state(tar['id'],tar['estado'],diccionary['user'],diccionary['ip'])
 
 
+    def sincronizar_login_token(self, user,token):
+        usuario = UsuarioManager(self.db).get_by_pass(user)
+        usuario.token = token
+
+        return super().update(usuario)
+
+
     def registrar_token(self, user,token):
         usuario = UsuarioManager(self.db).get_by_pass(user)
         usuario.token_notificacion = token

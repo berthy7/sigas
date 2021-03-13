@@ -87,6 +87,7 @@ class ApiCondominioController(ApiController):
         '/api/v1/configuraciones_procesadas': {'POST': 'configuraciones_procesadas'},
 
         '/api/v1/sincronizar_condominio': {'POST': 'sincronizar_condominio'},
+        '/api/v1/sincronizar_login': {'POST': 'sincronizar_login'},
         '/api/v1/sincronizar_usuario': {'POST': 'sincronizar_usuario'},
         '/api/v1/sincronizar_usuario_estado': {'POST': 'sincronizar_usuario_estado'},
         '/api/v1/sincronizar_residente': {'POST': 'sincronizar_residente'},
@@ -337,6 +338,13 @@ class ApiCondominioController(ApiController):
 
                         users = UsuarioManager(self.db).login_token(users)
                         usuario['token'] = users.token
+
+                        principal = self.db.query(Principal).first()
+                        if principal.estado:
+                            print("principal")
+
+
+                            self.funcion_sincronizar(users, dict(user=users.id,token=usuario['token']), "sincronizar_login")
 
 
                         self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
@@ -1676,6 +1684,23 @@ class ApiCondominioController(ApiController):
         except Exception as e:
             # Other errors are possible, such as IOError.
             print("Error de conexion funcion sincronizar: " + str(e))
+
+    def sincronizar_login(self):
+        print("funcion sincronizar login")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+
+            UsuarioManager(self.db).sincronizar_login_token(u.id,data['token'])
+            self.respond(response=None, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
 
     def sincronizar_condominio(self):
         try:
