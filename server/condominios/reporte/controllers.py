@@ -39,7 +39,7 @@ class ReporteController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
-        cname = self.manager(self.db).reporte_movimientos_vehicular(diccionary)
+        cname = self.manager(self.db).reporte_movimientos_vehicular_visita(diccionary)
 
 
         self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
