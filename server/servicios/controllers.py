@@ -1778,13 +1778,13 @@ class ApiCondominioController(ApiController):
 
 
             nro = NropaseManager(self.db).obtener_x_tarjeta(data['dict_usuario']['tarjeta_residente'])
-            print("sincronizar residente 2")
+            # print("sincronizar residente 2")
             data['dict_residente']['fknropase'] = nro.id if nro else nro
 
 
             dict_usuario = ResidenteManager(self.db).insert(data['dict_residente'])
             data['dict_usuario']['fkresidente'] = dict_usuario['fkresidente']
-            print("diccionario: " + str(data))
+            # print("diccionario: " + str(data))
 
             UsuarioManager(self.db).insert_residente(data['dict_usuario'])
 

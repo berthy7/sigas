@@ -62,6 +62,7 @@ class ResidenteManager(SuperManager):
             objeto.codigo = None
 
         a = super().insert(objeto)
+        # a = self.db.query(self.entity).filter(self.entity.id == 14).first()
 
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Residente.", fecha=fecha,tabla="residente", identificador=a.id)
         super().insert(b)

@@ -80,12 +80,13 @@ class ResidenteController(CrudController):
 
         dict_usuario = ResidenteManager(self.db).insert(diccionary)
         c = UsuarioManager(self.db).insert_residente(dict_usuario)
+        c = c['response']
 
         principal = self.db.query(Principal).first()
 
         if principal.estado:
 
-            if c.condominio.ip_publica != "":
+            if c['response'].condominio.ip_publica != "":
                 diccionary['codigo'] = c.fkresidente
                 diccionary['codigoqr'] = dict_usuario['codigoqr_residente']
                 dict_usuario['codigo'] = c.id
