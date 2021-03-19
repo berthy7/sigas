@@ -295,21 +295,21 @@ function cargar_tabla(data){
 
         dom: "Bfrtip" ,
         buttons: [
-            // {  extend : 'excelHtml5',
-            //    exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7]},
-            //     sheetName: 'Reporte Areas Sociales',
-            //    title: 'reas Sociales'  },
-            // {  extend : 'pdfHtml5',
-            //     orientation: 'landscape',
-            //    customize: function(doc) {
-            //         doc.styles.tableBodyEven.alignment = 'center';
-            //         doc.styles.tableBodyOdd.alignment = 'center';
-            //    },
-            //    exportOptions : {
-            //         columns : [0, 1, 2, 3, 4, 5 ,6 ,7]
-            //     },
-            //    title: 'reas Sociales'
-            // }
+            {  extend : 'excelHtml5',
+               exportOptions : { columns : [0, 1, 2, 3, 4, 5]},
+                sheetName: 'Reporte Tarjetas',
+               title: 'Tarjetas'  },
+            {  extend : 'pdfHtml5',
+                orientation: 'landscape',
+               customize: function(doc) {
+                    doc.styles.tableBodyEven.alignment = 'center';
+                    doc.styles.tableBodyOdd.alignment = 'center';
+               },
+               exportOptions : {
+                    columns : [0, 1, 2, 3, 4, 5]
+                },
+               title: 'Tarjetas'
+            }
         ],
         initComplete: function () {
 
@@ -319,7 +319,13 @@ function cargar_tabla(data){
         language : {
             'url': '/resources/js/spanish.json',
         },
-        "pageLength": 50
+        "pageLength": 50,
+        fixedHeader: {
+            header: true,
+            headerOffset: $('.navbar-header').outerHeight()
+        },
+        paging: true,
+        select: true
     });
 }
    
