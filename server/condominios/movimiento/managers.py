@@ -737,8 +737,16 @@ class MovimientoManager(SuperManager):
 
     def actualizar_movimiento(self, marcacion):
 
-        mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta).filter(
-                or_(Movimiento.fechai == None,Movimiento.fechaf == None)).first()
+        nropase = self.db.query(Nropase).filter(Nropase.tarjeta == marcacion.tarjeta).first()
+
+        if nropase.tipo == "Excepcion":
+            mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta)\
+                .filter(Movimiento.fechai == None).first()
+
+        else:
+
+            mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta).filter(
+                    or_(Movimiento.fechai == None,Movimiento.fechaf == None)).first()
         if mov:
             if not mov.fechai:
                 mov.fechai = marcacion.time
