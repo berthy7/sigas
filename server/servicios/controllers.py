@@ -1621,7 +1621,7 @@ class ApiCondominioController(ApiController):
             # x = ast.literal_eval(data)
             x = json.loads(data)
 
-            print("servicio local")
+            # print("servicio local")
             resp = DispositivoManager(self.db).listar_locales_cant_marcaciones(x)
             DispositivoManager(self.db).verificar_estado(x)
 
@@ -2017,12 +2017,16 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            print("usuario")
             data['user'] = usuario.id
 
             event = EventoManager(self.db).obtener_x_codigo(data['fkevento'])
+            print("evento")
             data['fkevento'] = event.id
 
+            print("invitacion")
             invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
             data['fkinvitado'] = invi.id
 
