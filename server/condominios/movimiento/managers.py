@@ -739,14 +739,23 @@ class MovimientoManager(SuperManager):
 
         nropase = self.db.query(Nropase).filter(Nropase.tarjeta == marcacion.tarjeta).first()
 
-        if nropase.tipo == "Excepcion":
-            mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta)\
-                .filter(Movimiento.fechai == None).first()
+        if nropase:
+
+
+            if nropase.tipo == "Excepcion":
+                mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta)\
+                    .filter(Movimiento.fechai == None).first()
+
+            else:
+
+                mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta).filter(
+                        or_(Movimiento.fechai == None,Movimiento.fechaf == None)).first()
 
         else:
+            mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(
+                Nropase.tarjeta == marcacion.tarjeta).filter(
+                or_(Movimiento.fechai == None, Movimiento.fechaf == None)).first()
 
-            mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta).filter(
-                    or_(Movimiento.fechai == None,Movimiento.fechaf == None)).first()
         if mov:
             if not mov.fechai:
                 mov.fechai = marcacion.time
