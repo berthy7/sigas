@@ -95,7 +95,7 @@ class EventoManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fkresidente == idresidente).all()
 
     def insert(self, diccionary):
-
+        print("insert")
         if diccionary['multiple'] or diccionary['paselibre'] :
             print("evento multiple")
             lista = list()

@@ -1242,6 +1242,7 @@ function limpiar_formulario() {
     $('#codigoautorizacion_residente').val('')
     $('#nropase').val('')
     $('#nropase').selectpicker("refresh")
+     $('#observacion').val('')
 
     $('#fkinvitado_conductor').val('')
     $('#fkinvitado_conductor').selectpicker("refresh")
@@ -1295,7 +1296,7 @@ $('#new').click(function () {
     $('#codigoautorizacion_residente').val('')
     $('#nropase').val('')
     $('#nropase').selectpicker("refresh")
-    $('#observaciones').val('')
+    $('#observacion').val('')
     
     $('#fkconductor').val('')
     $('#fkconductor').selectpicker("refresh")

@@ -743,8 +743,8 @@ class MovimientoManager(SuperManager):
             if not mov.fechai:
                 mov.fechai = marcacion.time
 
-                if mov.nropase.tipo == "Excepcion":
-                    mov.fechaf = marcacion.time
+                # if mov.nropase.tipo == "Excepcion":
+                mov.fechaf = marcacion.time
 
                 self.db.merge(mov)
                 self.db.commit()

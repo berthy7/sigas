@@ -412,8 +412,8 @@ class ConfiguraciondispositivoManager(SuperManager):
         for dis in dispositivos:
             diccionary['fkdispositivo'] = dis.id
 
-            if dis.fktipodispositivo != 4:
-                diccionary['tarjeta'] = diccionary['residente']
+            # if dis.fktipodispositivo != 4:
+            #     diccionary['tarjeta'] = diccionary['residente']
 
             objeto = ConfiguraciondispositivoManager(self.db).entity(**diccionary)
             super().insert(objeto)
