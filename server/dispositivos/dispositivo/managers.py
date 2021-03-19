@@ -33,7 +33,7 @@ class DispositivoManager(SuperManager):
                                situacion=estado['conexion'])
 
             self.db.merge(domi)
-            print(str(estado['fkdispositivo']) + " " + str(estado['conexion']) )
+            # print(str(estado['fkdispositivo']) + " " + str(estado['conexion']) )
         self.db.commit()
 
 
