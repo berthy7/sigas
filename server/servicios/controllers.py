@@ -1752,6 +1752,7 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+            print("sincronizar residente")
 
             data['dict_residente']['codigo'] = data['dict_usuario']['fkresidente']
             data['dict_residente']['codigoqr'] = data['dict_usuario']['codigoqr_residente']
@@ -1777,7 +1778,7 @@ class ApiCondominioController(ApiController):
 
 
             nro = NropaseManager(self.db).obtener_x_tarjeta(data['dict_usuario']['tarjeta_residente'])
-
+            print("sincronizar residente 2")
             data['dict_residente']['fknropase'] = nro.id if nro else nro
 
 
@@ -1814,18 +1815,15 @@ class ApiCondominioController(ApiController):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
-            print("sincronizacion evento")
+
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = u.id
 
-            print("sincronizacion evento2")
             data['fkresidente'] = u.fkresidente
 
-            print("sincronizacion evento3")
             domi = ResidenteManager(self.db).obtener_domicilios(u.fkresidente)
             data['fkdomicilio'] = domi.id
 
-            print("sincronizacion evento4")
             EventoManager(self.db).insert(data)
             self.respond(response=None, success=True, message='Insertado correctamente.')
         except Exception as e:
@@ -2019,14 +2017,11 @@ class ApiCondominioController(ApiController):
             data = json.loads(self.request.body.decode('utf-8'))
 
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            print("usuario")
             data['user'] = usuario.id
 
             event = EventoManager(self.db).obtener_x_codigo(data['fkevento'])
-            print("evento")
             data['fkevento'] = event.id
 
-            print("invitacion")
             invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
             data['fkinvitado'] = invi.id
 

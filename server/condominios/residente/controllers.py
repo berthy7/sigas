@@ -94,7 +94,7 @@ class ResidenteController(CrudController):
                     domi = DomicilioManager(self.db).obtener_x_id(domicilios['fkdomicilio'])
                     domicilios['codigo_domicilio'] = domi.codigo
 
-
+                print("sincronizcion residente")
                 url = "http://" + c.condominio.ip_publica + ":" + c.condominio.puerto + "/api/v1/sincronizar_residente"
 
                 headers = {'Content-Type': 'application/json'}
