@@ -842,10 +842,13 @@ class ApiCondominioController(ApiController):
             if Respuestausuario['success']:
                 arraT = self.manager(self.db).get_page(1, 10, None, None, True)
                 resp = []
+                data['fechai'] = datetime.strptime(data['fechai'], '%d/%m/%Y')
+                data['fechaf'] = datetime.strptime(data['fechaf'], '%d/%m/%Y')
 
                 arraT['objeto'] = EventoManager(self.db).filtrar(data['fechai'], data['fechaf'], data['user'])
                 for item in arraT['objeto']:
                     obj_dict = item.get_dict()
+                    obj_dict['residente'] = None
                     resp.append(obj_dict)
                 self.db.close()
 
