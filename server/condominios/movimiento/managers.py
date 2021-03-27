@@ -143,12 +143,17 @@ class MovimientoManager(SuperManager):
 
     def obtener_destino(self,idMovimiento):
         mov = self.db.query(self.entity).filter(self.entity.id == idMovimiento).first()
+        if mov:
 
-        if mov.fkdomicilio:
-            return mov.domicilio
-        elif mov.fkareasocial:
-            return mov.areasocial
+            if mov.fkdomicilio:
+                return mov.domicilio
+            elif mov.fkareasocial:
+                return mov.areasocial
+            else:
+                return None
         else:
+            print("obtener destino mov= null")
+
             return None
 
     def get_all(self):
