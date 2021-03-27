@@ -116,7 +116,7 @@ class UsuarioManager(SuperManager):
 
     def listar_notificacion(self,Idusuario):
 
-        return self.db.query(Notificacion).filter(Notificacion.fkremitente == Idusuario).filter(Notificacion.enabled).all()
+        return self.db.query(Notificacion).filter(Notificacion.fkreceptor == Idusuario).filter(Notificacion.enabled).all()
 
     def estado_notificacion(self, id, user, ip):
         x = self.db.query(Notificacion).filter(Notificacion.id == id).first()

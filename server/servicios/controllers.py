@@ -909,7 +909,14 @@ class ApiCondominioController(ApiController):
                 arraT['objeto'] = CondominioManager(self.db).obtener_residentes(usuario.fkcondominio)
                 for item in arraT['objeto']:
                     obj_dict = item.get_dict()
+
+                    obj_dict['foto'] = None
+                    obj_dict['usuaio'] =[]
+
                     resp.append(obj_dict)
+                    # resp.append(dict(id=item.id, fullname=item.fullname, ci=item.ci, expendido=item.expendido,
+                    #                  domicilioId=item.domicilios[0].domicilio.id,
+                    #                  domicilio=item.domicilios[0].domicilio.nombre))
                 self.db.close()
 
                 self.respond(response=resp, success=True, message="Residentes recuperados correctamente.")
@@ -937,6 +944,8 @@ class ApiCondominioController(ApiController):
 
                 arraT = self.manager(self.db).get_page(1, 10, None, None, True)
                 resp = []
+                data['fechai'] = datetime.strptime(data['fechai'], '%d/%m/%Y')
+                data['fechaf'] = datetime.strptime(data['fechaf'], '%d/%m/%Y')
 
                 arraT['objeto'] = MovimientoManager(self.db).filtrar_movil(data['fechai'], data['fechaf'], usuario)
                 for item in arraT['objeto']:

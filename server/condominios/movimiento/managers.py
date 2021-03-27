@@ -712,15 +712,6 @@ class MovimientoManager(SuperManager):
         list = {}
         c = 0
 
-        fecha = fecha_zona
-        fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
-        # fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
-
-        if fechainicio == "undefined":
-            fechainicio = fechahoy
-            fechafin = fechahoy
-
-
 
         if usuario.sigas:
             return self.db.query(self.entity).filter(self.entity.estado == True).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).all()
