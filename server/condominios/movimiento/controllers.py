@@ -213,13 +213,13 @@ class MovimientoController(CrudController):
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
             diccionary['id'] = resp.codigo
-            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
-
-            if destino:
-                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
-
-            else:
-                condominio = None
+            # destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
+            #
+            # if destino:
+            #     condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+            #
+            # else:
+            #     condominio = None
 
             diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
