@@ -233,7 +233,6 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
-
 function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) {
         obj = JSON.stringify({
         'fechainicio': fechainicio,
@@ -381,7 +380,6 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
         cargar_tabla(data_lista)
     })
 }
-
 
 $('#fkinvitado').selectpicker({
     size: 10,
