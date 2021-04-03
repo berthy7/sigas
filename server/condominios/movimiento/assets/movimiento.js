@@ -9,8 +9,6 @@ var ult_registro = 0;
 var data_lista_pendientes = [];
 
 
-
-
 $(document).ready(function () {
 
     auxiliar_method()
