@@ -1163,8 +1163,16 @@ class ApiCondominioController(ApiController):
                     mov.codigo = mov.id
                     data['codigo'] = mov.id
                     data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
-                    data['nombre_marca'] = mov.vehiculo.marca.nombre
-                    data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+                    accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(data['fkinvitacion'])
+
+
+                    if data['fkinvitacion'] != "":
+
+                        if accesos_invitacion['paselibre'] is False:
+
+                            data['nombre_marca'] = mov.vehiculo.marca.nombre
+                            data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
                     if mov.nropase:
                         data['tarjeta'] = mov.nropase.tarjeta
