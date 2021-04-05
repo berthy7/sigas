@@ -1611,7 +1611,7 @@ class ApiCondominioController(ApiController):
         self.set_session()
         data = json.loads(self.request.body.decode('utf-8'))
         x = ast.literal_eval(data)
-        print("ws marcaciones dispositivo " + str(x['iddispositivo']))
+        # print("ws marcaciones dispositivo " + str(x['iddispositivo']))
 
         RegistrosManager(self.db).insertRegistros(x)
         self.respond(success=True, message='Insertado correctamente.')
