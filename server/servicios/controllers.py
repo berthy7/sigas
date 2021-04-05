@@ -2011,8 +2011,8 @@ class ApiCondominioController(ApiController):
             data = json.loads(self.request.body.decode('utf-8'))
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            print(str(data))
-            print(str(usuario))
+            # print(str(data))
+            # print(str(usuario))
 
             mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
 
@@ -2024,7 +2024,7 @@ class ApiCondominioController(ApiController):
                 MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
                 self.respond(response=None, success=True, message='Salida movimiento.')
             else:
-                self.respond(response=None, success=True, message='No Sincronizo Salida movimiento.')
+                self.respond(response=None, success=True, message=' No Sincronizo Salida movimiento.')
 
         except Exception as e:
             print(e)
