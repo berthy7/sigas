@@ -132,7 +132,7 @@ class Movimiento_pController(CrudController):
             data['fkinvitado'] = ""
 
             try:
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"
+                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_p"
 
                 headers = {'Content-Type': 'application/json'}
 
