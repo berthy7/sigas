@@ -212,7 +212,7 @@ class MovimientoController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['id'] = resp.codigo
+            diccionary['idmovimiento'] = resp.codigo
             # destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
             #
             # if destino:
