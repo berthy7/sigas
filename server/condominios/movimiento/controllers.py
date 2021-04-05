@@ -147,7 +147,7 @@ class MovimientoController(CrudController):
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
 
-                print("respuesta sincronizacion insert movimiento nube:"+response)
+                print(response)
                 MovimientoManager(self.db).asignar_codigo(mov.id,response['response'])
 
             except Exception as e:
@@ -207,7 +207,7 @@ class MovimientoController(CrudController):
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
 
-                print("respuesta sincronizacion salida movimiento:"+response)
+                print(response)
 
         else:
             diccionary['user'] = self.get_user_id()
@@ -234,7 +234,7 @@ class MovimientoController(CrudController):
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
 
-                print("respuesta sincronizacion salida movimiento nube:"+response)
+                print(response)
             except Exception as e:
                 print(e)
 
