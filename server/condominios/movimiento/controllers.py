@@ -68,15 +68,54 @@ class MovimientoController(CrudController):
         print("ingreso Vehicular web nombre: " + str(data['nombre']))
         mov = MovimientoManager(self.db).insert(data)
 
-        destino = MovimientoManager(self.db).obtener_destino(mov.id)
 
-        principal = self.db.query(Principal).first()
-        if principal.estado:
+        if mov:
 
-            if destino.condominio.ip_publica != "":
+            destino = MovimientoManager(self.db).obtener_destino(mov.id)
 
-                mov.codigo = mov.id
-                data['codigo'] = mov.id
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+
+                if destino.condominio.ip_publica != "":
+
+                    mov.codigo = mov.id
+                    data['codigo'] = mov.id
+                    data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
+                    data['nombre_marca'] = mov.vehiculo.marca.nombre
+                    data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+                    if mov.nropase:
+                        data['tarjeta'] = mov.nropase.tarjeta
+                    else:
+                        data['tarjeta'] = ""
+
+                    if mov.fkdomicilio:
+                        data['codigo_destino'] = mov.domicilio.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+
+                    elif mov.fkareasocial:
+                        data['codigo_destino'] = mov.areasocial.codigo
+                        condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+
+                    else:
+                        data['codigo_destino'] = ""
+                        condominio = None
+
+                    data['fkinvitado'] = ""
+                    data['fkconductor'] = ""
+
+                    url = "http://" + destino.condominio.ip_publica + ":" + destino.condominio.puerto + "/api/v1/sincronizar_movimiento"
+
+                    headers = {'Content-Type': 'application/json'}
+
+                    cadena = json.dumps(data)
+                    body = cadena
+                    resp = requests.post(url, data=body, headers=headers, verify=False)
+                    response = json.loads(resp.text)
+
+                    print(response)
+
+            else:
                 data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
                 data['nombre_marca'] = mov.vehiculo.marca.nombre
                 data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
@@ -86,74 +125,38 @@ class MovimientoController(CrudController):
                 else:
                     data['tarjeta'] = ""
 
-                if mov.fkdomicilio:
-                    data['codigo_destino'] = mov.domicilio.codigo
-                    condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
-
-                elif mov.fkareasocial:
-                    data['codigo_destino'] = mov.areasocial.codigo
-                    condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
-
-                else:
-                    data['codigo_destino'] = ""
-                    condominio = None
+                # if mov.fkdomicilio:
+                #     data['codigo_destino'] = mov.domicilio.codigo
+                #     condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+                #
+                # elif mov.fkareasocial:
+                #     data['codigo_destino'] = mov.areasocial.codigo
+                #     condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+                #
+                # else:
+                #     data['codigo_destino'] = ""
+                #     condominio = None
 
                 data['fkinvitado'] = ""
                 data['fkconductor'] = ""
 
-                url = "http://" + destino.condominio.ip_publica + ":" + destino.condominio.puerto + "/api/v1/sincronizar_movimiento"
+                try:
+                    url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"
 
-                headers = {'Content-Type': 'application/json'}
+                    headers = {'Content-Type': 'application/json'}
 
-                cadena = json.dumps(data)
-                body = cadena
-                resp = requests.post(url, data=body, headers=headers, verify=False)
-                response = json.loads(resp.text)
+                    cadena = json.dumps(data)
+                    body = cadena
+                    resp = requests.post(url, data=body, headers=headers, verify=False)
+                    response = json.loads(resp.text)
 
-                print("respuesta sincronizacion insert movimiento :"+response)
+                    print(response)
+                    MovimientoManager(self.db).asignar_codigo(mov.id,response['response'])
 
-        else:
-            data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
-            data['nombre_marca'] = mov.vehiculo.marca.nombre
-            data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+                except Exception as e:
+                    print(e)
 
-            if mov.nropase:
-                data['tarjeta'] = mov.nropase.tarjeta
-            else:
-                data['tarjeta'] = ""
-
-            if mov.fkdomicilio:
-                data['codigo_destino'] = mov.domicilio.codigo
-                condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
-
-            elif mov.fkareasocial:
-                data['codigo_destino'] = mov.areasocial.codigo
-                condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
-
-            else:
-                data['codigo_destino'] = ""
-                condominio = None
-
-            data['fkinvitado'] = ""
-            data['fkconductor'] = ""
-
-            try:
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"
-
-                headers = {'Content-Type': 'application/json'}
-
-                cadena = json.dumps(data)
-                body = cadena
-                resp = requests.post(url, data=body, headers=headers, verify=False)
-                response = json.loads(resp.text)
-
-                print(response)
-                MovimientoManager(self.db).asignar_codigo(mov.id,response['response'])
-
-            except Exception as e:
-                print(e)
-
-        self.respond(success=True, message='Insertado correctamente.')
+            self.respond(success=True, message='Insertado correctamente.')
 
     def update(self):
         self.set_session()

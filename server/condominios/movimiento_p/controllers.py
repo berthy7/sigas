@@ -107,7 +107,7 @@ class Movimiento_pController(CrudController):
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
 
-                print("respuesta sincronizacion insert movimiento p:" +response)
+                print(response)
 
         else:
             data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')

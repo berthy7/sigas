@@ -587,13 +587,13 @@ class MovimientoManager(SuperManager):
 
         objeto = MovimientoManager(self.db).entity(**diccionary)
 
-        mov = self.db.query(Nropase).filter(Nropase.id == objeto.fknropase).filter(Nropase.situacion == "Ocupado").first()
+        nropase = self.db.query(Nropase).filter(Nropase.id == objeto.fknropase).filter(Nropase.situacion == "Ocupado").first()
 
-        if mov :
-            print("bloqueo de Registro duplicado ")
+        if nropase :
+            print("bloqueo de Registro duplicado: tarjeta ocupada " + nropase.tipo+" "+nropase.numero )
             b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador=mov.id)
             super().insert(b)
-            return mov
+            return False
         else:
             a = super().insert(objeto)
             a.codigo = a.id
