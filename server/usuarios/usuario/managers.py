@@ -819,6 +819,21 @@ class NotificacionManager(SuperManager):
         super().insert(b)
         return a
 
+    def registrar_notificacion_onesignal(self, a,objeto):
+        usuario = UsuarioManager(self.db).obtener_x_fkresidente(a.invitacion.evento.fkresidente)
+        fecha = BitacoraManager(self.db).fecha_actual()
+        Nombrevisita = ""
+        if a.invitacion.fkinvitado:
+            Nombrevisita = a.invitacion.invitado.fullname
+        elif a.invitacion.evento.paselibre:
+            Nombrevisita = "Pase Libre"
+
+        notificacion = NotificacionManager(self.db).insert(
+            dict(fkremitente=1, fkreceptor=usuario.id, mensaje="llego su visita " + Nombrevisita,
+                 titulo="Notificacion de llegada", fecha=fecha, user=objeto.user, ip=objeto.ip))
+
+        NotificacionManager(self.db).enviar_notificacion_onesignal(notificacion)
+
     def enviar_notificacion_onesignal(self, notificacion):
         # print("Enviando Notificacion a un solo cliente")
 

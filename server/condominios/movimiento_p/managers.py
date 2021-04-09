@@ -159,21 +159,9 @@ class Movimiento_pManager(SuperManager):
                         InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
-            usuario = UsuarioManager(self.db).obtener_x_fkresidente(a.invitacion.evento.fkresidente)
-
-            Nombrevisita = ""
-            if a.invitacion.fkinvitado:
-                Nombrevisita = a.invitacion.invitado.fullname
-            elif a.invitacion.evento.paselibre:
-                Nombrevisita = "Pase Libre"
-
-
-
-
-            notificacion = NotificacionManager(self.db).insert(dict(fkremitente=1,fkreceptor=usuario.id,mensaje="llego su visita "+Nombrevisita,
-            titulo="Notificacion de llegada",fecha =fecha,user =objeto.user,ip=objeto.ip))
-
-            NotificacionManager(self.db).enviar_notificacion_onesignal(notificacion)
+            principal = self.db.query(Principal).first()
+            if principal.estado:
+                NotificacionManager(self.db).registrar_notificacion_onesignal(a,objeto)
 
 
         return a
