@@ -117,17 +117,17 @@ class Movimiento_pController(CrudController):
             else:
                 data['tarjeta'] = ""
 
-            if mov.fkdomicilio:
-                data['codigo_destino'] = mov.domicilio.codigo
-                condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
-
-            elif mov.fkareasocial:
-                data['codigo_destino'] = mov.areasocial.codigo
-                condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
-
-            else:
-                data['codigo_destino'] = ""
-                condominio = None
+            # if mov.fkdomicilio:
+            #     data['codigo_destino'] = mov.domicilio.codigo
+            #     condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+            #
+            # elif mov.fkareasocial:
+            #     data['codigo_destino'] = mov.areasocial.codigo
+            #     condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+            #
+            # else:
+            #     data['codigo_destino'] = ""
+            #     condominio = None
 
             data['fkinvitado'] = ""
 

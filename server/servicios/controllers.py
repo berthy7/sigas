@@ -135,7 +135,7 @@ class ApiCondominioController(ApiController):
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
 
-f
+
     def eliminar_token(self):
         print("consulto eliminar_token")
         try:
