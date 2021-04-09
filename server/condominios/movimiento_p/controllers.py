@@ -11,6 +11,7 @@ from ..nropase.managers import *
 from ..movimiento.managers import *
 from ..condominio.managers import *
 from onesignal_sdk.client import Client
+from threading import Thread
 
 
 
@@ -68,8 +69,14 @@ class Movimiento_pController(CrudController):
         print("ingreso Peatonal web nombre: " + str(data['nombre']))
         mov = Movimiento_pManager(self.db).insert(data)
 
-        destino = MovimientoManager(self.db).obtener_destino(mov.id)
+        t = Thread(target=self.hilo_sincronizar, args=(mov,data,))
+        t.start()
 
+        self.respond(success=True, message='Insertado correctamente.')
+
+    def hilo_sincronizar(self,mov,data):
+        print("hilo sincronizar")
+        destino = MovimientoManager(self.db).obtener_destino(mov.id)
         principal = self.db.query(Principal).first()
         if principal.estado:
 
@@ -146,7 +153,7 @@ class Movimiento_pController(CrudController):
 
             except Exception as e:
                 print(e)
-        self.respond(success=True, message='Insertado correctamente.')
+
 
     def update(self):
         self.set_session()

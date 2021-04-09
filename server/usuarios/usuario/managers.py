@@ -829,7 +829,7 @@ class NotificacionManager(SuperManager):
             Nombrevisita = "Pase Libre"
 
         notificacion = NotificacionManager(self.db).insert(
-            dict(fkremitente=1, fkreceptor=usuario.id, mensaje="llego su visita " + Nombrevisita,
+            dict(fkremitente=1, fkreceptor=usuario.id, mensaje="Llego su visita " + Nombrevisita,
                  titulo="Notificacion de llegada", fecha=fecha, user=objeto.user, ip=objeto.ip))
 
         print("entrando a funcion enviar")

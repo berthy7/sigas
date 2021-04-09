@@ -615,9 +615,9 @@ class MovimientoManager(SuperManager):
                         if accesos_invitacion['paselibre'] is False:
                             InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
-            principal = self.db.query(Principal).first()
-            if principal.estado:
-                NotificacionManager(self.db).registrar_notificacion_onesignal(a,objeto)
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    NotificacionManager(self.db).registrar_notificacion_onesignal(a,objeto)
 
 
             return a
