@@ -188,13 +188,25 @@ class MovimientoController(CrudController):
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
+        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
+        t.start()
+
+        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
+
+        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+                     message='actualizado correctamente.')
+
+    def hilo_sincronizar_salida(self, diccionary):
+        print("hilo_sincronizar_salida")
+
         resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
 
         principal = self.db.query(Principal).first()
         if principal.estado:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            # diccionary['idmovimiento'] = diccionary['id']
+            diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -209,7 +221,6 @@ class MovimientoController(CrudController):
                 url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
 
                 headers = {'Content-Type': 'application/json'}
-
 
                 cadena = json.dumps(diccionary)
                 body = cadena
@@ -246,12 +257,6 @@ class MovimientoController(CrudController):
                 print(response)
             except Exception as e:
                 print(e)
-
-        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
-
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
-                     message='actualizado correctamente.')
 
     def actualizar_tabla(self):
         self.set_session()

@@ -175,17 +175,29 @@ class Movimiento_pController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
-        id = diccionary['id']
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
-        resp = MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
+        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
+        t.start()
+
+
+
+        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
+
+        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+                     message='actualizado correctamente.')
+
+    def hilo_sincronizar_salida(self, diccionary):
+        print("hilo_sincronizar_salida")
+        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
 
         principal = self.db.query(Principal).first()
         if principal.estado:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            # diccionary['idmovimiento'] = diccionary['id']
+            diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -236,12 +248,6 @@ class Movimiento_pController(CrudController):
                 print(response)
             except Exception as e:
                 print(e)
-
-        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
-
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
-                     message='actualizado correctamente.')
 
     def actualizar(self):
         self.set_session()
