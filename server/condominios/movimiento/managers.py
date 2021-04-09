@@ -572,7 +572,6 @@ class MovimientoManager(SuperManager):
 
         diccionary['tipo'] = "Vehicular"
 
-
         # diccionary['fechai'] = fecha
 
         try:
@@ -591,7 +590,7 @@ class MovimientoManager(SuperManager):
 
         if nropase :
             print("bloqueo de Registro duplicado: tarjeta ocupada " + nropase.tipo+" "+nropase.numero )
-            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador=mov.id)
+            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador="")
             super().insert(b)
             return False
         else:
@@ -615,6 +614,20 @@ class MovimientoManager(SuperManager):
                     if accesos_invitacion['multiple'] is False:
                         if accesos_invitacion['paselibre'] is False:
                             InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+
+            usuario = UsuarioManager(self.db).obtener_x_fkresidente(a.invitacion.evento.fkresidente)
+
+            Nombrevisita = ""
+            if a.invitacion.fkinvitado:
+                Nombrevisita = a.invitacion.invitado.fullname
+            elif a.invitacion.evento.paselibre:
+                Nombrevisita = "Pase Libre"
+
+            notificacion = NotificacionManager(self.db).insert(
+                dict(fkremitente=1, fkreceptor=usuario.id, mensaje="llego su visita " + Nombrevisita,
+                     titulo="Notificacion de llegada", fecha=fecha, user=objeto.user, ip=objeto.ip))
+
+            NotificacionManager(self.db).enviar_notificacion_onesignal(notificacion)
 
 
             return a

@@ -29,6 +29,16 @@ import json
 from configparser import ConfigParser
 import uuid
 
+from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
+
+from openpyxl import load_workbook
+from openpyxl import Workbook
+from openpyxl.styles import Font
+
+from onesignal_sdk.client import Client
+from onesignal_sdk.error import OneSignalHTTPError
+
 class UsuarioManager(SuperManager):
 
     def __init__(self, db):
@@ -808,3 +818,50 @@ class NotificacionManager(SuperManager):
                      identificador=a.id)
         super().insert(b)
         return a
+
+    def enviar_notificacion_onesignal(self, notificacion):
+        # print("Enviando Notificacion a un solo cliente")
+
+        try:
+            # Parametros
+            APP_ID = 'd99d9fe9-1f01-4b4a-a929-069a9813788c'
+            REST_API_KEY = 'MWI1Y2Y2MWEtZGY1OC00MjI1LTk0NTctNTQ5ZjI4NzViNWRk'
+            CHANNEL_ID = '4d4c7bc7-0221-4e6a-bedb-0093499f9424'  # DE LA CATEGORIA PRIORITARY
+            cli = notificacion.receptor.token_notificacion
+            if cli and cli != 'undefined' and cli != '0':
+                print('Token..:')
+                print(cli)
+
+                client = Client(app_id=APP_ID, rest_api_key=REST_API_KEY)
+                img = ''
+                notification_body = {
+                    'contents': {'en': notificacion.mensaje, 'es': notificacion.mensaje},
+                    # 'subtitle': {'en': n.subtitle, 'es': n.subtitle}, // Si se quiere agregar un subtitulo
+                    'headings': {'en': notificacion.titulo, 'es': notificacion.titulo},
+                    # 'included_segments': ['Active Users', 'Inactive Users'], // cuando se especifica el include_player_ids, los segmentos ya no se envian
+                    'include_player_ids': [cli],
+                    'big_picture': img,  # Foto cuando la notificacion se expande
+                    'small_icon': 'icon',  # Icono de la notificacion
+                    # 'android_accent_color': '0065ab',# Color de fondo del small_icon
+                    # 'huawei_accent_color': '0065ab',# Color de fondo del small_icon
+                    'huawei_small_icon': 'icon',
+                    'large_icon': img,  # Foto con la notificacion sin expandirse
+                    'huawei_large_icon': img,  # Foto con la notificacion sin expandirse
+                    'android_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
+                    'huawei_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
+                    'android_background_layout': '{"headings_color": "FFFF0000", "contents_color": "FF00FF00"}'
+                }
+                print('Cuerpo de la Notificacion..')
+                print('..')
+                print('..')
+                print(notification_body)
+                print('..')
+                print('..')
+                response = client.send_notification(notification_body)
+                # print('Notificacion enviada: ')
+                # print(response)
+                # self.deshabilitar_notificacion(n)
+        except OneSignalHTTPError as e:
+            print("Error al enviar la notificacion: " + str(notificacion.id) + ' ' + str(notificacion.titulo))
+            print(e)
+            print(e.message)
