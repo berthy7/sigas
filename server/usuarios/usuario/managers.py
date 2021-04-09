@@ -832,10 +832,11 @@ class NotificacionManager(SuperManager):
             dict(fkremitente=1, fkreceptor=usuario.id, mensaje="llego su visita " + Nombrevisita,
                  titulo="Notificacion de llegada", fecha=fecha, user=objeto.user, ip=objeto.ip))
 
+        print("entrando a funcion enviar")
         NotificacionManager(self.db).enviar_notificacion_onesignal(notificacion)
 
     def enviar_notificacion_onesignal(self, notificacion):
-        # print("Enviando Notificacion a un solo cliente")
+        print("Enviando Notificacion a un solo cliente")
 
         try:
             # Parametros
