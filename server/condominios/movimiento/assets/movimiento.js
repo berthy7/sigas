@@ -873,7 +873,7 @@ $('#fkinvitado').change(function () {
 
         $('#fkvehiculo').val('')
         $('#fkvehiculo').selectpicker('refresh')
-        $('#cantpasajeros').val('')
+        $('#cantpasajeros').val('1')
         $('#placa').val('')
         $('#tipo').val('')
         $('#tipo').selectpicker('refresh')
@@ -1271,7 +1271,7 @@ $('#new').click(function () {
     $('#placa').val('')
     $('#fktipo').val('')
     $('#fktipo').selectpicker("refresh")
-    $('#cantpasajeros').val('0')
+    $('#cantpasajeros').val('1')
     $('#fkcolor').val('')
     $('#fkcolor').selectpicker("refresh")
     $('#fkmarca').val('')
