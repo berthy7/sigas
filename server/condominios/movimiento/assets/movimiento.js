@@ -1214,7 +1214,7 @@ function limpiar_formulario() {
     $('#ci').val('')
     $('#expendido').val('')
     $('#expendido').selectpicker("refresh")
-    $('#cantpasajeros').val(0)
+    $('#cantpasajeros').val('1')
     $('#placa').val('')
     $('#tipo').val('')
     $('#tipo').selectpicker("refresh")
