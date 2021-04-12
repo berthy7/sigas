@@ -1334,4 +1334,4 @@ def condominio_schedule():
             EventoManager(db).expirar_eventos_pasados()
             EventoManager(db).expirar_eventos()
 
-    schedule.every(1).minutes.do(sincronizar_invitaciones)
+    # schedule.every(1).minutes.do(sincronizar_invitaciones)

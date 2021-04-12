@@ -1042,7 +1042,17 @@ class ApiCondominioController(ApiController):
                 if principal.estado:
                     event.codigo = event.id
                     data['codigo'] = event.id
-                    data['invitaciones'] = event.invitaciones
+
+
+                    lista_detalle = list()
+
+                    for list_det in event.invitaciones:
+                        list_det.evento = None
+                        list_det.tipopase = None
+                        lista_detalle.append(list_det.get_dict())
+
+
+                    data['invitaciones'] = lista_detalle
                     self.db.merge(event)
                     self.db.commit()
                     self.funcion_sincronizar(u,data,"sincronizar_evento")
