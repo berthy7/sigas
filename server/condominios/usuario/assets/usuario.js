@@ -305,6 +305,7 @@ function actualizar_data(response){
 
         data.push( [
             response['response'][i]['id'],
+            response['response'][i]['codigo'],
             response['response'][i]['fullname'],
             response['response'][i]['username'],
             response['response'][i]['rol']['nombre'],

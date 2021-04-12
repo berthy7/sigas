@@ -1315,7 +1315,14 @@ $('#new').click(function () {
     document.getElementById('switch_paselibre').checked=false
     document.getElementById('switch_multiple').checked=false
 
+    $('.div_visita').show()
     $('.div_vehiculo').show()
+
+        $('#expendido_conductor').val('')
+    $('#expendido_conductor').selectpicker("refresh")
+    
+    $('#fktipodocumento').val(1)
+    $('#fktipodocumento').selectpicker("refresh")
 
 
     verif_inputs('')

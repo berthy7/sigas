@@ -145,9 +145,14 @@
                     {% if c.fkinvitado %}
                         '{{ c.invitado.ci }}',
                         '{{ c.invitado.fullname }}',
+                    {% elif c.fkresidente %}
+                        'Residente',
+                        '{{ c.residente.fullname }}',
+
                     {% else %}
                         'Residente',
-                        '--',
+                        '----',
+
                     {% end %}
 
                     {% if c.fkconductor %}

@@ -50,8 +50,10 @@
                 <table id="data_table" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="order_by_th" data-name="names">Nro</th>
+                            <th class="order_by_th" data-name="names">Id</th>
+                            <th class="order_by_th" data-name="names">Codigo</th>
                             <th class="order_by_th" data-name="names">Tipo Evento</th>
+                            <th class="order_by_th" data-name="names">Descripcion</th>
                             <th class="order_by_th" data-name="names">Residente</th>
                             <th class="order_by_th" data-name="names">Lugar</th>
                             <th class="order_by_th" data-name="names">Fecha Inicio</th>
@@ -90,7 +92,9 @@
             {% for c in eventos %}
                 data.push( [
                     '{{ c.id }}',
+                    '{{ c.codigo }}',
                     '{{ c.tipoevento.nombre }}',
+                    '{{ c.descripcion }}',
                     '{{ c.residente.fullname }}',
                     {% if c.fkdomicilio %}
                         '{{ c.domicilio.nombre }}',
@@ -186,6 +190,13 @@
                     </select>\
                     </br>\
                     </br>\
+                </div>\
+            </div>\
+            <div class="col-sm-2">\
+                <div class="form-group form-float">\
+                    <div class="form-line">\
+                        <input id="codigo'+id_in+'" data-id="'+id_in+'" class="form-control">\
+                    </div>\
                 </div>\
             </div>\
             <div class="col-sm-2">\

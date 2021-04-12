@@ -1042,6 +1042,7 @@ class ApiCondominioController(ApiController):
                 if principal.estado:
                     event.codigo = event.id
                     data['codigo'] = event.id
+                    data['invitaciones'] = event.invitaciones
                     self.db.merge(event)
                     self.db.commit()
                     self.funcion_sincronizar(u,data,"sincronizar_evento")

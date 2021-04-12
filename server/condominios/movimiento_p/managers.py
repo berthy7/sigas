@@ -154,9 +154,9 @@ class Movimiento_pManager(SuperManager):
 
             if accesos_invitacion['multiacceso'] is False:
                 if accesos_invitacion['multiple'] is False:
-                    if accesos_invitacion['paselibre'] is False:
+                    #if accesos_invitacion['paselibre'] is False:
 
-                        InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+                    InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
 
 
             principal = self.db.query(Principal).first()
