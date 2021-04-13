@@ -110,6 +110,12 @@ class EventoManager(SuperManager):
 
                 diccionary['invitaciones'] = lista
 
+            else:
+                for invi in diccionary['invitaciones']:
+
+                    if invi['fkinvitado'] == "None":
+                        invi['fkinvitado'] = None
+
 
         if diccionary['fkdomicilio'] == "":
             diccionary['fkdomicilio'] = None
