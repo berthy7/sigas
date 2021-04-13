@@ -125,8 +125,12 @@ class MovimientoController(CrudController):
 
         else:
             data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
-            data['nombre_marca'] = mov.vehiculo.marca.nombre
+            data['nombre_marca'] = mov.vehiculo.marca.nombre if mov.vehiculo.fkmarca else ""
             data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+
+            print(data['nombre_marca'])
+            print(data['nombre_modelo'])
 
             if mov.nropase:
                 data['tarjeta'] = mov.nropase.tarjeta
