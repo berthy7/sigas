@@ -188,11 +188,15 @@ class MovimientoController(CrudController):
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
+        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
+
         t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
         t.start()
 
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
+
+        print("respuesta filtro")
 
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='actualizado correctamente.')

@@ -697,6 +697,7 @@ class MovimientoManager(SuperManager):
         fecha = fecha_zona
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+        print("FIltrar por fecha")
 
 
         if usuario.sigas:

@@ -97,15 +97,13 @@ class EventoManager(SuperManager):
     def insert(self, diccionary):
         print("insert")
 
-
-
         if diccionary['multiple'] or diccionary['paselibre'] :
             print("evento multiple paselibre")
 
             if len(diccionary['invitaciones']) == 0:
                 lista = list()
 
-                lista.append(dict(fkinvitado=None,fktipopase=diccionary['fktipoevento'],
+                lista.append(dict(fkinvitado=None,fktipopase=1,
                                   codigoautorizacion=""))
 
                 diccionary['invitaciones'] = lista
