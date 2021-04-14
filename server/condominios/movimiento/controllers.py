@@ -125,8 +125,16 @@ class MovimientoController(CrudController):
 
         else:
             data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
-            data['nombre_marca'] = mov.vehiculo.marca.nombre if mov.vehiculo.fkmarca else ""
-            data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+            if mov.fkinvitacion and mov.invitacion.evento.paselibre:
+                print("registro con pase libre")
+                data['nombre_marca'] = ""
+                data['nombre_modelo'] = ""
+
+            else:
+
+                data['nombre_marca'] = mov.vehiculo.marca.nombre if mov.vehiculo.fkmarca else ""
+                data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
 
             print(data['nombre_marca'])
@@ -163,7 +171,7 @@ class MovimientoController(CrudController):
                 response = json.loads(resp.text)
 
                 print(response)
-                MovimientoManager(self.db).asignar_codigo(mov.id, response['response'])
+                # MovimientoManager(self.db).asignar_codigo(mov.id, response['response'])
 
             except Exception as e:
                 print(e)

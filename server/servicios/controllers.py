@@ -1871,18 +1871,29 @@ class ApiCondominioController(ApiController):
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
             data['user'] = u.id
-
-
             data['fkvehiculo'] =  ""
             data['fkinvitado'] = ""
 
+            if data['nombre_modelo'] != "":
+                print("nombre_marca: "+str(data['nombre_marca']))
 
-            print("nombre_marca: "+str(data['nombre_marca']))
+                marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
+                print("marca: " + str(marca))
 
-            marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
-            print("marca: " + str(marca))
+                data['fkmarca'] = marca.id
+            else:
+                data['fkmodelo'] = None
 
-            data['fkmarca'] = marca.id
+
+            if data['nombre_modelo'] != "":
+
+                print("modelo: " + str(data['nombre_modelo']))
+                modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
+                print("modelo: " + str(modelo))
+                data['fkmodelo'] = modelo.id if modelo else modelo
+            else:
+                data['fkmodelo'] = None
+
 
             if data['codigoautorizacion'] != "":
 
@@ -1904,16 +1915,6 @@ class ApiCondominioController(ApiController):
                 data['fknropase'] = tarjeta.id
             else:
                 data['fknropase'] = tarjeta
-
-
-            if data['nombre_modelo'] != "":
-
-                print("modelo: " + str(data['nombre_modelo']))
-                modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
-                print("modelo: " + str(modelo))
-                data['fkmodelo'] = modelo.id if modelo else modelo
-            else:
-                data['fkmodelo'] = None
 
 
             if data['fkresidente'] != "":
@@ -1942,9 +1943,9 @@ class ApiCondominioController(ApiController):
                 data['fkinvitacion'] = invi.id
 
             data['fechar'] = datetime.strptime(data['fechar'], '%d/%m/%Y %H:%M:%S')
-
-            objeto_mov = MovimientoManager(self.db).insert(data)
-            self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
+            print(str(data))
+            # objeto_mov = MovimientoManager(self.db).insert(data)
+            self.respond(response=6, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
