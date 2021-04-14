@@ -657,10 +657,14 @@ class MovimientoManager(SuperManager):
     def asignar_codigo(self, id, codigo):
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
 
-        x.codigo = codigo
+        if x:
 
-        self.db.merge(x)
-        self.db.commit()
+            x.codigo = codigo
+
+            self.db.merge(x)
+            self.db.commit()
+            print("codigo asignado: " + str(x.codigo))
+
 
         return x
 

@@ -171,7 +171,7 @@ class MovimientoController(CrudController):
                 response = json.loads(resp.text)
 
                 print(response)
-                # MovimientoManager(self.db).asignar_codigo(mov.id, response['response'])
+                MovimientoManager(self.db).asignar_codigo(mov.id, response['response'])
 
             except Exception as e:
                 print(e)
