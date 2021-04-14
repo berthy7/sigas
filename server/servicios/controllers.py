@@ -1945,7 +1945,7 @@ class ApiCondominioController(ApiController):
             data['fechar'] = datetime.strptime(data['fechar'], '%d/%m/%Y %H:%M:%S')
             print(str(data))
             objeto_mov = MovimientoManager(self.db).insert(data)
-            self.respond(response=6, success=True, message='Insertado correctamente.')
+            self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))
