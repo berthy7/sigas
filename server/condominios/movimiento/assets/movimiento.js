@@ -9,8 +9,6 @@ var ult_registro = 0;
 var data_lista_pendientes = [];
 
 
-
-
 $(document).ready(function () {
 
     auxiliar_method()
@@ -233,7 +231,6 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
-
 function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) {
         obj = JSON.stringify({
         'fechainicio': fechainicio,
@@ -381,7 +378,6 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
         cargar_tabla(data_lista)
     })
 }
-
 
 $('#fkinvitado').selectpicker({
     size: 10,
@@ -877,7 +873,7 @@ $('#fkinvitado').change(function () {
 
         $('#fkvehiculo').val('')
         $('#fkvehiculo').selectpicker('refresh')
-        $('#cantpasajeros').val('')
+        $('#cantpasajeros').val('1')
         $('#placa').val('')
         $('#tipo').val('')
         $('#tipo').selectpicker('refresh')
@@ -1218,7 +1214,7 @@ function limpiar_formulario() {
     $('#ci').val('')
     $('#expendido').val('')
     $('#expendido').selectpicker("refresh")
-    $('#cantpasajeros').val(0)
+    $('#cantpasajeros').val('1')
     $('#placa').val('')
     $('#tipo').val('')
     $('#tipo').selectpicker("refresh")
@@ -1275,7 +1271,7 @@ $('#new').click(function () {
     $('#placa').val('')
     $('#fktipo').val('')
     $('#fktipo').selectpicker("refresh")
-    $('#cantpasajeros').val('0')
+    $('#cantpasajeros').val('1')
     $('#fkcolor').val('')
     $('#fkcolor').selectpicker("refresh")
     $('#fkmarca').val('')
@@ -1319,7 +1315,14 @@ $('#new').click(function () {
     document.getElementById('switch_paselibre').checked=false
     document.getElementById('switch_multiple').checked=false
 
+    $('.div_visita').show()
     $('.div_vehiculo').show()
+
+        $('#expendido_conductor').val('')
+    $('#expendido_conductor').selectpicker("refresh")
+    
+    $('#fktipodocumento').val(1)
+    $('#fktipodocumento').selectpicker("refresh")
 
 
     verif_inputs('')

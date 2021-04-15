@@ -28,6 +28,7 @@
                 <table id="data_table" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
+                            <th class="order_by_th" data-name="names">Id</th>
                             <th class="order_by_th" data-name="names">Codigo</th>
                             <th class="order_by_th" data-name="names">Ci</th>
                             <th class="order_by_th" data-name="names">Nombre</th>
@@ -64,6 +65,7 @@
             {% set cont = 0 %}
             {% for c in residentes %}
                 data.push( [
+                    '{{ c.id }}',
                     '{{ c.codigo }}',
                     '{{ c.ci }}',
                     '{{ c.fullname }}',

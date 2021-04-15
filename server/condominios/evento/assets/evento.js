@@ -447,6 +447,7 @@ $('#insert').click(function () {
     if (notvalid===false) {
         objeto = JSON.stringify({
             'codigo': $('#codigo').val(),
+            'descripcion': $('#descripcion').val(),
             'fkresidente': $('#fkresidente').val(),
             'fktipoevento': $('#fktipoevento').val(),
             'fkdomicilio': $('#fkdomicilio').val(),
@@ -512,19 +513,15 @@ function editar(elemento){
             $('#integrante_div').empty()
 
             for (invi in self.invitaciones) {
-                id = self.invitaciones[invi].id
-                fkinvitado = self.invitaciones[invi].fkinvitado
-                nombre = self.invitaciones[invi].nombre
-                apellidop = self.invitaciones[invi].apellidop
-                apellidom = self.invitaciones[invi].apellidom
-                ci = self.invitaciones[invi].ci
-                append_input_integrante(id)
-                $('#id' + id).val(id)
-                $('#fkinvitado' + id).val(fkinvitado)
-                $('#nombre' + id).val(nombre)
-                $('#apellidop' + id).val(apellidop)
-                $('#apellidom' + id).val(apellidom)
-                $('#ci' + id).val(ci)
+
+                append_input_integrante(self.invitaciones[invi].id)
+                $('#id' + self.invitaciones[invi].id).val(self.invitaciones[invi].id)
+                $('#fkinvitado' + self.invitaciones[invi].id).val(self.invitaciones[invi].fkinvitado)
+                $('#nombre' + self.invitaciones[invi].id).val(self.invitaciones[invi].nombre)
+                $('#apellidop' + self.invitaciones[invi].id).val(self.invitaciones[invi].apellidop)
+                $('#apellidom' + self.invitaciones[invi].id).val(self.invitaciones[invi].apellidom)
+                $('#ci' + self.invitaciones[invi].id).val(self.invitaciones[invi].ci)
+                $('#codigo' + self.invitaciones[invi].id).val(self.invitaciones[invi].codigoautorizacion)
             }
 
             validationInputSelects("form")

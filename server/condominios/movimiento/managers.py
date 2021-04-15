@@ -143,12 +143,17 @@ class MovimientoManager(SuperManager):
 
     def obtener_destino(self,idMovimiento):
         mov = self.db.query(self.entity).filter(self.entity.id == idMovimiento).first()
+        if mov:
 
-        if mov.fkdomicilio:
-            return mov.domicilio
-        elif mov.fkareasocial:
-            return mov.areasocial
+            if mov.fkdomicilio:
+                return mov.domicilio
+            elif mov.fkareasocial:
+                return mov.areasocial
+            else:
+                return None
         else:
+            print("obtener destino mov= null")
+
             return None
 
     def get_all(self):
@@ -567,7 +572,6 @@ class MovimientoManager(SuperManager):
 
         diccionary['tipo'] = "Vehicular"
 
-
         # diccionary['fechai'] = fecha
 
         try:
@@ -582,13 +586,13 @@ class MovimientoManager(SuperManager):
 
         objeto = MovimientoManager(self.db).entity(**diccionary)
 
-        mov = self.db.query(Nropase).filter(Nropase.id == objeto.fknropase).filter(Nropase.situacion == "Ocupado").first()
+        nropase = self.db.query(Nropase).filter(Nropase.id == objeto.fknropase).filter(Nropase.situacion == "Ocupado").first()
 
-        if mov :
-            print("bloqueo de Registro duplicado ")
-            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador=mov.id)
+        if nropase :
+            print("bloqueo de Registro duplicado: tarjeta ocupada " + nropase.tipo+" "+nropase.numero )
+            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador="")
             super().insert(b)
-            return mov
+            return False
         else:
             a = super().insert(objeto)
             a.codigo = a.id
@@ -608,8 +612,12 @@ class MovimientoManager(SuperManager):
 
                 if accesos_invitacion['multiacceso'] is False:
                     if accesos_invitacion['multiple'] is False:
-                        if accesos_invitacion['paselibre'] is False:
-                            InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+                        #if accesos_invitacion['paselibre'] is False:
+                         InvitacionManager(self.db).delete(a.fkinvitacion, False, objeto.user, objeto.ip)
+
+                principal = self.db.query(Principal).first()
+                if principal.estado:
+                    NotificacionManager(self.db).registrar_notificacion_onesignal(a,objeto)
 
 
             return a
@@ -649,10 +657,14 @@ class MovimientoManager(SuperManager):
     def asignar_codigo(self, id, codigo):
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
 
-        x.codigo = codigo
+        if x:
 
-        self.db.merge(x)
-        self.db.commit()
+            x.codigo = codigo
+
+            self.db.merge(x)
+            self.db.commit()
+            print("codigo asignado: " + str(x.codigo))
+
 
         return x
 
@@ -689,6 +701,7 @@ class MovimientoManager(SuperManager):
         fecha = fecha_zona
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
+        print("FIltrar por fecha")
 
 
         if usuario.sigas:
