@@ -909,14 +909,9 @@ class ApiCondominioController(ApiController):
                 arraT['objeto'] = CondominioManager(self.db).obtener_residentes(usuario.fkcondominio)
                 for item in arraT['objeto']:
                     obj_dict = item.get_dict()
-
                     obj_dict['foto'] = None
                     obj_dict['usuaio'] =[]
-
                     resp.append(obj_dict)
-                    # resp.append(dict(id=item.id, fullname=item.fullname, ci=item.ci, expendido=item.expendido,
-                    #                  domicilioId=item.domicilios[0].domicilio.id,
-                    #                  domicilio=item.domicilios[0].domicilio.nombre))
                 self.db.close()
 
                 self.respond(response=resp, success=True, message="Residentes recuperados correctamente.")
@@ -1042,17 +1037,6 @@ class ApiCondominioController(ApiController):
                 if principal.estado:
                     event.codigo = event.id
                     data['codigo'] = event.id
-
-
-                    lista_detalle = list()
-
-                    for list_det in event.invitaciones:
-                        list_det.evento = None
-                        list_det.tipopase = None
-                        lista_detalle.append(list_det.get_dict())
-
-
-                    data['invitaciones'] = lista_detalle
                     self.db.merge(event)
                     self.db.commit()
                     self.funcion_sincronizar(u,data,"sincronizar_evento")
@@ -1174,16 +1158,8 @@ class ApiCondominioController(ApiController):
                     mov.codigo = mov.id
                     data['codigo'] = mov.id
                     data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
-
-                    accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(data['fkinvitacion'])
-
-
-                    if data['fkinvitacion'] != "":
-
-                        if accesos_invitacion['paselibre'] is False:
-
-                            data['nombre_marca'] = mov.vehiculo.marca.nombre
-                            data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+                    data['nombre_marca'] = mov.vehiculo.marca.nombre
+                    data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
                     if mov.nropase:
                         data['tarjeta'] = mov.nropase.tarjeta
@@ -1622,7 +1598,7 @@ class ApiCondominioController(ApiController):
         self.set_session()
         data = json.loads(self.request.body.decode('utf-8'))
         x = ast.literal_eval(data)
-        # print("ws marcaciones dispositivo " + str(x['iddispositivo']))
+        print("ws marcaciones dispositivo " + str(x['iddispositivo']))
 
         RegistrosManager(self.db).insertRegistros(x)
         self.respond(success=True, message='Insertado correctamente.')
@@ -1871,29 +1847,18 @@ class ApiCondominioController(ApiController):
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
             data['user'] = u.id
+
+
             data['fkvehiculo'] =  ""
             data['fkinvitado'] = ""
 
-            if data['nombre_modelo'] != "":
-                print("nombre_marca: "+str(data['nombre_marca']))
 
-                marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
-                print("marca: " + str(marca))
+            print("nombre_marca: "+str(data['nombre_marca']))
 
-                data['fkmarca'] = marca.id
-            else:
-                data['fkmodelo'] = None
+            marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
+            print("marca: " + str(marca))
 
-
-            if data['nombre_modelo'] != "":
-
-                print("modelo: " + str(data['nombre_modelo']))
-                modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
-                print("modelo: " + str(modelo))
-                data['fkmodelo'] = modelo.id if modelo else modelo
-            else:
-                data['fkmodelo'] = None
-
+            data['fkmarca'] = marca.id
 
             if data['codigoautorizacion'] != "":
 
@@ -1915,6 +1880,16 @@ class ApiCondominioController(ApiController):
                 data['fknropase'] = tarjeta.id
             else:
                 data['fknropase'] = tarjeta
+
+
+            if data['nombre_modelo'] != "":
+
+                print("modelo: " + str(data['nombre_modelo']))
+                modelo = ModeloManager(self.db).obtener_o_crear(data['nombre_modelo'], data['fkmarca'])
+                print("modelo: " + str(modelo))
+                data['fkmodelo'] = modelo.id if modelo else modelo
+            else:
+                data['fkmodelo'] = None
 
 
             if data['fkresidente'] != "":
@@ -1943,7 +1918,7 @@ class ApiCondominioController(ApiController):
                 data['fkinvitacion'] = invi.id
 
             data['fechar'] = datetime.strptime(data['fechar'], '%d/%m/%Y %H:%M:%S')
-            print(str(data))
+
             objeto_mov = MovimientoManager(self.db).insert(data)
             self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
         except Exception as e:
@@ -2023,8 +1998,8 @@ class ApiCondominioController(ApiController):
             data = json.loads(self.request.body.decode('utf-8'))
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            # print(str(data))
-            # print(str(usuario))
+            print(str(data))
+            print(str(usuario))
 
             mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
 
@@ -2036,7 +2011,7 @@ class ApiCondominioController(ApiController):
                 MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
                 self.respond(response=None, success=True, message='Salida movimiento.')
             else:
-                self.respond(response=None, success=True, message=' No Sincronizo Salida movimiento.')
+                self.respond(response=None, success=True, message='No Sincronizo Salida movimiento.')
 
         except Exception as e:
             print(e)

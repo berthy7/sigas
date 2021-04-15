@@ -9,7 +9,6 @@ from ..marca.managers import *
 from ..modelo.managers import *
 from ..areasocial.managers import *
 from ..nropase.managers import *
-from threading import Thread
 
 import os.path
 import uuid
@@ -69,16 +68,6 @@ class MovimientoController(CrudController):
         print("ingreso Vehicular web nombre: " + str(data['nombre']))
         mov = MovimientoManager(self.db).insert(data)
 
-
-
-        if mov:
-            t = Thread(target=self.hilo_sincronizar, args=(mov, data,))
-            t.start()
-
-            self.respond(success=True, message='Insertado correctamente.')
-
-    def hilo_sincronizar(self, mov, data):
-        print("hilo sincronizar")
         destino = MovimientoManager(self.db).obtener_destino(mov.id)
 
         principal = self.db.query(Principal).first()
@@ -125,20 +114,8 @@ class MovimientoController(CrudController):
 
         else:
             data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
-
-            if mov.fkinvitacion and mov.invitacion.evento.paselibre:
-                print("registro con pase libre")
-                data['nombre_marca'] = ""
-                data['nombre_modelo'] = ""
-
-            else:
-
-                data['nombre_marca'] = mov.vehiculo.marca.nombre if mov.vehiculo.fkmarca else ""
-                data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
-
-
-            print(data['nombre_marca'])
-            print(data['nombre_modelo'])
+            data['nombre_marca'] = mov.vehiculo.marca.nombre
+            data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
 
             if mov.nropase:
                 data['tarjeta'] = mov.nropase.tarjeta
@@ -171,10 +148,12 @@ class MovimientoController(CrudController):
                 response = json.loads(resp.text)
 
                 print(response)
-                MovimientoManager(self.db).asignar_codigo(mov.id, response['response'])
+                MovimientoManager(self.db).asignar_codigo(mov.id,response['response'])
 
             except Exception as e:
                 print(e)
+
+        self.respond(success=True, message='Insertado correctamente.')
 
     def update(self):
         self.set_session()
@@ -202,27 +181,11 @@ class MovimientoController(CrudController):
 
         resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
 
-        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
-        t.start()
-
-        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
-
-        print("respuesta filtro")
-
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
-                     message='actualizado correctamente.')
-
-    def hilo_sincronizar_salida(self, diccionary):
-        print("hilo_sincronizar_salida")
-
-        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
-
         principal = self.db.query(Principal).first()
         if principal.estado:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = diccionary['id']
+            # diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -238,6 +201,7 @@ class MovimientoController(CrudController):
 
                 headers = {'Content-Type': 'application/json'}
 
+
                 cadena = json.dumps(diccionary)
                 body = cadena
                 resp = requests.post(url, data=body, headers=headers, verify=False)
@@ -248,14 +212,14 @@ class MovimientoController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = resp.codigo
-            # destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
-            #
-            # if destino:
-            #     condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
-            #
-            # else:
-            #     condominio = None
+            diccionary['id'] = resp.codigo
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
+
+            if destino:
+                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+            else:
+                condominio = None
 
             diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
@@ -273,6 +237,12 @@ class MovimientoController(CrudController):
                 print(response)
             except Exception as e:
                 print(e)
+
+        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
+
+        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+                     message='actualizado correctamente.')
 
     def actualizar_tabla(self):
         self.set_session()
@@ -320,7 +290,7 @@ class MovimientoController(CrudController):
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         ult_registro = data['ult_registro']
-        # print(data['data_lista_pendientes'])
+        print(data['data_lista_pendientes'])
         # indicted_object = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)

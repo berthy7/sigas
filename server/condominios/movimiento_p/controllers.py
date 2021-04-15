@@ -11,7 +11,6 @@ from ..nropase.managers import *
 from ..movimiento.managers import *
 from ..condominio.managers import *
 from onesignal_sdk.client import Client
-from threading import Thread
 
 
 
@@ -69,14 +68,8 @@ class Movimiento_pController(CrudController):
         print("ingreso Peatonal web nombre: " + str(data['nombre']))
         mov = Movimiento_pManager(self.db).insert(data)
 
-        t = Thread(target=self.hilo_sincronizar, args=(mov,data,))
-        t.start()
-
-        self.respond(success=True, message='Insertado correctamente.')
-
-    def hilo_sincronizar(self,mov,data):
-        print("hilo sincronizar")
         destino = MovimientoManager(self.db).obtener_destino(mov.id)
+
         principal = self.db.query(Principal).first()
         if principal.estado:
 
@@ -139,7 +132,7 @@ class Movimiento_pController(CrudController):
             data['fkinvitado'] = ""
 
             try:
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_p"
+                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"
 
                 headers = {'Content-Type': 'application/json'}
 
@@ -153,7 +146,7 @@ class Movimiento_pController(CrudController):
 
             except Exception as e:
                 print(e)
-
+        self.respond(success=True, message='Insertado correctamente.')
 
     def update(self):
         self.set_session()
@@ -175,29 +168,17 @@ class Movimiento_pController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
 
+        id = diccionary['id']
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
-        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
-        t.start()
-
-
-
-        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
-
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
-                     message='actualizado correctamente.')
-
-    def hilo_sincronizar_salida(self, diccionary):
-        print("hilo_sincronizar_salida")
-        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
+        resp = MovimientoManager(self.db).salida(id, self.get_user_id(), self.request.remote_ip)
 
         principal = self.db.query(Principal).first()
         if principal.estado:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = diccionary['id']
+            # diccionary['idmovimiento'] = diccionary['id']
             destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
             if destino:
@@ -223,14 +204,14 @@ class Movimiento_pController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = resp.codigo
-            destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
+            diccionary['id'] = resp.codigo
+            destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
 
-            # if destino:
-            #     condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
-            #
-            # else:
-            #     condominio = None
+            if destino:
+                condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+
+            else:
+                condominio = None
 
             diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
@@ -248,6 +229,12 @@ class Movimiento_pController(CrudController):
                 print(response)
             except Exception as e:
                 print(e)
+
+        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
+
+        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+                     message='actualizado correctamente.')
 
     def actualizar(self):
         self.set_session()

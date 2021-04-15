@@ -857,10 +857,6 @@ $('#new').click(function () {
     document.getElementById('switch_multiacceso').checked=false
     document.getElementById('switch_paselibre').checked=false
     document.getElementById('switch_multiple').checked=false
-    
-    $('.div_visita').show()
-    $('#fktipodocumento').val(1)
-    $('#fktipodocumento').selectpicker("refresh")
 
     verif_inputs('')
     validationInputSelects("form")
