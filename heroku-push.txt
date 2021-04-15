@@ -1,12 +1,22 @@
 E:
-cd C:\Proyectos\sigas
-
+cd C:\Proyectos\proyecto_prueba_
 heroku login
 git init
 
-heroku git:remote -a sigas-web
 heroku git:remote -a pruebass-web
 
 git add .
 git commit -am "actualizacion"
 git push heroku master
+
+
+heroku ps -a pruebass-web
+
+calculo de horas de trabajo que va en la semana
+
+
+mas horas de canso, y tambien tomar en cuenta menos horas de trabajo
+
+menos horas de trabajo acumualdo , y si ya tiene descanso
+
+
