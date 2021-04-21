@@ -52,7 +52,7 @@
 
                 data.push( [
                     '{{ c.id }}',
-                    '{% if c.fkusuario %}------{%else%}------{%end%}',
+                    '{% if c.fkusuario %}{{ c.usuario.fullname }} {%else%}------{%end%}',
                     '{{ c.accion }}',
                     '{{ c.ip }}',
                     '{{ c.tabla }}',

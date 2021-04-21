@@ -69,8 +69,6 @@ class MovimientoController(CrudController):
         print("ingreso Vehicular web nombre: " + str(data['nombre']))
         mov = MovimientoManager(self.db).insert(data)
 
-
-
         if mov:
             t = Thread(target=self.hilo_sincronizar, args=(mov, data,))
             t.start()
