@@ -22,7 +22,7 @@ class BitacoraManager(SuperManager):
 
 
     def list_all(self):
-        x = dict(objects=self.db.query(Bitacora).order_by(Bitacora.id.asc()))
+        x = dict(objects=self.db.query(Bitacora).order_by(Bitacora.id.asc()).all())
         return x
 
     def fecha_actual(self):
