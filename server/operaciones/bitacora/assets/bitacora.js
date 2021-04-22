@@ -2,7 +2,25 @@ main_route = '/bitacora'
 
 $(document).ready( function () {
 
+    var fechahoy = new Date();
+    var hoy = fechahoy.getDate()+"/"+(fechahoy.getMonth()+1) +"/"+fechahoy.getFullYear()
+
+    document.getElementById("fechai").value=hoy
+    document.getElementById("fechaf").value=hoy
+
+    $('#idusuario').val(0)
+    $('#idusuario').selectpicker('refresh')
+
 });
+
+$('#idusuario').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+
 
 function cargar_tabla(data){
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
@@ -53,3 +71,67 @@ function cargar_tabla(data){
 
 
 }
+
+function actualizar_tabla(response){
+
+    var data = [];
+    var usuario;
+
+
+    for (var i = 0; i < Object.keys(response.response).length; i++) {
+
+            console.log(response['response'][i])
+
+            if(response['response'][i].fkusuario != "None"){
+                usuario = response['response'][i].usuario.fullname
+            }else{
+                usuario = '-----'
+            }
+
+            data.push( [
+               response['response'][i].id,
+                usuario,
+                response['response'][i].accion,
+                response['response'][i].ip,
+                response['response'][i].tabla,
+                response['response'][i].identificador,
+                response['response'][i].fecha
+
+            ]);
+    }
+
+    cargar_tabla(data)
+
+}
+
+$('#filtrar').click(function () {
+    $("#rgm-loader").show();
+    //document.getElementById("filtrar").disabled = true
+    obj = JSON.stringify({
+        'fechainicio': $('#fechai').val(),
+        'fechafin': $('#fechaf').val(),
+        'idusuario': $('#idusuario').val(),
+        '_xsrf': getCookie("_xsrf")
+    })
+    ruta = "bitacora_filtrar";
+    $.ajax({
+        method: "POST",
+        url: ruta,
+        data: {_xsrf: getCookie("_xsrf"), object: obj},
+        async: true,
+        beforeSend: function () {
+           $("#rproc-loader").fadeIn(800);
+           $("#new").hide();
+        },
+        success: function () {
+           $("#rproc-loader").fadeOut(800);
+           $("#new").show();
+        }
+        
+    }).done(function (response) {
+
+        response = JSON.parse(response)
+        actualizar_tabla(response)
+
+    })
+});

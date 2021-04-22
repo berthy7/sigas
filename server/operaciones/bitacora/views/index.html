@@ -9,7 +9,60 @@
     <div class="header"><h2 class="title-rg-own">BITÁCORA</h2></div>
 
     <div class="body">
+        <div class="row clearfix">
+            <div class="col-sm-2">
+                <label class="form-label">Fecha Inicio</label>
+               <div class="form-group">
+                    <div id="fechaDIVinicio" class="form-line success">
+
+                        <input id="fechai" type="text" class="form-control datei">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label class="form-label">Fecha Fin</label>
+                    <div id="fechaDIVfin" class="form-line success">
+
+                        <input id="fechaf" type="text" class="form-control datef">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                    <button id="filtrar" type="button" class="btn bg-indigo waves-effect white-own">
+                    <i class="material-icons">youtube_searched_for</i>
+                    </button>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-sm-4">
+               <label>Usuarios</label>
+                 <select id="idusuario" class="form-control">
+                     <option value="0">TODOS</option>
+                    {% for i in usuarios %}
+                        <option value="{{i.id}}">{{i.fullname}}</option>
+                    {% end %}
+                 </select>
+                </br>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-sm-10">
+                <div id="rproc-loader" class="loader-wrapper" style="display: none">
+                    <div class="loader loader-own">
+                        <div class="preloader preloader-own">
+                            <div class="spinner-layer pl-teal">
+                                <div class="circle-clipper left"><div class="circle"></div></div>
+                                <div class="circle-clipper right"><div class="circle"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center inf-own">Cargando Registros...</p>
+                </div>
+            </div>
+        </div>
         <div class="row">
+
             <div class="body table-responsive">
                 <table id="data_table" class="table table-bordered table-striped table-hover">
                     <thead>

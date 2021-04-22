@@ -605,6 +605,9 @@ class UsuarioManager(SuperManager):
     def listar_todo(self, id):
         return self.db.query(Usuario).filter(Usuario.enabled == True).filter(Usuario.id == id)
 
+    def listar_todos(self):
+        return self.db.query(Usuario).all()
+
     def correo_creacion_usuarios(self,usuario,password):
         correos = []
         server = self.db.query(ServidorCorreo).filter(ServidorCorreo.estado == True).filter(ServidorCorreo.id == 1).first()
