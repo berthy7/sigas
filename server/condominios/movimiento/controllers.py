@@ -155,8 +155,18 @@ class MovimientoController(CrudController):
                 data['codigo_destino'] = ""
                 condominio = None
 
+
+            if mov.fkresidente:
+                residente = ResidenteManager(self.db).obtener_x_id(mov.fkresidente)
+                data['fkresidente'] = residente.codigo
+            else:
+
+                data['fkresidente'] = None
+
             data['fkinvitado'] = ""
             data['fkconductor'] = ""
+
+
 
             try:
                 url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"

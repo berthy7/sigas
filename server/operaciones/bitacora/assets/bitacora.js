@@ -80,8 +80,6 @@ function actualizar_tabla(response){
 
     for (var i = 0; i < Object.keys(response.response).length; i++) {
 
-            console.log(response['response'][i])
-
             if(response['response'][i].fkusuario != "None"){
                 usuario = response['response'][i].usuario.fullname
             }else{

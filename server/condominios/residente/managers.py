@@ -22,6 +22,10 @@ class ResidenteManager(SuperManager):
     def get_all(self):
         return self.db.query(self.entity)
 
+
+    def obtener_x_id(self, id):
+        return self.db.query(self.entity).filter(self.entity.id == id).first()
+
     def obtener_x_codigo(self, codigo):
         return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
 
