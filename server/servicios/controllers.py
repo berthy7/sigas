@@ -1043,6 +1043,9 @@ class ApiCondominioController(ApiController):
                     event.codigo = event.id
                     data['codigo'] = event.id
 
+                    self.db.merge(event)
+                    self.db.commit()
+
 
                     lista_detalle = list()
 
@@ -1053,8 +1056,7 @@ class ApiCondominioController(ApiController):
 
 
                     data['invitaciones'] = lista_detalle
-                    self.db.merge(event)
-                    self.db.commit()
+
                     self.funcion_sincronizar(u,data,"sincronizar_evento")
 
                 self.respond(success=True, message='Insertado correctamente.')

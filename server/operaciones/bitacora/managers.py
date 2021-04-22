@@ -16,8 +16,13 @@ class BitacoraManager(SuperManager):
     def __init__(self, db):
         super().__init__(Bitacora, db)
 
+    # def list_all(self):
+    #     x = dict(objects=self.db.query(Bitacora).order_by(Bitacora.id.asc()).limit(5000).all())
+    #     return x
+
+
     def list_all(self):
-        x = dict(objects=self.db.query(Bitacora).order_by(Bitacora.id.asc()).limit(5000).all())
+        x = dict(objects=self.db.query(Bitacora).order_by(Bitacora.id.asc()))
         return x
 
     def fecha_actual(self):
