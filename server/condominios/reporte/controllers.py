@@ -18,6 +18,7 @@ class ReporteController(CrudController):
     routes = {
         '/reporte': {'GET': 'index', 'POST': 'table'},
         '/reporte_general': {'POST': 'reporte_general_excel'},
+        '/reporte_generar': {'POST': 'reporte_generar'},
         '/reporte_vehicular_visita': {'POST': 'vehicular_visita'},
         '/reporte_peatonal_visita': {'POST': 'peatonal_visita'},
         '/reporte_vehicular_residente': {'PUT': 'vehicular_residente'},
@@ -35,15 +36,15 @@ class ReporteController(CrudController):
 
         return aux
 
-    def vehicular_visita(self):
-        self.set_session()
-        diccionary = json.loads(self.get_argument("object"))
-
-        cname = self.manager(self.db).reporte_movimientos_vehicular_visita(diccionary)
-
-
-        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
-        self.db.close()
+    # def vehicular_visita(self):
+    #     self.set_session()
+    #     diccionary = json.loads(self.get_argument("object"))
+    #
+    #     cname = self.manager(self.db).reporte_movimientos_vehicular_visita(diccionary)
+    #
+    #
+    #     self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
+    #     self.db.close()
 
     def peatonal_visita(self):
         self.set_session()
@@ -98,7 +99,7 @@ class ReporteController(CrudController):
     #
     #
     #     self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
-    #     self.render('attendance/views/tabla_vehicular_visita+.html',report=self.manager(self.db).delay(diccionary))
+    #     self.render('attendance/views/tabla_vehicular_visita.html',report=self.manager(self.db).delay(diccionary))
     #     self.db.close()
 
     # def reporte_general(self):
@@ -149,20 +150,32 @@ class ReporteController(CrudController):
     #
     #     # self.respond(indicted_object, message='Operacion exitosa!')
     #     # self.render(self.html_table, **indicted_object)
-    #     self.render('condominios/reporte/views/tabla_vehicular_visita.html', report=self.manager(self.db).delay(diccionary))
+    #     self.render('condominios/reporte/views/tabla_vehicular_visita-.html', report=self.manager(self.db).delay(diccionary))
     #     self.db.close()
 
 
-    def filtrar(self):
-        self.set_session()
-        data = json.loads(self.get_argument("object"))
-        us = self.get_user()
-        ins_manager = self.manager(self.db)
-        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
-        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
-        indicted_object = ins_manager.filtrar(fechainicio, fechafin,us)
-        self.respond(indicted_object, message='Operacion exitosa!')
-        self.db.close()
+    # def filtrar(self):
+    #     self.set_session()
+    #     data = json.loads(self.get_argument("object"))
+    #     us = self.get_user()
+    #     ins_manager = self.manager(self.db)
+    #     fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
+    #     fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
+    #     indicted_object = ins_manager.filtrar(fechainicio, fechafin,us)
+    #     self.respond(indicted_object, message='Operacion exitosa!')
+    #     self.db.close()
+
+    # def vehicular_visita(self):
+    #     self.set_session()
+    #     ins_manager = self.manager(self.db)
+    #     diccionary = json.loads(self.get_argument("object"))
+    #     # indicted_object = ins_manager.obtain(diccionary['id'])
+    #     arraT = ins_manager.get_page(1, 10, None, None, True)
+    #     arraT['datos'] = ins_manager.list_all_reporte()
+    #     self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
+    #     self.db.close()
+
+
 
     # def peatonal_visita(self):
     #     self.set_session()
@@ -173,6 +186,29 @@ class ReporteController(CrudController):
     #     arraT['datos'] = Movimiento_pManager(self.db).reporte_movimientos_peatonal(diccionary)
     #     self.respond([objeto_regreso.get_dict() for objeto_regreso in arraT['datos']])
     #     self.db.close()
+
+    def reporte_generar(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+
+        ins_manager = self.manager(self.db)
+        arraT = BitacoraManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] = ins_manager.reporte_generar(data)
+
+        self.respond(response='', success=True,
+                     message='actualizado correctamente.')
+
+    def vehicular_visita(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+
+        ins_manager = self.manager(self.db)
+        arraT = BitacoraManager(self.db).get_page(1, 10, None, None, True)
+        arraT['datos'] = ins_manager.reporte_vehicular_visita(data)
+
+        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+                     message='actualizado correctamente.')
+
 
     def vehicular_residente(self):
         self.set_session()

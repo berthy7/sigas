@@ -15,7 +15,8 @@ import os.path
 import uuid
 import json
 
-
+global urlServidor
+urlServidor = 'http://pruebass-web.herokuapp.com/api/v1/'
 class MovimientoController(CrudController):
 
     manager = MovimientoManager
@@ -73,7 +74,7 @@ class MovimientoController(CrudController):
             t = Thread(target=self.hilo_sincronizar, args=(mov, data,))
             t.start()
 
-            self.respond(success=True, message='Insertado correctamente.')
+        self.respond(success=True, message='Insertado correctamente.')
 
     def hilo_sincronizar(self, mov, data):
         print("hilo sincronizar")
@@ -169,7 +170,7 @@ class MovimientoController(CrudController):
 
 
             try:
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento"
+                url = urlServidor+"sincronizar_movimiento"
 
                 headers = {'Content-Type': 'application/json'}
 
@@ -210,7 +211,7 @@ class MovimientoController(CrudController):
 
         resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
 
-        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
+        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,resp,))
         t.start()
 
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
@@ -221,10 +222,8 @@ class MovimientoController(CrudController):
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='actualizado correctamente.')
 
-    def hilo_sincronizar_salida(self, diccionary):
+    def hilo_sincronizar_salida(self, diccionary,respMov):
         print("hilo_sincronizar_salida")
-
-        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
 
         principal = self.db.query(Principal).first()
         if principal.estado:
@@ -239,7 +238,7 @@ class MovimientoController(CrudController):
             else:
                 condominio = None
 
-            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+            diccionary['fechaf'] = respMov.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
             if condominio.ip_publica != "":
                 url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
@@ -256,7 +255,7 @@ class MovimientoController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = resp.codigo
+            diccionary['idmovimiento'] = respMov.codigo
             # destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
             #
             # if destino:
@@ -265,11 +264,11 @@ class MovimientoController(CrudController):
             # else:
             #     condominio = None
 
-            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+            diccionary['fechaf'] = respMov.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
             try:
 
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_salida"
+                url = urlServidor+"sincronizar_movimiento_salida"
 
                 headers = {'Content-Type': 'application/json'}
 

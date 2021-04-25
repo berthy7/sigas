@@ -87,7 +87,7 @@ function actualizar_tabla(response){
             }
 
             data.push( [
-               response['response'][i].id,
+                response['response'][i].id,
                 usuario,
                 response['response'][i].accion,
                 response['response'][i].ip,

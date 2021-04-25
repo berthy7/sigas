@@ -99,6 +99,36 @@ $('#tipo_reporte').change(function () {
 });
 
 
+$('#filtrar2').click(function () {
+    console.log("filtrar2")
+    obj = JSON.stringify({
+        'fechainicio': $('#fechainicio').val(),
+        'fechafin': $('#fechafin').val()
+    })
+    
+        ruta = 'reporte_generar';
+        $.ajax({
+            method: "POST",
+            url: ruta,
+            data: {_xsrf: getCookie("_xsrf"), object: obj},
+            async: true,
+    
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+            }
+    
+        }).done(function (response) {
+
+
+        })
+
+})
+
 $('#generar').click(function () {
 
     obj = JSON.stringify({
@@ -129,30 +159,24 @@ $('#generar').click(function () {
     
     
         }).done(function (response) {
-            // response = JSON.parse(response)
-            
-            
-            console.log("datos en interfaz")
+            response = JSON.parse(response)
+
+            console.log("datos en interfaz" + response)
             
             if ($('#tipo_reporte').val() == "vehicular_visita"){
                 preparar_datos_vehicular_visita(response)
-    
             }
             else if ($('#tipo_reporte').val() == "peatonal_visita"){
                 preparar_datos_peatonal_visita(response)
-    
             }
             else if ($('#tipo_reporte').val() == "vehicular_residente"){
                 preparar_datos_vehicular_residente(response)
-    
             }
             else if ($('#tipo_reporte').val() == "peatonal_residente"){
                 preparar_datos_peatonal_residente(response)
-    
             }
             else if ($('#tipo_reporte').val() == "singuardia_visita"){
                 preparar_datos_singuardia_visita(response)
-    
             }
             
             

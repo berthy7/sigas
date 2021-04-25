@@ -18,7 +18,8 @@ from threading import Thread
 import os.path
 import uuid
 import json
-
+global urlServidor
+urlServidor = 'http://pruebass-web.herokuapp.com/api/v1/'
 
 class Movimiento_pController(CrudController):
 
@@ -139,7 +140,7 @@ class Movimiento_pController(CrudController):
             data['fkinvitado'] = ""
 
             try:
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_p"
+                url = urlServidor+"sincronizar_movimiento_p"
 
                 headers = {'Content-Type': 'application/json'}
 
@@ -178,7 +179,9 @@ class Movimiento_pController(CrudController):
         fechainicio = diccionary['fechai']
         fechafin = diccionary['fechaf']
 
-        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,))
+        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
+
+        t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,resp,))
         t.start()
 
 
@@ -189,9 +192,9 @@ class Movimiento_pController(CrudController):
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
                      message='actualizado correctamente.')
 
-    def hilo_sincronizar_salida(self, diccionary):
+    def hilo_sincronizar_salida(self, diccionary,respMov):
         print("hilo_sincronizar_salida")
-        resp = MovimientoManager(self.db).salida(diccionary['id'], self.get_user_id(), self.request.remote_ip)
+
 
         principal = self.db.query(Principal).first()
         if principal.estado:
@@ -206,7 +209,7 @@ class Movimiento_pController(CrudController):
             else:
                 condominio = None
 
-            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+            diccionary['fechaf'] = respMov.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
             if condominio.ip_publica != "":
                 url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_movimiento_salida"
@@ -223,7 +226,7 @@ class Movimiento_pController(CrudController):
         else:
             diccionary['user'] = self.get_user_id()
             diccionary['ip'] = self.request.remote_ip
-            diccionary['idmovimiento'] = resp.codigo
+            diccionary['idmovimiento'] = respMov.codigo
             destino = MovimientoManager(self.db).obtener_destino(diccionary['idmovimiento'])
 
             # if destino:
@@ -232,11 +235,11 @@ class Movimiento_pController(CrudController):
             # else:
             #     condominio = None
 
-            diccionary['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+            diccionary['fechaf'] = respMov.fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
             try:
 
-                url = "http://sigas-web.herokuapp.com/api/v1/sincronizar_movimiento_salida"
+                url = urlServidor+"sincronizar_movimiento_salida"
 
                 headers = {'Content-Type': 'application/json'}
 

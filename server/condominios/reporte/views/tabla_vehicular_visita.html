@@ -1,31 +1,48 @@
-<table id="data_vehicular_visita" class="table table-bordered table-striped table-hover">
-    <thead>
-        <tr>
-            <th class="order_by_th" data-name="names">Id</th>
-            <th class="order_by_th" data-name="names">Fecha Ingreso</th>
-            <th class="order_by_th" data-name="names">Fecha Salida</th>
-            <th class="order_by_th" data-name="names">Tipo documento</th>
-            <th class="order_by_th" data-name="names">Nº documento</th>
-            <th class="order_by_th" data-name="names">Nombre Invitado</th>
-            <th class="order_by_th" data-name="names">Nombre Conductor</th>
-            <th class="order_by_th" data-name="names">Cant. Pasajeros</th>
-            <th class="order_by_th" data-name="names">Placa</th>
-            <th class="order_by_th" data-name="names">Tipo vehiculo</th>
-            <th class="order_by_th" data-name="names">Marca</th>
-            <th class="order_by_th" data-name="names">Modelo</th>
-            <th class="order_by_th" data-name="names">Color</th>
-            <th class="order_by_th" data-name="names">Destino</th>
-            <th class="order_by_th" data-name="names">Autorizado por</th>
-            <th class="order_by_th" data-name="names">Nro Pase</th>
-            <th class="order_by_th" data-name="names">Tipo de pase</th>
-            <th class="order_by_th" data-name="names">Observacion</th>
-        </tr>
-    </thead>
+{%extends ../../../common/views/layout.html%}
 
-</table>
+{%block style%}
+ {% set user = usuario %}
+    <link rel="stylesheet" href="condominios/reporte/assets/reporte.css">
+{%end%}
 
+{%block content%}
+    <div class="header"><h2 class="title-rg-own">Reporte</h2></div>
 
+    <div class="body">
+        <div class="row">
+            <div class="body table-responsive">
+                <table id="data_table" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="order_by_th" data-name="names">ID </th>
+                            <th class="order_by_th" data-name="phone">Usuario </th>
+                            <th class="order_by_th" data-name="phone">Acción </th>
+                            <th class="order_by_th" data-name="phone">Dirección IP </th>
+                            <th class="order_by_th" data-name="phone">Tabla </th>
+                            <th class="order_by_th" data-name="phone">Identificador </th>
+                            <th class="order_by_th" data-name="phone">Fecha </th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+{%end%}
+
+{% block script %}
+    <script src="resources/plugins/momentjs/locale/es.js"></script>
+    <script src="resources/js/functions.js"></script>
+    <script src="condominios/reporte/assets/vehicular_visita.js"></script>
+
+    <script src="resources/js/dataTables.buttons.js"></script>
+    <script src="resources/js/pdfmake.js"></script>
+    <script src="resources/js/vfs_fonts.js"></script>
+    <script src="resources/js/buttons.bootstrap.js"></script>
+    <script src="resources/js/buttons.html5.js"></script>
+    <script src="resources/js/buttons.print.js"></script>
+    <script src="resources/js/buttons.colVis.js"></script>
 <script>
 
-
    </script>
+{% end %}

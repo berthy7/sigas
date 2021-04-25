@@ -40,6 +40,20 @@ class Movimiento(Serializable, Base):
 
     estado = Column(Boolean, default=True)
 
+    descripcion_fechai = Column(String(50), nullable=True,default=' ')
+    descripcion_fechaf = Column(String(50), nullable=True, default=' ')
+    descripcion_documento = Column(String(20), nullable=True, default=' ')
+    descripcion_ci_invitado = Column(String(50), nullable=True, default=' ')
+    descripcion_nombre_invitado = Column(String(100), nullable=True, default=' ')
+    descripcion_nombre_conductor = Column(String(100), nullable=True, default=' ')
+    descripcion_placa = Column(String(50), nullable=True, default=' ')
+    descripcion_tipo = Column(String(50), nullable=True, default=' ')
+    descripcion_marca = Column(String(50), nullable=True, default=' ')
+    descripcion_modelo = Column(String(50), nullable=True, default=' ')
+    descripcion_color = Column(String(20), nullable=True, default=' ')
+    descripcion_destino = Column(String(50), nullable=True, default=' ')
+    descripcion_nropase = Column(String(50), nullable=True, default=' ')
+
     invitacion = relationship('Invitacion')
     invitado = relationship('Invitado', foreign_keys=[fkinvitado])
     conductor = relationship('Invitado', foreign_keys=[fkconductor])

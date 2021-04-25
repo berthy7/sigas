@@ -155,10 +155,10 @@
                         </br>
                         <div class="row clearfix">
                             <div class="col-sm-6">
-                               <label>Domicilios</label>
+                               <label>Domicilios  |  Nro. Interno</label>
                                  <select id="fkdomicilio" class="form-control">
                                     {% for domi in domicilios %}
-                                        <option value="{{domi.id}}">{{domi.nombre}}</option>
+                                        <option value="{{domi.id}}">{{domi.nombre}}  |  {{domi.interno}}</option>
                                     {% end %}
                                  </select>
                                 </br>

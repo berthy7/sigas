@@ -33,15 +33,10 @@ class BitacoraManager(SuperManager):
         return dict(objects=self.db.query(Bitacora).filter(self.entity.fecha.cast(Date) == fechahoy).order_by(Bitacora.id.asc()))
 
     def filtrar(self, fechainicio, fechafin, idusuario):
-        # usuario = UsuarioManager(self.db).get_by_pass(usuario)
 
         if idusuario == "0":
-
-            print("Filtrar por fecha todos")
-
             return self.db.query(Bitacora).filter(func.date(self.entity.fecha).between(fechainicio, fechafin)).order_by(Bitacora.id.asc())
         else:
-            print("Filtrar por fecha usuario")
             return self.db.query(Bitacora).filter(self.entity.fkusuario == idusuario).filter(func.date(self.entity.fecha).between(fechainicio, fechafin)).order_by(Bitacora.id.asc())
 
     def fecha_actual(self):

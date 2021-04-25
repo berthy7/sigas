@@ -145,6 +145,7 @@
                     {% if c.fkinvitado %}
                         '{{ c.invitado.ci }}',
                         '{{ c.invitado.fullname }}',
+
                     {% elif c.fkresidente %}
                         'Residente',
                         '{{ c.residente.fullname }}',
@@ -195,12 +196,14 @@
                     {% end %}
 
                     '{{ c.autorizacion.nombre }}',
+
                     {% if c.fknropase %}
                         '{{ c.nropase.numero }} {{ c.nropase.tipo }}',
                     {% else %}
                         '-----',
                     {% end %}
                     '{{ c.tipopase.nombre }}',
+
                     {% if c.fechaf %}
                         '✓',
                     {% else %}

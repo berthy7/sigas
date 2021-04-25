@@ -8,6 +8,7 @@ from ..vehiculo.managers import *
 from sqlalchemy import or_,and_
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
+from threading import Thread
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
@@ -19,6 +20,105 @@ class MovimientoManager(SuperManager):
     def __init__(self, db):
         super().__init__(Movimiento, db)
 
+    def reporte_generar(self,diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        domicilio = self.db.query(self.entity)\
+            .filter(func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin']))\
+            .filter(self.entity.estado == True).all()
+
+
+        t = Thread(target=self.sincronizar_descripcion, args=(domicilio,))
+        t.start()
+
+
+
+
+        return domicilio
+
+    def sincronizar_descripcion(self, objetos):
+        print("sincronizar descripcion")
+        cont = 1
+
+        for objeto in objetos:
+
+            objeto.descripcion_fechai = objeto.fechai.strftime('%d/%m/%Y %H:%M:%S') if objeto.fechai else ''
+            objeto.descripcion_fechaf = objeto.fechaf.strftime('%d/%m/%Y %H:%M:%S') if objeto.fechaf else ''
+            objeto.descripcion_documento = objeto.tipodocumento.nombre
+
+            if objeto.fkinvitado:
+                if objeto.fkconductor:
+                    objeto.descripcion_nombre_conductor = objeto.conductor.fullname
+                else:
+                    objeto.descripcion_nombre_conductor = '-----'
+
+                objeto.descripcion_ci_invitado = objeto.invitado.ci
+                objeto.descripcion_nombre_invitado = objeto.invitado.fullname
+
+
+            else:
+                objeto.descripcion_ci_invitado = '-----'
+                objeto.descripcion_nombre_invitado = '-----'
+
+            if objeto.fkvehiculo:
+                objeto.descripcion_placa = objeto.vehiculo.placa
+                objeto.descripcion_tipo = objeto.vehiculo.tipo.nombre
+                objeto.descripcion_marca = objeto.vehiculo.marca.nombre
+                objeto.descripcion_modelo = objeto.vehiculo.modelo.nombre if objeto.vehiculo.fkmodelo else '-----'
+                objeto.descripcion_color = objeto.vehiculo.color.nombre
+
+            else:
+                objeto.descripcion_placa = '-----'
+                objeto.descripcion_tipo = '-----'
+                objeto.descripcion_marca = '-----'
+                objeto.descripcion_modelo = '-----'
+                objeto.descripcion_color = '-----'
+
+            if objeto.fkdomicilio:
+                objeto.descripcion_destino = objeto.domicilio.nombre
+            elif objeto.fkareasocial:
+                objeto.descripcion_destino = objeto.areasocial.nombre
+            else:
+                objeto.descripcion_destino = '-----'
+
+            if objeto.fknropase:
+                objeto.descripcion_nropase = objeto.nropase.numero + ' ' + objeto.nropase.tipo
+            else:
+                objeto.descripcion_nropase = '-----'
+
+            self.db.merge(objeto)
+            print(str(cont))
+            cont = cont +1
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+
+        print("sincronizar inicio commit "+ fecha.strftime('%d/%m/%Y %H:%M:%S'))
+        self.db.commit()
+        print("sincronizar fin commit "+ fecha.strftime('%d/%m/%Y %H:%M:%S'))
+
+    def reporte_vehicular_visita(self,diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        domicilio = self.db.query(self.entity).join(Domicilio).filter(
+            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+        areasocial = self.db.query(self.entity).join(Areasocial).filter(
+            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+
+        for area in areasocial:
+            domicilio.append(area)
+
+        print("retorno de movimientos :"+ str(len(domicilio)))
+        return domicilio
 
     # def reporte_movimientos_vehicular(self,diccionario):
     #
@@ -136,8 +236,6 @@ class MovimientoManager(SuperManager):
     #     wb.save("server/common/resources/downloads/" + cname)
     #     return cname
 
-
-
     def obtener_x_codigo(self, codigo):
         return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
 
@@ -190,7 +288,7 @@ class MovimientoManager(SuperManager):
 
 
     def list_all_reporte(self):
-        return self.db.query(self.entity).filter(self.entity.tipo == "Vehicular").all()
+        return self.db.query(self.entity).filter(self.entity.tipo == "Vehicular").limit(1).all()
 
 
     def delay(self, diccionario):
@@ -212,15 +310,15 @@ class MovimientoManager(SuperManager):
 
         return ss
 
-    def reporte_movimientos_vehicular(self,diccionario):
-
-        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
-        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
-
-        return dict(objects=self.db.query(self.entity).join(Domicilio).filter(
-            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
-            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True))
+    # def reporte_movimientos_vehicular(self,diccionario):
+    #
+    #     diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+    #     diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+    #
+    #     return dict(objects=self.db.query(self.entity).join(Domicilio).filter(
+    #         Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True))
 
     def reporte_movimientos_vehicular_visita(self, diccionario):
 
@@ -321,6 +419,7 @@ class MovimientoManager(SuperManager):
                     ws['U' + str(indice)] = i.areasocial.codigo
                 else:
                     ws['U' + str(indice)] = ""
+
                 ws['V' + str(indice)] = i.autorizacion.nombre
                 ws['W' + str(indice)] = i.tipopase.nombre
                 ws['X' + str(indice)] = i.observacion
@@ -401,27 +500,27 @@ class MovimientoManager(SuperManager):
         return cname
 
 
-    # def reporte_movimientos_vehicular(self,diccionario):
-    #
-    #     diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
-    #     diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
-    #
-    #     domicilio = self.db.query(self.entity).join(Domicilio).filter(
-    #         Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
-    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
-    #
-    #     areasocial = self.db.query(self.entity).join(Areasocial).filter(
-    #         Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
-    #         func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-    #             self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
-    #
-    #
-    #     for area in areasocial:
-    #         domicilio.append(area)
-    #
-    #     print("retorno de movimientos :"+ str(len(domicilio)))
-    #     return domicilio
+    def reporte_movimientos_vehicular(self,diccionario):
+
+        diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
+        diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
+
+        domicilio = self.db.query(self.entity).join(Domicilio).filter(
+            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+        areasocial = self.db.query(self.entity).join(Areasocial).filter(
+            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
+            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+
+
+        for area in areasocial:
+            domicilio.append(area)
+
+        print("retorno de movimientos :"+ str(len(domicilio)))
+        return domicilio
 
 
     # def reporte_movimientos_vehicular(self,diccionario):
@@ -571,6 +670,8 @@ class MovimientoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         diccionary['tipo'] = "Vehicular"
+        diccionary['descripcion_ci_invitado'] = diccionary['ci']+" "+ diccionary['apellidop']
+        diccionary['descripcion_nombre_invitado'] = diccionary['nombre'] +" "+ diccionary['apellidop'] +" "+diccionary['apellidom']
 
         # diccionary['fechai'] = fecha
 
@@ -595,8 +696,6 @@ class MovimientoManager(SuperManager):
             return False
         else:
             a = super().insert(objeto)
-            a.codigo = a.id
-            self.db.merge(a)
 
             print("registro ingreso Vehicular: " +str(a.id))
             b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento.", fecha=fecha,tabla="movimiento", identificador=a.id)
@@ -619,8 +718,58 @@ class MovimientoManager(SuperManager):
                 if principal.estado:
                     NotificacionManager(self.db).registrar_notificacion_onesignal(a,objeto)
 
+            self.hilo_sincronizar_update_descripcion(a)
 
+            # t = Thread(target=self.hilo_sincronizar_update_descripcion, args=(a,))
+            # t.start()
             return a
+
+    def hilo_sincronizar_update_descripcion(self, objeto):
+        print("hilo sincronizar descripcion")
+        objeto.codigo = objeto.id
+        objeto.descripcion_documento = objeto.tipodocumento.nombre
+
+        if objeto.fkinvitado:
+            if objeto.fkconductor:
+                objeto.descripcion_nombre_conductor = objeto.conductor.fullname
+            else:
+                objeto.descripcion_nombre_conductor = '-----'
+
+            objeto.descripcion_ci_invitado = objeto.invitado.ci
+            objeto.descripcion_nombre_invitado = objeto.invitado.fullname
+
+
+        else:
+            objeto.descripcion_ci_invitado = '-----'
+            objeto.descripcion_nombre_invitado =  '-----'
+
+        if objeto.fkvehiculo:
+            objeto.descripcion_placa = objeto.vehiculo.placa
+            objeto.descripcion_tipo = objeto.vehiculo.tipo.nombre
+            objeto.descripcion_marca = objeto.vehiculo.marca.nombre
+            objeto.descripcion_modelo = objeto.vehiculo.modelo.nombre if objeto.vehiculo.fkmodelo else '-----'
+            objeto.descripcion_color = objeto.vehiculo.color.nombre
+
+
+        else:
+            objeto.descripcion_placa = '-----'
+            objeto.descripcion_tipo = '-----'
+            objeto.descripcion_marca = '-----'
+            objeto.descripcion_modelo = '-----'
+            objeto.descripcion_color = '-----'
+
+        if objeto.fkdomicilio:
+            objeto.descripcion_destino = objeto.domicilio.nombre
+        elif objeto.fkareasocial:
+            objeto.descripcion_destino = objeto.areasocial.nombre
+        else:
+            objeto.descripcion_destino = '-----'
+
+        if objeto.fknropase:
+            objeto.descripcion_nropase = objeto.nropase.numero + ' ' + objeto.nropase.tipo
+
+        self.db.merge(objeto)
+        self.db.commit()
 
     def update(self, objeto):
         fecha = BitacoraManager(self.db).fecha_actual()
@@ -636,12 +785,12 @@ class MovimientoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
         if x.fechai is None:
             x.fechai = x.fechar
+            x.descripcion_fechai = x.fechar.strftime('%d/%m/%Y %H:%M:%S')
 
 
         x.fechaf = fecha
+        x.descripcion_fechaf = fecha.strftime('%d/%m/%Y %H:%M:%S')
 
-
-        fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=user, ip=ip, accion="Registro Salida", fecha=fecha, tabla="movimiento", identificador=id)
         super().insert(b)
         self.db.merge(x)
@@ -651,8 +800,8 @@ class MovimientoManager(SuperManager):
         if x.fknropase:
             # actualizar siuacion
             NropaseManager(self.db).situacion(x.fknropase, "Libre")
-
         return x
+
 
     def asignar_codigo(self, id, codigo):
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
@@ -675,11 +824,12 @@ class MovimientoManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
         if x.fechai is None:
             x.fechai = x.fechar
+            x.descripcion_fechai = x.fechar.strftime('%d/%m/%Y %H:%M:%S')
 
         x.fechaf = fechaf
+        x.descripcion_fechaf = fechaf.strftime('%d/%m/%Y %H:%M:%S')
 
 
-        fecha = BitacoraManager(self.db).fecha_actual()
         b = Bitacora(fkusuario=user, ip=ip, accion="Registro Salida", fecha=fecha, tabla="movimiento", identificador=id)
         super().insert(b)
         self.db.merge(x)
@@ -745,7 +895,6 @@ class MovimientoManager(SuperManager):
 
         if nropase:
 
-
             if nropase.tipo == "Excepcion":
                 mov = self.db.query(Movimiento).join(Nropase).filter(Movimiento.estado == True).filter(Nropase.tarjeta == marcacion.tarjeta)\
                     .filter(Movimiento.fechai == None).first()
@@ -763,6 +912,7 @@ class MovimientoManager(SuperManager):
         if mov:
             if not mov.fechai:
                 mov.fechai = marcacion.time
+                mov.descripcion_fechai = marcacion.time.strftime('%d/%m/%Y %H:%M:%S')
 
                 # if mov.nropase.tipo == "Excepcion":
                 # mov.fechaf = marcacion.time
@@ -771,6 +921,7 @@ class MovimientoManager(SuperManager):
                 self.db.commit()
             elif not mov.fechaf:
                 mov.fechaf = marcacion.time
+                mov.descripcion_fechaf = marcacion.time.strftime('%d/%m/%Y %H:%M:%S')
                 self.db.merge(mov)
 
                 nropase = self.db.query(Nropase).filter(Nropase.id == mov.fknropase).first()

@@ -141,8 +141,7 @@ class Movimiento_pManager(SuperManager):
         print("registro ingreso Peatonal: " + str(a.id))
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Movimiento_p.", fecha=fecha,tabla="movimiento", identificador=a.id)
         super().insert(b)
-        a.codigo = a.id
-        self.db.merge(a)
+
 
         if a.fknropase:
             # actualizar siuacion
@@ -163,9 +162,56 @@ class Movimiento_pManager(SuperManager):
             if principal.estado:
                 NotificacionManager(self.db).registrar_notificacion_onesignal(a,objeto)
 
-
+        self.hilo_sincronizar_update_descripcion(a)
         return a
 
+    def hilo_sincronizar_update_descripcion(self, objeto):
+        print("hilo sincronizar descripcion")
+        objeto.codigo = objeto.id
+        objeto.descripcion_documento = objeto.tipodocumento.nombre
+        objeto.descripcion_fechai = objeto.fechar.strftime('%d/%m/%Y %H:%M:%S')
+        if objeto.fkinvitado:
+            if objeto.fkconductor:
+                objeto.descripcion_nombre_conductor = objeto.conductor.fullname
+            else:
+                objeto.descripcion_nombre_conductor = '-----'
+
+            objeto.descripcion_ci_invitado = objeto.invitado.ci
+            objeto.descripcion_nombre_invitado = objeto.invitado.fullname
+
+
+        else:
+            objeto.descripcion_ci_invitado = '-----'
+            objeto.descripcion_nombre_invitado = '-----'
+        if objeto.fkvehiculo:
+            objeto.descripcion_placa = objeto.vehiculo.placa
+            objeto.descripcion_tipo = objeto.vehiculo.tipo.nombre
+            objeto.descripcion_marca = objeto.vehiculo.marca.nombre
+            objeto.descripcion_modelo = objeto.vehiculo.modelo.nombre if objeto.vehiculo.fkmodelo else '-----'
+            objeto.descripcion_color = objeto.vehiculo.color.nombre
+
+
+        else:
+            objeto.descripcion_placa = '-----'
+            objeto.descripcion_tipo = '-----'
+            objeto.descripcion_marca = '-----'
+            objeto.descripcion_modelo = '-----'
+            objeto.descripcion_color = '-----'
+
+        if objeto.fkdomicilio:
+            objeto.descripcion_destino = objeto.domicilio.nombre
+        elif objeto.fkareasocial:
+            objeto.descripcion_destino = objeto.areasocial.nombre
+        else:
+            objeto.descripcion_destino = '-----'
+
+        if objeto.fknropase:
+            objeto.descripcion_nropase = objeto.nropase.numero + ' ' + objeto.nropase.tipo
+        else:
+            objeto.descripcion_nropase = '-----'
+
+        self.db.merge(objeto)
+        self.db.commit()
 
 
     def update(self, objeto):
@@ -183,6 +229,7 @@ class Movimiento_pManager(SuperManager):
         x = self.db.query(Movimiento).filter(Movimiento.id == id).first()
         fecha = BitacoraManager(self.db).fecha_actual()
         x.fechaf = fecha
+        x.descripcion_fechaf = fecha.strftime('%d/%m/%Y %H:%M:%S')
 
 
         fecha = BitacoraManager(self.db).fecha_actual()
