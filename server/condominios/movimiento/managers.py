@@ -106,12 +106,12 @@ class MovimientoManager(SuperManager):
         domicilio = self.db.query(self.entity).join(Domicilio).filter(
             Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
             func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True)
 
         areasocial = self.db.query(self.entity).join(Areasocial).filter(
             Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
             func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).all()
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True)
 
 
         for area in areasocial:
