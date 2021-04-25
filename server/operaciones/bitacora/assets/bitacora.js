@@ -76,8 +76,7 @@ function actualizar_tabla(response){
 
     var data = [];
     var usuario;
-
-
+    
     for (var i = 0; i < Object.keys(response.response).length; i++) {
 
             if(response['response'][i].fkusuario != "None"){

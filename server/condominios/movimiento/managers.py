@@ -103,10 +103,9 @@ class MovimientoManager(SuperManager):
         diccionario['fechainicio'] = datetime.strptime(diccionario['fechainicio'], '%d/%m/%Y')
         diccionario['fechafin'] = datetime.strptime(diccionario['fechafin'], '%d/%m/%Y')
 
-        domicilio = self.db.query(self.entity).join(Domicilio).filter(
-            Domicilio.fkcondominio == diccionario['fkcondominio']).filter(
+        domicilio = self.db.query(self.entity).filter(
             func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True)
+                self.entity.tipo == "Vehicular").filter(self.entity.estado == True).order_by(self.entity.fechar.desc())
 
         return domicilio
 
@@ -681,7 +680,7 @@ class MovimientoManager(SuperManager):
 
         if nropase :
             print("bloqueo de Registro duplicado: tarjeta ocupada " + nropase.tipo+" "+nropase.numero )
-            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador="")
+            b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Bloqueo de registro duplicado.", fecha=fecha,tabla="movimiento", identificador=0)
             super().insert(b)
             return False
         else:
