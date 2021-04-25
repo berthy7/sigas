@@ -1,64 +1,21 @@
-function preparar_datos_peatonal_visita(datos){
+function preparar_datos_peatonal_visita(response){
     
     var data = [];
-    for (var i = 0; i < Object.keys(datos).length; i++) {
-        var id
-        var fechai
-        var fechaf
+    for (var i = 0; i < Object.keys(response.response).length; i++) {
 
-    
-        var domicilio
-        var autorizacion
-        var nropase
-
-        
-        id = datos[i].id
-        if (datos[i].fechai !="None"){
-            fechai = datos[i]['fechai']
-        }else{
-            fechai= '-----'
-        }
-
-        if (datos[i].fechaf !="None"){
-            fechaf = datos[i]['fechaf']
-
-        }else{
-            fechaf= '-----'
-        }
-        
-        if (datos[i].fkdomicilio !="None"){
-            domicilio = datos[i]['domicilio'].ubicacion + ' ' +datos[i]['domicilio'].numero
-        }else if (datos[i].fkareasocial !="None"){
-            domicilio= datos[i]['areasocial'].nombre
-        }else{
-            domicilio= '-----'
-        }
-        
-        if (datos[i].fkautorizacion !="None"){
-            autorizacion = datos[i]['autorizacion'].nombre
-        }else{
-            autorizacion= '-----'
-        }
-
-        if (datos[i].fknropase !="None"){
-            nropase = datos[i]['nropase'].numero
-        }else{
-            nropase= '-----'
-        }
-        
 
         data.push( [
-            id,
-            fechai,
-            fechaf,
-            datos[i]['tipodocumento'].nombre,
-            datos[i]['invitado'].ci,
-            datos[i]['invitado'].apellidop + ' ' + datos[i]['invitado'].apellidom + ' '+datos[i]['invitado'].nombre,
-            domicilio,
-            autorizacion,
-            nropase,
-            datos[i]['tipopase'].nombre,
-            datos[i].observacion
+            response['response'][i].id,
+            response['response'][i].fechai,
+            response['response'][i].fechaf,
+            response['response'][i].documento,
+            response['response'][i].ci_invitado,
+            response['response'][i].nombre_invitado,
+            response['response'][i].destino,
+            response['response'][i].autorizacion,
+            response['response'][i].nropase,
+            response['response'][i].tipopase,
+            response['response'][i].observacion
         ]);
     }
 

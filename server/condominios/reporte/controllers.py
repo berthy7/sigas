@@ -48,25 +48,17 @@ class ReporteController(CrudController):
         self.respond(response=lista_dict, success=True,
                      message='actualizado correctamente.')
 
-    # def vehicular_visita(self):
-    #     self.set_session()
-    #     diccionary = json.loads(self.get_argument("object"))
-    #
-    #     cname = self.manager(self.db).reporte_movimientos_vehicular_visita(diccionary)
-    #
-    #
-    #     self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
-    #     self.db.close()
 
     def peatonal_visita(self):
         self.set_session()
-        diccionary = json.loads(self.get_argument("object"))
+        data = json.loads(self.get_argument("object"))
 
-        cname = self.manager(self.db).reporte_movimientos_peatonal_visita(diccionary)
+        ins_manager = self.manager(self.db)
 
+        lista_dict = ins_manager.reporte_peatonal_visita(data)
 
-        self.respond({'nombre': cname, 'url': 'resources/downloads/' + cname}, True)
-        self.db.close()
+        self.respond(response=lista_dict, success=True,
+                     message='actualizado correctamente.')
 
 
     # def table(self):
