@@ -117,7 +117,7 @@ class MovimientoManager(SuperManager):
         for area in areasocial:
             domicilio.append(area)
 
-        print("retorno de movimientos :"+ str(len(domicilio)))
+        print("retorno de movimientos :")
         return domicilio
 
     # def reporte_movimientos_vehicular(self,diccionario):
