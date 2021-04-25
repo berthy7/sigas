@@ -160,8 +160,6 @@ $('#generar').click(function () {
     
         }).done(function (response) {
             response = JSON.parse(response)
-
-            console.log("datos en interfaz" + response)
             
             if ($('#tipo_reporte').val() == "vehicular_visita"){
                 preparar_datos_vehicular_visita(response)

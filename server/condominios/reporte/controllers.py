@@ -12,7 +12,7 @@ import threading
 
 class ReporteController(CrudController):
 
-    manager = MovimientoManager
+    manager = ReporteManager
     html_index = "condominios/reporte/views/index.html"
 
     routes = {
@@ -35,6 +35,18 @@ class ReporteController(CrudController):
         aux['condominios'] = CondominioManager(self.db).listar_todo()
 
         return aux
+
+
+    def vehicular_visita(self):
+        self.set_session()
+        data = json.loads(self.get_argument("object"))
+
+        ins_manager = self.manager(self.db)
+
+        lista_dict = ins_manager.reporte_vehicular_visita(data)
+
+        self.respond(response=lista_dict, success=True,
+                     message='actualizado correctamente.')
 
     # def vehicular_visita(self):
     #     self.set_session()
@@ -198,16 +210,7 @@ class ReporteController(CrudController):
         self.respond(response='', success=True,
                      message='actualizado correctamente.')
 
-    def vehicular_visita(self):
-        self.set_session()
-        data = json.loads(self.get_argument("object"))
 
-        ins_manager = self.manager(self.db)
-        arraT = BitacoraManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] = ins_manager.reporte_vehicular_visita(data)
-
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
-                     message='actualizado correctamente.')
 
 
     def vehicular_residente(self):
