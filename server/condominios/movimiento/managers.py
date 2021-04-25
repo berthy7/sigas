@@ -108,16 +108,6 @@ class MovimientoManager(SuperManager):
             func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
                 self.entity.tipo == "Vehicular").filter(self.entity.estado == True)
 
-        areasocial = self.db.query(self.entity).join(Areasocial).filter(
-            Areasocial.fkcondominio == diccionario['fkcondominio']).filter(
-            func.date(self.entity.fechar).between(diccionario['fechainicio'], diccionario['fechafin'])).filter(
-                self.entity.tipo == "Vehicular").filter(self.entity.estado == True)
-
-
-        for area in areasocial:
-            domicilio.append(area)
-
-        print("retorno de movimientos :")
         return domicilio
 
     # def reporte_movimientos_vehicular(self,diccionario):
