@@ -64,6 +64,21 @@
                 <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
                     <i class="material-icons">explicit</i><i class="material-icons">file_upload</i>
                 </button>
+        <div class="row clearfix">
+            <div class="col-sm-10">
+                <div id="rproc-loader" class="loader-wrapper" style="display: none">
+                    <div class="loader loader-own">
+                        <div class="preloader preloader-own">
+                            <div class="spinner-layer pl-teal">
+                                <div class="circle-clipper left"><div class="circle"></div></div>
+                                <div class="circle-clipper right"><div class="circle"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center inf-own">Cargando Registros...</p>
+                </div>
+            </div>
+        </div>
 
         {% if 'movimiento_query' in privileges %}
         <div class="row">

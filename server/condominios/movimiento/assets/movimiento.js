@@ -653,110 +653,33 @@ function cargar_tabla(data){
 function actualizar_tabla(response){
 
     var data = [];
-    var id;
-    var fechai;
-    var fechaf;
-    var tipodocumento;
-    var ci;
-    var nombre;
-    var conductor;
-    var placa;
-    var tipo;
-    var marca;
-    var modelo;
-    var color;
-    var destino;
-    var nropase;
     var salida;
 
     for (var i = 0; i < Object.keys(response.response).length; i++) {
-            id = response['response'][i].id
-
-            if(response['response'][i].fechai){
-                fechai= response['response'][i].fechai
-            }else{
-                fechai = '-----'
-            }
 
             if(response['response'][i].fechaf){
-                fechaf = response['response'][i].fechaf
                 salida= '✓'
             }else{
-                fechaf = '-----'
-                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo white-own waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
-
-            }
-        
-            if(response['response'][i].fktipodocumento){
-                tipodocumento= response['response'][i].tipodocumento.nombre
-            }else{
-                tipodocumento = '-----'
-            }
-
-            if(response['response'][i].fkinvitado != "None"){
-                ci = response['response'][i].invitado.ci,
-                nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
-
-            }else{
-                ci ='Residente'
-                nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
-            }
-
-
-            if(response['response'][i].fkconductor != "None"){
-                conductor= response['response'][i].conductor.nombre +" "+response['response'][i].conductor.apellidop+" "+response['response'][i].conductor.apellidom
-            }else{
-                conductor ='-----'
-            }
-
-            placa= response['response'][i].vehiculo.placa
-            tipo = response['response'][i].vehiculo.tipo.nombre
-
-            if(response['response'][i].vehiculo.fkmarca != "None"){
-                marca = response['response'][i].vehiculo.marca.nombre
-            }else{
-                marca ='-----'
-            }
-            if(response['response'][i].vehiculo.fkmodelo != "None"){
-                modelo = response['response'][i].vehiculo.modelo.nombre
-            }else{
-                modelo ='-----'
-            }
-
-            color = response['response'][i].vehiculo.color.nombre
-
-
-            if(response['response'][i].fkdomicilio != "None"){
-                destino = response['response'][i].domicilio.ubicacion + " " + response['response'][i].domicilio.numero
-            }else if(response['response'][i].fkareasocial != "None"){
-                destino = response['response'][i].areasocial.nombre
-            }else{
-                destino = '-----'
-            }
-
-            if(response['response'][i].fknropase != "None"){
-                nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
-            }else{
-                nropase = '-----'
+                salida ="<button id='exit' onClick='salida(this)' data-json="+response['response'][i].id+" type='button' class='btn bg-indigo white-own waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
             }
 
             data.push( [
-                id,
-                fechai,
-                fechaf,
-                tipodocumento,
-                ci,
-                nombre,
-                conductor,
-                response['response'][i].cantpasajeros,
-                placa,
-                tipo,
-                marca,
-                modelo,
-                color,
-                destino,
+                response['response'][i].id,
+                response['response'][i].descripcion_fechai,
+                response['response'][i].descripcion_fechaf,
+                response['response'][i].descripcion_documento,
+                response['response'][i].descripcion_ci_invitado,
+                response['response'][i].descripcion_nombre_invitado,
+                response['response'][i].descripcion_nombre_conductor,
+                response['response'][i].response['response'][i].cantpasajeros,
+                response['response'][i].descripcion_placa,
+                response['response'][i].descripcion_tipo,
+                response['response'][i].descripcion_marca,
+                response['response'][i].descripcion_modelo,
+                response['response'][i].descripcion_color,
+                response['response'][i].descripcion_destino,
                 response['response'][i].autorizacion.nombre,
-                nropase,
+                response['response'][i].descripcion_nropase,
                 response['response'][i].tipopase.nombre,
                 salida
             ]);
@@ -1581,7 +1504,15 @@ $('#filtrar').click(function () {
         method: "POST",
         url: ruta,
         data: {_xsrf: getCookie("_xsrf"), object: obj},
-        async: true
+        async: true,
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+            }
     }).done(function (response) {
 
         response = JSON.parse(response)
