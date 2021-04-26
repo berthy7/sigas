@@ -40,8 +40,8 @@ class Movimiento(Serializable, Base):
 
     estado = Column(Boolean, default=True)
 
-    descripcion_fechai = Column(String(50), nullable=True,default=' ')
-    descripcion_fechaf = Column(String(50), nullable=True, default=' ')
+    descripcion_fechai = Column(String(50), nullable=True,default='-----')
+    descripcion_fechaf = Column(String(50), nullable=True, default='-----')
     descripcion_documento = Column(String(20), nullable=True, default=' ')
     descripcion_ci_invitado = Column(String(50), nullable=True, default=' ')
     descripcion_nombre_invitado = Column(String(100), nullable=True, default=' ')

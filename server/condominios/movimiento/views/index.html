@@ -124,86 +124,22 @@
 
                 data.push( [
                     '{{ c.id }}',
-                    {% if c.fechai %}
-                        '{{ c.fechai.strftime('%d/%m/%Y %H:%M:%S') }}',
-                    {% else %}
-                        '-----',
-                    {% end %}
-
-                    {% if c.fechaf %}
-                        '{{ c.fechaf.strftime('%d/%m/%Y %H:%M:%S') }}',
-                    {% else %}
-                        '-----',
-                    {% end %}
-
-                    {% if c.fktipodocumento %}
-                        '{{ c.tipodocumento.nombre}}',
-                    {% else %}
-                        '-----',
-                    {% end %}
-
-                    {% if c.fkinvitado %}
-                        '{{ c.invitado.ci }}',
-                        '{{ c.invitado.fullname }}',
-
-                    {% elif c.fkresidente %}
-                        'Residente',
-                        '{{ c.residente.fullname }}',
-
-                    {% else %}
-                        'Residente',
-                        '----',
-
-                    {% end %}
-
-                    {% if c.fkconductor %}
-                        '{{ c.conductor.fullname }}',
-                    {% else %}
-                        '-----',
-                    {% end %}
-
+                    '{{ c.descripcion_fechai }}',
+                    '{{ c.descripcion_fechaf }}',
+                    '{{ c.descripcion_documento }}',
+                    '{{ c.descripcion_ci_invitado }}',
+                    '{{ c.descripcion_nombre_invitado }}',
+                    '{{ c.descripcion_nombre_conductor }}',
                     '{{ c.cantpasajeros }}',
-
-                    {% if c.fkvehiculo %}
-                            '{{ c.vehiculo.placa }}',
-                            '{{ c.vehiculo.tipo.nombre }}',
-                                {% if c.vehiculo.fkmarca %}
-                                    '{{ c.vehiculo.marca.nombre }}',
-                                {% else %}
-                                    '-----',
-                                {% end %}
-                                {% if c.vehiculo.fkmodelo %}
-                                    '{{ c.vehiculo.modelo.nombre }}',
-                                {% else %}
-                                    '-----',
-                                {% end %}
-
-                            '{{ c.vehiculo.color.nombre }}',
-
-                    {% else %}
-                        '-----',
-                        '-----',
-                        '-----',
-                        '-----',
-                        '-----',
-                    {% end %}
-                    {% if c.fkdomicilio %}
-                        '{{ c.domicilio.nombre }}',
-                    {% elif c.fkareasocial %}
-                        '{{ c.areasocial.nombre }}',
-                    {% else %}
-                        '-----',
-                    {% end %}
-
+                    '{{ c.descripcion_placa }}',
+                    '{{ c.descripcion_tipo }}',
+                    '{{ c.descripcion_marca }}',
+                    '{{ c.descripcion_modelo }}',
+                    '{{ c.descripcion_color}}',
+                    '{{ c.descripcion_destino }}',
                     '{{ c.autorizacion.nombre }}',
-
-                    {% if c.fknropase %}
-                        '{{ c.nropase.numero }} {{ c.nropase.tipo }}',
-                    {% else %}
-                        '-----',
-                    {% end %}
+                    '{{ c.descripcion_nropase }} ',
                     '{{ c.tipopase.nombre }}',
-
                     {% if c.fechaf %}
                         '✓',
                     {% else %}
