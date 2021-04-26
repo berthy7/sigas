@@ -909,7 +909,7 @@ $('#insert').click(function () {
                         }, null, function () {
                             setTimeout(function () {
                                 window.location = main_route
-                            }, 2000);
+                            }, 1000);
                         })
                         $('#form').modal('hide')
                     } else {
@@ -957,7 +957,7 @@ $('#insert').click(function () {
                     }, null, function () {
                         setTimeout(function () {
                             window.location = main_route
-                        }, 2000);
+                        }, 1000);
                     })
                     $('#form').modal('hide')
                 } else {
