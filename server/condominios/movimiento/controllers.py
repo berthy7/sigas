@@ -214,12 +214,11 @@ class MovimientoController(CrudController):
         t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,resp,))
         t.start()
 
-        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
+        lista_dict =  MovimientoManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
 
         print("respuesta filtro")
 
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+        self.respond(response=lista_dict, success=True,
                      message='actualizado correctamente.')
 
     def hilo_sincronizar_salida(self, diccionary,respMov):
@@ -297,10 +296,9 @@ class MovimientoController(CrudController):
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         user = self.get_user_id()
-        arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] = ins_manager.filtrar(fechainicio, fechafin,user)
+        lista_dict = ins_manager.filtrar(fechainicio, fechafin,user)
 
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+        self.respond(response=lista_dict, success=True,
                      message='actualizado correctamente.')
 
     def importar(self):
