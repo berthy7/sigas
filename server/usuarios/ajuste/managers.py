@@ -9,12 +9,32 @@ class AjusteManager(SuperManager):
     def __init__(self, db):
         super().__init__(Ajuste, db)
 
+
+    def update_onesignal(self, diccionary):
+
+        x = self.db.query(self.entity).filter(self.entity.enabled == True).first()
+        x.app_id =  diccionary['app_id']
+        x.rest_api_key = diccionary['rest_api_key']
+        x.channel_id = diccionary['channel_id']
+
+        fecha = BitacoraManager(self.db).fecha_actual()
+
+        self.db.add(Bitacora(fkusuario=diccionary['user'], ip=diccionary['ip'], accion="Modifico Ajuste onesignal.", fecha=fecha, tabla="ajuste",
+                     identificador=x.id))
+
+
+        self.db.merge(x)
+        self.db.commit()
+
+        return x
+
     def obtener(self):
 
         x = self.db.query(self.entity).filter(self.entity.enabled == True).first()
         mov = self.db.query(VersionMovil).filter(VersionMovil.estado == True).first()
 
-        return dict(id=x.id,claveSecreta=x.claveSecreta,id_movil=mov.id,version=mov.version)
+        return dict(id=x.id,claveSecreta=x.claveSecreta,id_movil=mov.id,version=mov.version
+                    , app_id=x.app_id,rest_api_key=x.rest_api_key,channel_id=x.channel_id)
 
 
     def listar_todo(self):

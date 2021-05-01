@@ -87,7 +87,58 @@
               </div>
             </div>
 
+
           </div>
+        <div class="row clearfix">
+            <div class="col-sm-4">
+              <div class="card" style="padding-left: 20px; padding-top: 10px">
+                  <label ><span class="card-title">Ajustes One Signal</span></label>
+                  </br>
+                  </br>
+                <div class="card-content">
+
+                    <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <label>App ID</label>
+                                <div class="form-line">
+                                    <input id="app_id" value="{{ ajuste['app_id'] }}" type="text" class="form-control txta-own"  >
+                                </div>
+                        </div>
+
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-11">
+                            <label>Rest Api Key</label>
+                                <div class="form-line">
+                                    <input id="rest_api_key" value="{{ ajuste['rest_api_key'] }}" type="text" class="form-control txta-own"  >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-8">
+                            <label>Channel Id</label>
+                                <div class="form-line">
+                                    <input id="channel_id" value="{{ ajuste['channel_id'] }}" type="text" class="form-control txta-own"  >
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                            <button id="actualizar_onesignal" type="button" class="btn color_boton waves-effect white-own" >Guardar <i class="material-icons white-own">save</i></button>
+                        </div>
+                    </div>
+                    </br>
+
+                </div>
+
+              </div>
+            </div>
+            </div>
 
     </div>
 

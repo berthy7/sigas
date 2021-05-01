@@ -61,12 +61,14 @@ $('#actualizarVersionmovil').click(function () {
 })
 
 
-$('#actualizarTasaInteres').click(function () {
+$('#actualizar_onesignal').click(function () {
 
     objeto = JSON.stringify({
-        'tasaInteres': $('#tasaInteres').val()
+        'app_id': $('#app_id').val(),
+        'rest_api_key': $('#rest_api_key').val(),
+        'channel_id': $('#channel_id').val()
     })
-    ajax_call('ajuste_update', {
+    ajax_call('ajuste_onesignal', {
         object: objeto,
         _xsrf: getCookie("_xsrf")
     }, null, function () {

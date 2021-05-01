@@ -729,7 +729,6 @@ class MovimientoManager(SuperManager):
             objeto.descripcion_ci_invitado = objeto.invitado.ci
             objeto.descripcion_nombre_invitado = objeto.invitado.fullname
 
-
         else:
             objeto.descripcion_ci_invitado = '-----'
             objeto.descripcion_nombre_invitado =  '-----'

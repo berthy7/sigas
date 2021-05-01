@@ -12,6 +12,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 from ...dispositivos.dispositivo.managers import *
+from ..ajuste.models import Ajuste
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -839,13 +840,14 @@ class NotificacionManager(SuperManager):
         NotificacionManager(self.db).enviar_notificacion_onesignal(notificacion)
 
     def enviar_notificacion_onesignal(self, notificacion):
+        ajuste = self.db.query(Ajuste).first()
         print("Enviando Notificacion a un solo cliente")
 
         try:
             # Parametros
-            APP_ID = 'd99d9fe9-1f01-4b4a-a929-069a9813788c'
-            REST_API_KEY = 'MWI1Y2Y2MWEtZGY1OC00MjI1LTk0NTctNTQ5ZjI4NzViNWRk'
-            CHANNEL_ID = '4d4c7bc7-0221-4e6a-bedb-0093499f9424'  # DE LA CATEGORIA PRIORITARY
+            APP_ID = ajuste.app_id
+            REST_API_KEY = ajuste.rest_api_key
+            CHANNEL_ID = ajuste.channel_id  # DE LA CATEGORIA PRIORITARY
             cli = notificacion.receptor.token_notificacion
             if cli and cli != 'undefined' and cli != '0':
                 print('Token..:')

@@ -13,6 +13,7 @@ class AjusteController(CrudController):
         '/ajuste': {'GET': 'index', 'POST': 'table'},
         '/ajuste_insert': {'POST': 'insert'},
         '/ajuste_update_movil': {'PUT': 'edit', 'POST': 'update_movil'},
+        '/ajuste_onesignal': { 'POST': 'ajuste_onesignal'},
         '/ajuste_delete': {'POST': 'delete'}
     }
 
@@ -49,4 +50,14 @@ class AjusteController(CrudController):
         diccionary['id'] = diccionary['id_movil']
         AjusteManager(self.db).update_movil(diccionary)
         self.respond(success=True, message='Modificado correctamente.')
+
+    def ajuste_onesignal(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        diccionary['user'] = self.get_user_id()
+        diccionary['ip'] = self.request.remote_ip
+        AjusteManager(self.db).update_onesignal(diccionary)
+        self.respond(success=True, message='Modificado correctamente.')
+
+
 

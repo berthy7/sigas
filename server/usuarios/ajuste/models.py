@@ -15,6 +15,9 @@ class Ajuste(Serializable, Base):
 
     id = Column( Integer, primary_key=True)
     claveSecreta = Column( String(150), nullable=False)
+    app_id = Column(String(150), nullable=False)
+    rest_api_key = Column(String(150), nullable=False)
+    channel_id = Column(String(150), nullable=False)
 
     enabled = Column(Boolean, default=True)
 
