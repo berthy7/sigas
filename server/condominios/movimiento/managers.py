@@ -842,13 +842,12 @@ class MovimientoManager(SuperManager):
         fechahoy = str(fecha.day)+"/"+str(fecha.month)+"/"+str(fecha.year)
         fechahoy = datetime.strptime(fechahoy, '%d/%m/%Y')
 
-
         print("FIltrar por fecha")
-
 
         if usuario.sigas:
             domicilio = self.db.query(self.entity).filter(self.entity.estado == True).filter(func.date(self.entity.fechar).between(fechainicio, fechafin)).filter(
                 self.entity.tipo == "Vehicular").all()
+
             for d in domicilio:
                 lista.append(dict(id=d.id, fechai=d.descripcion_fechai, fechaf=d.descripcion_fechaf,
                                   documento=d.descripcion_documento,

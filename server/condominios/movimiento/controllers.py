@@ -296,9 +296,9 @@ class MovimientoController(CrudController):
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         user = self.get_user_id()
-        lista_dict = ins_manager.filtrar(fechainicio, fechafin,user)
+        lista_ = ins_manager.filtrar(fechainicio, fechafin,user)
 
-        self.respond(response=lista_dict, success=True,
+        self.respond(response=lista_, success=True,
                      message='actualizado correctamente.')
 
     def importar(self):

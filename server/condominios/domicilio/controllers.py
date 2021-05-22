@@ -70,6 +70,8 @@ class DomicilioController(CrudController):
 
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']],success=True, message='Insertado correctamente.')
 
+
+
     def update(self):
         self.set_session()
         us = self.get_user()
@@ -86,6 +88,52 @@ class DomicilioController(CrudController):
             arraT['datos'] = DomicilioManager(self.db).listar_departamentos(us)
 
         self.respond(response=[objeto.get_dict() for objeto in arraT['datos']],success=True, message='Modificado correctamente.')
+
+    def hilo_sincronizar_actualizar(self, mov, data):
+        print("hilo sincronizar")
+        destino = MovimientoManager(self.db).obtener_destino(mov.id)
+
+        principal = self.db.query(Principal).first()
+        if principal.estado:
+
+            if destino.condominio.ip_publica != "":
+
+                mov.codigo = mov.id
+                data['codigo'] = mov.id
+                data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
+                data['nombre_marca'] = mov.vehiculo.marca.nombre
+                data['nombre_modelo'] = mov.vehiculo.modelo.nombre if mov.vehiculo.fkmodelo else ""
+
+                if mov.nropase:
+                    data['tarjeta'] = mov.nropase.tarjeta
+                else:
+                    data['tarjeta'] = ""
+
+                if mov.fkdomicilio:
+                    data['codigo_destino'] = mov.domicilio.codigo
+                    condominio = CondominioManager(self.db).obtener_x_id(mov.domicilio.fkcondominio)
+
+                elif mov.fkareasocial:
+                    data['codigo_destino'] = mov.areasocial.codigo
+                    condominio = CondominioManager(self.db).obtener_x_id(mov.areasocial.fkcondominio)
+
+                else:
+                    data['codigo_destino'] = ""
+                    condominio = None
+
+                data['fkinvitado'] = ""
+                data['fkconductor'] = ""
+
+                url = "http://" + destino.condominio.ip_publica + ":" + destino.condominio.puerto + "/api/v1/sincronizar_movimiento"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(data)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
 
     def delete(self):
         self.set_session()

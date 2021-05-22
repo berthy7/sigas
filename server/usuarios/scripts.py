@@ -187,7 +187,7 @@ def insertions():
         versionMovil = VersionMovil(id=1, version='0.6.7', estado=True)
         session.add(versionMovil)
 
-        ajuste_web = Ajuste(id=1, claveSecreta='SECRETSIGAS', estado=True)
+        ajuste_web = Ajuste(id=1, claveSecreta='SECRETSIGAS',rest_api_key='ew9paXNPk_4:APA91bFI04CDRqcYU3pQjzWFOWDMODn1xoeKpSFkyBOLsiULeD9LAmYqcTC8dXMTDrd9W_jWzwRDnpBpJ1e5l7doxgfCAaAAWdneOmxnTwAgsBoJtUVtBrCp8fCHQ8_uEVM5ypCVNKIo', estado=True)
         session.add(ajuste_web)
 
         servidor = Principal(id=1, estado=False)

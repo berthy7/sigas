@@ -695,34 +695,6 @@ $('#codigoautorizacion').change(function () {
 
 });
 
-$('#fkinvitado').change(function () {
-    if (parseInt(JSON.parse($('#fkinvitado').val())) != 0){
-        cargar_invitado(parseInt(JSON.parse($('#fkinvitado').val())))
-    }else{
-        $('#nombre').val('')
-        $('#apellidop').val('')
-        $('#apellidom').val('')
-        $('#ci').val('')
-        $('#expendido').val('')
-        $('#expendido').selectpicker('refresh')
-
-        $('#fkvehiculo').val('')
-        $('#fkvehiculo').selectpicker('refresh')
-        $('#cantpasajeros').val('1')
-        $('#placa').val('')
-        $('#tipo').val('')
-        $('#tipo').selectpicker('refresh')
-        $('#color').val('')
-        $('#color').selectpicker('refresh')
-        $('#fkmarca').val('')
-        $('#fkmarca').selectpicker('refresh')
-        $('#fkmodelo').val('')
-        $('#fkmodelo').selectpicker('refresh')
-
-        validationInputSelects("form")
-    }
-});
-
 $('#fkconductor').change(function () {
     if (parseInt(JSON.parse($('#fkconductor').val())) != 0){
         cargar_conductor(parseInt(JSON.parse($('#fkconductor').val())))
@@ -1514,6 +1486,7 @@ $('#filtrar').click(function () {
                $("#new").show();
             }
     }).done(function (response) {
+        console.log(response)
 
         response = JSON.parse(response)
         actualizar_tabla(response)

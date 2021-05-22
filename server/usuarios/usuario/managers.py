@@ -40,6 +40,13 @@ from openpyxl.styles import Font
 from onesignal_sdk.client import Client
 from onesignal_sdk.error import OneSignalHTTPError
 
+import firebase_admin
+from firebase_admin import credentials, messaging
+
+# cred = credentials.Certificate("./serviceAccountKey.json")
+# firebase_admin.initialize_app(cred)
+
+
 class UsuarioManager(SuperManager):
 
     def __init__(self, db):
@@ -837,7 +844,40 @@ class NotificacionManager(SuperManager):
                  titulo="Notificacion de llegada", fecha=fecha, user=objeto.user, ip=objeto.ip))
 
         print("entrando a funcion enviar")
-        NotificacionManager(self.db).enviar_notificacion_onesignal(notificacion)
+        # NotificacionManager(self.db).enviar_notificacion_firebase(notificacion)
+
+    # def enviar_notificacion_firebase(self, notificacion):
+    #     ajuste = self.db.query(Ajuste).first()
+    #
+    #     tokens = [
+    #         ajuste.rest_api_key]
+    #     dataObject = {
+    #         "usuario": "juan perez",
+    #         "fecha": "29-04-2021"
+    #     }
+    #     self.sendPush(notificacion.titulo, notificacion.mensaje,
+    #                  tokens, dataObject=dataObject)
+
+
+
+    def sendPush(title, msg, registration_token, dataObject=None):
+        # See documentation on defining a message payload.
+        message = messaging.MulticastMessage(
+            notification=messaging.Notification(
+                title=title,
+                body=msg
+            ),
+            data=dataObject,
+            tokens=registration_token,
+        )
+
+        # Send a message to the device corresponding to the provided
+        # registration token.
+        response = messaging.send_multicast(message)
+        # Response is a message ID string.
+        print('Successfully sent message:', response)
+
+        # pip intall firebase-admin
 
     def enviar_notificacion_onesignal(self, notificacion):
         ajuste = self.db.query(Ajuste).first()
@@ -886,3 +926,4 @@ class NotificacionManager(SuperManager):
             print("Error al enviar la notificacion: " + str(notificacion.id) + ' ' + str(notificacion.titulo))
             print(e)
             print(e.message)
+
