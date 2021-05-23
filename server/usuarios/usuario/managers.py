@@ -40,8 +40,8 @@ from openpyxl.styles import Font
 from onesignal_sdk.client import Client
 from onesignal_sdk.error import OneSignalHTTPError
 
-import firebase_admin
-from firebase_admin import credentials, messaging
+# import firebase_admin
+# from firebase_admin import credentials, messaging
 
 # cred = credentials.Certificate("./serviceAccountKey.json")
 # firebase_admin.initialize_app(cred)
