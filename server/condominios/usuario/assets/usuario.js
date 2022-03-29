@@ -95,9 +95,6 @@ function obtener_usuarios_id() {
         var a = parseInt($(this).attr('data-id'))
         var check = $(this).prop('checked')
 
-        console.log("usuario id : "+ a)
-        console.log("usuario estado : "+check)
-
         aux.push((function add(a,check) {
 
             return {
@@ -168,21 +165,21 @@ function cargar_tabla2(data){
 
         dom: "Bfrtip" ,
         buttons: [
-            // {  extend : 'excelHtml5',
-            //    exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7]},
-            //     sheetName: 'Reporte Areas Sociales',
-            //    title: 'reas Sociales'  },
-            // {  extend : 'pdfHtml5',
-            //     orientation: 'landscape',
-            //    customize: function(doc) {
-            //         doc.styles.tableBodyEven.alignment = 'center';
-            //         doc.styles.tableBodyOdd.alignment = 'center';
-            //    },
-            //    exportOptions : {
-            //         columns : [0, 1, 2, 3, 4, 5 ,6 ,7]
-            //     },
-            //    title: 'reas Sociales'
-            // }
+            {  extend : 'excelHtml5',
+               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ]},
+                sheetName: 'Reporte Areas Sociales',
+               title: 'reas Sociales'  },
+            {  extend : 'pdfHtml5',
+                orientation: 'landscape',
+               customize: function(doc) {
+                    doc.styles.tableBodyEven.alignment = 'center';
+                    doc.styles.tableBodyOdd.alignment = 'center';
+               },
+               exportOptions : {
+                    columns : [0, 1, 2, 3, 4, 5]
+                },
+               title: 'reas Sociales'
+            }
         ],
         initComplete: function () {
 
@@ -216,21 +213,21 @@ function cargar_tabla(data,data_privilegios){
 
         dom: "Bfrtip" ,
         buttons: [
-            // {  extend : 'excelHtml5',
-            //    exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7]},
-            //     sheetName: 'Reporte Areas Sociales',
-            //    title: 'reas Sociales'  },
-            // {  extend : 'pdfHtml5',
-            //     orientation: 'landscape',
-            //    customize: function(doc) {
-            //         doc.styles.tableBodyEven.alignment = 'center';
-            //         doc.styles.tableBodyOdd.alignment = 'center';
-            //    },
-            //    exportOptions : {
-            //         columns : [0, 1, 2, 3, 4, 5 ,6 ,7]
-            //     },
-            //    title: 'reas Sociales'
-            // }
+            {  extend : 'excelHtml5',
+               exportOptions : { columns : [0, 1, 2, 3, 4, 5 ]},
+                sheetName: 'Reporte Usuarios',
+               title: 'Usuarios'  },
+            {  extend : 'pdfHtml5',
+                orientation: 'landscape',
+               customize: function(doc) {
+                    doc.styles.tableBodyEven.alignment = 'center';
+                    doc.styles.tableBodyOdd.alignment = 'center';
+               },
+               exportOptions : {
+                    columns : [0, 1, 2, 3, 4, 5]
+                },
+               title: 'Usuarios de Condominio'
+            }
         ],
         initComplete: function () {
 

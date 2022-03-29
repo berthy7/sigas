@@ -62,11 +62,36 @@ class InvitadoManager(SuperManager):
 
 
     def obtener_x_id(self,idinvitado):
-        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.id == idinvitado).first()
+        print("invitado obtener_ por id")
 
+        if idinvitado != "None":
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.id == idinvitado).first()
+
+        else:
+            print("invitado obtener_por Id : envio Id None string")
     def obtener_x_ci(self,ciinvitado):
 
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.ci == str(ciinvitado)).first()
+
+    def obtener_x_datos(self,ci,nombre,apellidop):
+
+        if ci != "":
+            print("obtener_invitado_x_datos :" + ci )
+            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.ci == str(ci)).first()
+
+        else:
+            print("obtener_invitado_x_datos :" + nombre + " " + apellidop)
+            invitadoNombre = self.db.query(self.entity).filter(self.entity.estado == True).filter(
+                self.entity.nombre == str(nombre)).filter(
+                self.entity.apellidop == str(apellidop)).first()
+
+            return invitadoNombre
+
+
+
+    def obtener_x_nombre(self,nombreinvitado):
+
+        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.nombre == str(nombreinvitado)).first()
 
     def obtener_x_nombre_amistad(self,nombreinvitado,usuario):
 
@@ -134,6 +159,30 @@ class InvitadoManager(SuperManager):
 
         return a
 
+    def registrar_invitado_movimiento(self, diccionario):
+
+        nombre = diccionario['nombre']
+        apellidop = diccionario['apellidop']
+        apellidom = diccionario['apellidom']
+        ci = diccionario['ci']
+        expendido = diccionario['expendido']
+
+        invitado = InvitadoManager(self.db).obtener_x_ci(ci)
+
+        if invitado:
+            return invitado
+        else:
+            dict_invitado = dict(nombre=nombre,apellidop=apellidop,apellidom=apellidom,ci=ci, expendido=expendido)
+
+            objeto = InvitadoManager(self.db).entity(**dict_invitado)
+            fecha = BitacoraManager(self.db).fecha_actual()
+            a = super().insert(objeto)
+            b = Bitacora(fkusuario=diccionario['user'], ip=diccionario['ip'], accion="Registro Invitado.", fecha=fecha,
+                         tabla="invitado", identificador=a.id)
+            super().insert(b)
+
+        return a
+
 
     def registrar_invitado(self, diccionario):
         usuario = UsuarioManager(self.db).get_by_pass(diccionario['user'])
@@ -144,7 +193,7 @@ class InvitadoManager(SuperManager):
         expendido = diccionario['expendido']
 
         # invitado = InvitadoManager(self.db).obtener_x_nombre_amistad(nombre,usuario)
-        invitado = InvitadoManager(self.db).obtener_x_ci(nombre)
+        invitado = InvitadoManager(self.db).obtener_x_ci(ci)
 
         if invitado:
             return invitado
@@ -205,7 +254,6 @@ class InvitadoManager(SuperManager):
         invitado.apellidom = apellidom
         invitado.ci = ci
         invitado.expendido = expendido
-
 
         super().update(invitado)
 

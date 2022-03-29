@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="row clearfix">
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
                             <label>Placa</label>
                                 <div class="form-line">
                                     <input id="placa" name="Placa" type="text" class="form-control txta-own" required >
@@ -27,47 +27,20 @@
                     </div>
                     </br>
                     </br>
-                    <div class="col-sm-6">
+                    <div class="row clearfix">
+                        <div class="col-sm-5">
                          <label>Color</label>
-                         <select id="color" class="form-control" required>
-                             <option value="Amarillo">Amarillo</option>
-                             <option value="Azul">Azul</option>
-                             <option value="Blanco">Blanco</option>
-                             <option value="Cobre">Cobre</option>
-                             <option value="Naranja">Naranja</option>
-                             <option value="Negro">Negro</option>
-                             <option value="Plateado">Plateado</option>
-                             <option value="Rojo">Rojo</option>
-                             <option value="Verde">Verde</option>
-                         </select>
-                        </br>
-                        </br>
-                    </div>
-                    </br>
-                    </br>
-                    <div class="row clearfix">
-                        <div class="col-sm-6">
-                            <label>Tipo</label>
-                             <select id="tipo" class="form-control" required>
-                                 <option value="AUTO">AUTO</option>
-                                 <option value="CAMIONETA">CAMIONETA</option>
-                                 <option value="VAGONETA">VAGONETA</option>
-                                 <option value="JEEP">JEEP</option>
-                                 <option value="CAMION">CAMION</option>
-                                 <option value="MOTOCICLETA">MOTOCICLETA</option>
-                                 <option value="MOTO">MOTO</option>
-                                 </select>
+                         <select id="fkcolor" class="form-control" required>
+                             {% for col in colores %}
+                                    <option value="{{col.id}}">{{col.nombre}}</option>
+                                {% end %}
+                             </select>
                         </div>
-
-                    </div>
-                    </br>
-                    </br>
-                    <div class="row clearfix">
-                        <div class="col-sm-6">
-                            <label>Marca</label>
-                             <select id="fkmarca" class="form-control" required>
-                                {% for mar in marcas %}
-                                    <option value="{{mar.id}}">{{mar.nombre}}</option>
+                        <div class="col-sm-5">
+                            <label>Tipo</label>
+                             <select id="fktipo" class="form-control" required>
+                                 {% for tip in tipos %}
+                                    <option value="{{tip.id}}">{{tip.nombre}}</option>
                                 {% end %}
                              </select>
                         </div>
@@ -76,7 +49,15 @@
                     </br>
                     </br>
                     <div class="row clearfix">
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
+                            <label>Marca</label>
+                             <select id="fkmarca" class="form-control" required>
+                                {% for mar in marcas %}
+                                    <option value="{{mar.id}}">{{mar.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+                        <div class="col-sm-5">
                             <label>Modelo</label>
                              <select id="fkmodelo" class="form-control">
 
@@ -86,6 +67,40 @@
                     </div>
                     </br>
                     </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-5">
+                            <label>Residente</label>
+                             <select id="fkresidente" class="form-control">
+                                {% for res in residentes %}
+                                    <option value="{{res.id}}">{{res.fullname}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-5">
+                            <label>Buscar Tag</label>
+                             <select id="fknropase" class="form-control">
+                                 <option value="0">-----</option>
+                                {% for nropase in nropases_tag %}
+                                    <option value="{{nropase.id}}">{{nropase.tarjeta}}</option>
+                                {% end %}
+                             </select>
+                        </div>
+                        <div class="col-sm-5">
+                            <label>Tag Vehicular</label>
+                                <div class="form-line">
+                                    <input id="idnropase" name="idnropase" type="text" class="form-control txta-own"  >
+                                    <input id="tarjeta" name="tarjeta" type="text" class="form-control txta-own" readonly >
+                                </div>
+                        </div>
+
+
+                    </div>
                 </div>
 
                 <div class="modal-footer">

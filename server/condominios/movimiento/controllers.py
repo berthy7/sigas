@@ -16,7 +16,8 @@ import uuid
 import json
 
 global urlServidor
-urlServidor = 'http://pruebass-web.herokuapp.com/api/v1/'
+urlServidor = 'http://sigas-web.herokuapp.com/api/v1/'
+
 class MovimientoController(CrudController):
 
     manager = MovimientoManager
@@ -43,8 +44,6 @@ class MovimientoController(CrudController):
 
         aux['objeto'] = objeto
         aux['tipodocumento'] = TipodocumentoManager(self.db).listar_todo()
-        # aux['invitados'] = InvitadoManager(self.db).listar_todo()
-        # aux['vehiculos'] = VehiculoManager(self.db).listar_todo()
         aux['residentes'] = ResidenteManager(self.db).listar_residentes(us)
 
         aux['areasociales'] = AreasocialManager(self.db).listar_todo(us)
@@ -62,27 +61,37 @@ class MovimientoController(CrudController):
 
         return aux
 
+    def delete(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        id = diccionary['id']
+        user = self.get_user_id()
+        ip = self.request.remote_ip
+        MovimientoManager(self.db).delete(id, user, ip)
+        self.respond(success=True, message='Baja Realizada Correctamente.')
+
+
     def insert(self):
         self.set_session()
         data = json.loads(self.get_argument("object"))
         data['user'] = self.get_user_id()
         data['ip'] = self.request.remote_ip
+        data['fechar'] = ""
         print("ingreso Vehicular web nombre: " + str(data['nombre']))
         mov = MovimientoManager(self.db).insert(data)
 
-        # if mov:
-        #     t = Thread(target=self.hilo_sincronizar, args=(mov, data,))
-        #     t.start()
+        if mov:
+            t = Thread(target=self.hilo_sincronizar, args=(mov, data,))
+            t.start()
 
         self.respond(success=True, message='Insertado correctamente.')
 
     def hilo_sincronizar(self, mov, data):
         print("hilo sincronizar")
-        destino = MovimientoManager(self.db).obtener_destino(mov.id)
 
         principal = self.db.query(Principal).first()
         if principal.estado:
-
+            destino = MovimientoManager(self.db).obtener_destino(mov.id)
             if destino.condominio.ip_publica != "":
 
                 mov.codigo = mov.id
@@ -173,6 +182,9 @@ class MovimientoController(CrudController):
                 url = urlServidor+"sincronizar_movimiento"
 
                 headers = {'Content-Type': 'application/json'}
+
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
 
                 cadena = json.dumps(data)
                 body = cadena
@@ -267,12 +279,13 @@ class MovimientoController(CrudController):
 
             try:
 
-                url = urlServidor+"sincronizar_movimiento_salida"
+                url = urlServidor+"sincronizar_movimiento_salida_nube"
 
                 headers = {'Content-Type': 'application/json'}
 
                 cadena = json.dumps(diccionary)
                 body = cadena
+                print("body: "+str(body))
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
 
@@ -293,13 +306,36 @@ class MovimientoController(CrudController):
         data = json.loads(self.get_argument("object"))
 
         ins_manager = self.manager(self.db)
-        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
-        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         user = self.get_user_id()
-        lista_ = ins_manager.filtrar(fechainicio, fechafin,user)
 
-        self.respond(response=lista_, success=True,
-                     message='actualizado correctamente.')
+        if data['fresidente'] != '':
+            lista_ = ins_manager.filtrar_residente(datetime.strptime(data['fechainicio'], '%d/%m/%Y'),
+                                         datetime.strptime(data['fechafin'], '%d/%m/%Y'),
+                                         data['fresidente'])
+            self.respond(response=lista_, success=True,
+                         message='actualizado correctamente.')
+
+        else:
+
+            if data['fdomicilio'] != '':
+                lista_ = ins_manager.filtrar_domicilio(datetime.strptime(data['fechainicio'], '%d/%m/%Y'),
+                                                       datetime.strptime(data['fechafin'], '%d/%m/%Y'),
+                                                       data['fdomicilio'])
+                self.respond(response=lista_, success=True,
+                             message='actualizado correctamente.')
+            else:
+
+                if data['fdomicilio'] == '' or data['fresidente'] == '':
+
+                    lista_ = ins_manager.filtrar(datetime.strptime(data['fechainicio'], '%d/%m/%Y'),
+                                             datetime.strptime(data['fechafin'], '%d/%m/%Y'),user)
+
+                    self.respond(response=lista_, success=True,
+                                message='actualizado correctamente.')
+
+
+
+
 
     def importar(self):
         self.set_session()
@@ -325,8 +361,6 @@ class MovimientoController(CrudController):
         fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
         fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         ult_registro = data['ult_registro']
-        # print(data['data_lista_pendientes'])
-        # indicted_object = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
         arraT = MovimientoManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] = ins_manager.recargar(fechainicio, fechafin, us, ult_registro)
         if len(ins_manager.errors) == 0:

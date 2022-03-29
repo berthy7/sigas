@@ -1,6 +1,19 @@
 main_route = '/reporte'
 
 $(document).ready(function () {
+        $('#fkcondominio').val($('#idcondominio').val())
+    $('#fkcondominio').selectpicker('refresh')
+
+    if ($('#sigas').val()  == "True"){
+        console.log("rol sigas")
+        $('#fkcondominio').prop('disabled', false);
+
+
+    }else{
+         console.log("rol condominio")
+        $('#fkcondominio').prop('disabled', true);
+    }
+    
    
 });
 

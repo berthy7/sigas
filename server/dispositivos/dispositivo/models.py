@@ -85,6 +85,29 @@ class Dispositivoeventos(Serializable, Base):
 
 
 
+class Huellas(Serializable, Base):
+    way = {}
+
+    __tablename__ = 'huellas'
+
+    id = Column(Integer,primary_key=True)
+    templateid = Column(Integer, nullable=True)
+    userid = Column(Integer, nullable=True)
+    codigo = Column(Integer, nullable=True)
+    nombre = Column(String(100), nullable=True)
+    fingerid = Column(Integer, nullable=True)
+    valid = Column(Integer, nullable=True)
+    fpversion = Column(String(20), nullable=True)
+    template = Column(Text, nullable=True)
+    template1 = Column(Text, nullable=True)
+    template2 = Column(Text, nullable=True)
+    template3 = Column(Text, nullable=True)
+    template4 = Column(Text, nullable=True)
+    fkcondominio = Column(Integer, nullable=True)
+
+
+
+
 
 
 

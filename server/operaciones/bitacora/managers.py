@@ -39,13 +39,14 @@ class BitacoraManager(SuperManager):
         else:
             return self.db.query(Bitacora).filter(self.entity.fkusuario == idusuario).filter(func.date(self.entity.fecha).between(fechainicio, fechafin)).order_by(Bitacora.id.asc())
 
-    def fecha_actual(self):
+    def convertir_fecha_local(self,fechaActual):
 
-        fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
+
         principal = self.db.query(Principal).first()
 
         if principal.estado:
-            fecha_str = str(fechaHora)
+            print("convertir fecha principal")
+            fecha_str = str(fechaActual)
             fecha_ = fecha_str[0:19]
             fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
 
@@ -53,6 +54,41 @@ class BitacoraManager(SuperManager):
             fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
 
         return fechaHora
+
+    def fecha_actual(self):
+
+        fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
+        principal = self.db.query(Principal).first()
+
+        if principal.estado:
+
+            fecha_str = str(fechaHora)
+            fecha_ = fecha_str[0:19]
+            fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+
+            timezone = pytz.timezone('America/La_Paz')
+            fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+
+
+        return fechaHora
+    #
+    # def fecha_actual(self):
+    #     print("fecha_actual bitacora")
+    #     fechaHora = datetime.now(pytz.timezone('America/La_Paz'))
+    #     principal = self.db.query(Principal).first()
+    #     print("fecha_actual bitacora" + str(fechaHora))
+    #     if principal.estado:
+    #         print("fecha_actual bitacora principal")
+    #         fecha_str = str(fechaHora)
+    #         fecha_ = fecha_str[0:19]
+    #         fechaHora = datetime.strptime(fecha_, '%Y-%m-%d %H:%M:%S')
+    #         print("fecha_actual bitacora principal antes del timezone" + str(fechaHora))
+    #         timezone = pytz.timezone('America/La_Paz')
+    #         fechaHora = pytz.utc.localize(fechaHora, is_dst=None).astimezone(timezone)
+    #
+    #         print("fecha_actual bitacora principal" + str(fechaHora))
+    #
+    #     return fechaHora
 
     def fecha(self):
         fechaHora = datetime.now(pytz.timezone('America/La_Paz'))

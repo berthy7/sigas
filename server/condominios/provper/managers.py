@@ -23,11 +23,11 @@ class ProvperManager(SuperManager):
     def listar_x_residente(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.permanente == True).order_by(
+            return self.db.query(self.entity).filter(self.entity.enabled == True).filter(self.entity.permanente == True).order_by(
                 self.entity.apellidop.asc()).all()
 
         else:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.permanente == True).order_by(
+            return self.db.query(self.entity).filter(self.entity.enabled == True).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.permanente == True).order_by(
                 self.entity.apellidop.asc()).all()
 
 
@@ -39,20 +39,29 @@ class ProvperManager(SuperManager):
         return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.ci == ciinvitado).first()
 
     def insert(self, diccionary):
-        usuario = UsuarioManager(self.db).get_by_pass(diccionary['user'])
+
+        if diccionary['fkcondominio'] == '':
+            diccionary['fkcondominio'] = None
+
+        if diccionary['fknropase'] == '':
+            diccionary['fknropase'] = None
 
         objeto = ProvperManager(self.db).entity(**diccionary)
         fecha = BitacoraManager(self.db).fecha_actual()
         objeto.vehiculos = []
+        objeto.enabled = True
 
         a = super().insert(objeto)
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro provper.", fecha=fecha,tabla="invitado", identificador=a.id)
         super().insert(b)
 
-
         if diccionary['fkresidente']:
-            amistad = Amistad(fkresidente=diccionary['fkresidente'], fkinvitado=a.id)
-            super().insert(amistad)
+
+            amistadActual = self.db.query(Amistad).filter(Amistad.fkresidente == diccionary['fkresidente']).filter(Amistad.fkinvitado == a.id).first()
+
+            if amistadActual == None:
+                amistad = Amistad(fkresidente=diccionary['fkresidente'], fkinvitado=a.id,proveedor=True)
+                super().insert(amistad)
 
         for vehi in diccionary['vehiculos']:
             VehiculoManager(self.db).registrar_vehiculo_invitado(vehi,a.id)
@@ -67,6 +76,17 @@ class ProvperManager(SuperManager):
         a = super().update(objeto)
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Modifico provper.", fecha=fecha,tabla="invitado", identificador=a.id)
         super().insert(b)
+
+        if diccionary['fkresidente']:
+
+            amistadActual = self.db.query(Amistad).filter(Amistad.fkresidente == diccionary['fkresidente']).filter(Amistad.fkinvitado == a.id).first()
+
+            if amistadActual == None:
+                amistad = Amistad(fkresidente=diccionary['fkresidente'], fkinvitado=a.id,proveedor=True)
+                super().insert(amistad)
+
+        for vehi in diccionary['vehiculos']:
+            VehiculoManager(self.db).registrar_vehiculo_invitado(vehi,a.id)
 
         return a
 

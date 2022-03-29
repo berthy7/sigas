@@ -26,7 +26,7 @@
         <link href="common/layout.css" rel="stylesheet" />
         {%block style%}{%end %}
     </head>
-    <body class="">
+    <body class="ls-closed">
         <div class="page-loader-wrapper">
             <div class="loader">
                 <div class="preloader">
@@ -43,8 +43,9 @@
         <nav class="navbar bg-blue-dark-own">
             <div class="container-fluid">
                 <div class="navbar-header ">
+                    <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
                     <a href="javascript:void(0);" class="bars"></a>
-                    <a href="/" class="navbar-brand white-own">
+                    <a class="navbar-brand white-own" href="/" >
                         <center>
                                 SIGAS  : {{ condominio }}
                         </center>

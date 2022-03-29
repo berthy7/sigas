@@ -102,7 +102,7 @@ class UsuarioCondominioController(CrudController):
         arraT['privileges'] = UsuarioManager(self.db).get_privileges(self.get_user_id(), self.request.uri)
 
         if result.fkresidente:
-            ResidenteManager(self.db).delete(result.fkresidente, self.get_user_id(), self.request.remote_ip, diccionary['enabled'])
+            ResidenteManager(self.db).de(diccionary)
 
         resultado = ""
 
@@ -122,7 +122,7 @@ class UsuarioCondominioController(CrudController):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
         id = diccionary['id']
-        enable = diccionary['enabled']
+        enable = False
         resp = UsuarioManager(self.db).delete_user(id, enable, self.get_user_id(), self.request.remote_ip)
 
         if resp:

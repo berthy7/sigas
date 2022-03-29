@@ -3,11 +3,14 @@ from server.common.controllers import CrudController
 from ..movimiento.managers import *
 from ..marca.managers import *
 from ..modelo.managers import *
+from ..condominio.managers import *
 
 import os.path
 import uuid
 import json
 
+global urlServidor
+urlServidor = 'http://sigas-web.herokuapp.com/api/v1/'
 
 class ProvperController(CrudController):
 
@@ -39,6 +42,9 @@ class ProvperController(CrudController):
         aux['modelos'] = ModeloManager(self.db).listar_todo()
         aux['nropases_provper'] = NropaseManager(self.db).listar_tarjetas_provper(us)
         aux['residentes'] = ResidenteManager(self.db).listar_residentes(us)
+        aux['idcondominio'] = us.fkcondominio
+        aux['sigas'] = us.sigas
+        aux['condominios'] = CondominioManager(self.db).listar_todo()
 
         return aux
 
@@ -48,8 +54,52 @@ class ProvperController(CrudController):
         diccionary['user'] = self.get_user_id()
         diccionary['ip'] = self.request.remote_ip
         diccionary['permanente'] = True
-        ProvperManager(self.db).insert(diccionary)
+        provper = ProvperManager(self.db).insert(diccionary)
+
+        if provper:
+            t = Thread(target=self.hilo_sincronizar, args=(provper, diccionary,))
+            t.start()
+
+
         self.respond(success=True, message='Insertado correctamente.')
+
+    def hilo_sincronizar(self, provper, data):
+        print("hilo sincronizar provper")
+
+        condominio = CondominioManager(self.db).obtener_x_id(provper.fkcondominio)
+
+        principal = self.db.query(Principal).first()
+        if principal.estado:
+
+            if condominio.ip_publica != "":
+
+                url = "http://" + condominio.ip_publica + ":" + condominio.puerto + "/api/v1/sincronizar_provper"
+
+                headers = {'Content-Type': 'application/json'}
+
+                cadena = json.dumps(data)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+        else:
+            try:
+                url = urlServidor + "sincronizar_provper"
+
+                headers = {'Content-Type': 'application/json'}
+
+                u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+                data['user'] = u.id
+
+                cadena = json.dumps(data)
+                body = cadena
+                resp = requests.post(url, data=body, headers=headers, verify=False)
+                response = json.loads(resp.text)
+
+                print(response)
+            except Exception as e:
+                print(e)
 
     def update(self):
         self.set_session()

@@ -57,8 +57,39 @@
                     </button>
             </div>
         </div>
+        <div class="row clearfix">
+            <div class="col-sm-2">
+                <label class="form-label">Residentes</label>
+               <div class="form-group">
+                    <div id="fresidentesdiv" class="form-line success">
 
-                        <button id="reporte-xls" title="Excel" type="button" class="btn bg-teal waves-effect white-own">
+                        <select id="fresidente" class="form-control">
+                            <option value="">Todos</option>
+                            {% for resi in residentes %}
+                                <option value="{{resi.id}}">{{resi.fullname}}</option>
+                            {% end %}
+                         </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <label class="form-label">Domicilios | Interno</label>
+               <div class="form-group">
+                    <div class="form-line success">
+
+                        <select id="fdomicilio" class="form-control">
+                            <option value="">Todos</option>
+                            {% for domi in domicilios %}
+                                <option value="{{domi.id}}">{{domi.ubicacion}} {{domi.numero}} |  {{domi.interno}}</option>
+                            {% end %}
+                         </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+                <button id="reporte-xls" title="Excel" type="button" class="btn bg-teal waves-effect white-own">
                     <i class="material-icons">explicit</i>
                 </button>
                 <button id="importar_Excel" type="button" class="btn bg-indigo-verde waves-effect white-own">
@@ -97,9 +128,9 @@
                             <th class="order_by_th" data-name="names">Placa</th>
                             <th class="order_by_th" data-name="names">Tipo vehiculo</th>
                             <th class="order_by_th" data-name="names">Marca</th>
-                            <th class="order_by_th" data-name="names">Modelo</th>
                             <th class="order_by_th" data-name="names">Color</th>
                             <th class="order_by_th" data-name="names">Destino</th>
+                            <th class="order_by_th" data-name="names">Residente</th>
                             <th class="order_by_th" data-name="names">Autorizado por</th>
                             <th class="order_by_th" data-name="names">Nro Pase</th>
                             <th class="order_by_th" data-name="names">Tipo de pase</th>
@@ -134,12 +165,27 @@
         $(document).ready(function () {
 
             var data = [];
+            var salida;
 
             {% for c in movimientos_vehicular %}
+                    {% if c.fechaf %}
+                        salida = '<i class="Medium material-icons icon-cog">check_circle</i>';
+                    {% else %}
+                         salida = '<button id="exit" onClick="salida(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light salida" title="Actualizar Salida"><i class="material-icons">exit_to_app</i></button>';
+                    {% end %}
+
+                    {% if idperfil == 1 %}
+                        salida += "<button id='delete' onClick='eliminar(this)' data-json='{{ c.id }}' type='button' class='btn bg-indigo waves-effect waves-light white-own' title='Eliminar'><i class='material-icons'>delete</i></button> "
+                    {% end %}
 
                 data.push( [
                     '{{ c.id }}',
-                    '{{ c.descripcion_fechai }}',
+                    {% if c.descripcion_fechai == '-----' %}
+                        '{{ c.fechar.strftime('%d/%m/%Y %H:%M:%S') }}',
+
+                    {% else %}
+                        '{{ c.descripcion_fechai }}',
+                    {% end %}
                     '{{ c.descripcion_fechaf }}',
                     '{{ c.descripcion_documento }}',
                     '{{ c.descripcion_ci_invitado }}',
@@ -149,17 +195,13 @@
                     '{{ c.descripcion_placa }}',
                     '{{ c.descripcion_tipo }}',
                     '{{ c.descripcion_marca }}',
-                    '{{ c.descripcion_modelo }}',
                     '{{ c.descripcion_color}}',
                     '{{ c.descripcion_destino }}',
+                    '{{ c.descripcion_residente }}',
                     '{{ c.autorizacion.nombre }}',
                     '{{ c.descripcion_nropase }} ',
                     '{{ c.tipopase.nombre }}',
-                    {% if c.fechaf %}
-                        '✓',
-                    {% else %}
-                         '<button id="exit" onClick="salida(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light salida" title="Actualizar Salida"><i class="material-icons">exit_to_app</i></button>'
-                    {% end %}
+                     salida
 
                 ]);
 

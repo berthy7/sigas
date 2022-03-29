@@ -12,8 +12,10 @@
 
     <div class="header"><h2 class="title-rg-own">Reportes</h2></div>
     <div class="body">
+        <input type="hidden" id="idcondominio" value="{{idcondominio}}">
         <div class="row clearfix">
             <div class="col-sm-4">
+                <input type="hidden" id="sigas" value="{{sigas}}">
                 <label>Clientes</label>
                  <select id="fkcondominio" class="form-control" required>
                     {% for con in condominios %}
@@ -63,11 +65,16 @@
                     </div>
                 </div>
             </div>
-{#            <div class="col-sm-1">#}
-{#                <button id="filtrar2" type="button" class="btn bg-indigo waves-effect white-own">#}
-{#                <i class="material-icons">youtube_searched_for</i>#}
-{#                </button>#}
-{#            </div>#}
+
+                                {% if sigas %}
+                      <div class="col-sm-1">
+                <button id="filtrar2" type="button" class="btn bg-indigo waves-effect white-own">
+                <i class="material-icons">youtube_searched_for</i>
+                </button>
+            </div>
+                    {% end %}
+
+
         </div>
         <div class="row clearfix">
             <div class="col-sm-10">

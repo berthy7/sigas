@@ -186,6 +186,19 @@ class NropaseManager(SuperManager):
         else:
             return None
 
+
+    def listar_numero_pases_tag(self,usuario):
+
+        if usuario.sigas:
+            return self.db.query(self.entity).filter(self.entity.tipo == "Tag").filter(self.entity.situacion != "Ocupado").order_by(
+                self.entity.numero.asc()).all()
+
+        if usuario.rol.nombre != "RESIDENTE":
+            return self.db.query(Nropase).join(CondominioPases).join(Condominio).filter(Condominio.id == usuario.fkcondominio).filter(Nropase.tipo == "Tag").filter(self.entity.situacion != "Ocupado").order_by(Nropase.numero.asc()).all()
+
+        else:
+            return None
+
     def listar_numero_pases_residente(self,usuario):
 
         if usuario.sigas:
@@ -270,12 +283,13 @@ class NropaseManager(SuperManager):
 
     def situacion(self, id,situacion):
         x = self.db.query(Nropase).filter(Nropase.id == id).first()
-        if x.tipo != "Excepcion":
-            if x:
-                x.situacion = situacion
+        if x:
+            if x.tipo != "Excepcion":
+                if x:
+                    x.situacion = situacion
 
-                self.db.merge(x)
-                self.db.commit()
+                    self.db.merge(x)
+                    self.db.commit()
 
         return x
 

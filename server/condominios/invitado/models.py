@@ -8,7 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Invitado(Serializable, Base):
-    way = {'vehiculos': {},'nropase': {},'amistad': {}}
+    way = {'condominio': {},'vehiculos': {},'nropase': {},'amistad': {}}
 
     __tablename__ = 'invitado'
 
@@ -28,7 +28,10 @@ class Invitado(Serializable, Base):
     huella = Column(Text, nullable=True)
     rostro = Column(Text, nullable=True)
     estado = Column(Boolean, default=True)
+    enabled = Column(Boolean, default=False)
+    fkcondominio = Column(Integer, ForeignKey('condominio.id'), nullable=True)
 
+    condominio = relationship('Condominio')
     vehiculos = relationship('Vehiculo')
     nropase = relationship('Nropase')
     amistad = relationship('Amistad')
@@ -96,7 +99,7 @@ class Amistad(Serializable, Base):
     id = Column(Integer, primary_key=True)
     fkresidente = Column(Integer, ForeignKey('residente.id'), nullable=True)
     fkinvitado = Column(Integer, ForeignKey('invitado.id'), nullable=True)
-
+    proveedor = Column(Boolean, default=False)
     estado = Column(Boolean, default=True)
 
     residente = relationship('Residente')

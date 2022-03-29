@@ -31,6 +31,9 @@ class ReporteController(CrudController):
         aux = super().get_extra_data()
         us = self.get_user()
         objeto = []
+
+        aux['idcondominio'] = us.fkcondominio
+        aux['sigas'] = us.sigas
         aux['movimientos'] = MovimientoManager(self.db).list_all()
         aux['condominios'] = CondominioManager(self.db).listar_todo()
 
@@ -195,7 +198,7 @@ class ReporteController(CrudController):
         self.set_session()
         data = json.loads(self.get_argument("object"))
 
-        ins_manager = self.manager(self.db)
+        ins_manager = MovimientoManager(self.db)
         arraT = BitacoraManager(self.db).get_page(1, 10, None, None, True)
         arraT['datos'] = ins_manager.reporte_generar(data)
 

@@ -20,6 +20,7 @@ class Domicilio(Serializable, Base):
     tipo = Column(String(100), nullable=True)
     interno = Column(String(100), nullable=True)
     estado = Column(Boolean, default=True)
+    codigocondominio = Column(String(100), nullable=True)
 
     condominio = relationship('Condominio')
 

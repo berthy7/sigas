@@ -484,6 +484,15 @@ liveSearchPlaceholder: 'Buscar vehiculo',
 title: 'Seleccione Vehiculo'
 })
 
+$('#fkcondominio').selectpicker({
+size: 10,
+liveSearch: true,
+liveSearchPlaceholder: 'Buscar',
+title: 'Seleccione'
+})
+
+
+
 
 
 $('#agregar_vehiculo').click(function () {
@@ -516,6 +525,20 @@ $('#new').click(function () {
     $('#fkresidente').val('')
     $('#fkresidente').selectpicker('refresh')
 
+    $('#fkcondominio').val($('#idcondominio').val())
+    $('#fkcondominio').selectpicker('refresh')
+
+    if ($('#sigas').val()  == "True"){
+        console.log("rol sigas")
+        $('#fkcondominio').prop('disabled', false);
+
+
+    }else{
+         console.log("rol condominio")
+        $('#fkcondominio').prop('disabled', true);
+
+    }
+
     verif_inputs('')
     validationInputSelects("form")
      $('#div_nuevo_vehiculo').hide()
@@ -523,71 +546,6 @@ $('#new').click(function () {
     $('#insert').show()
     $('#update').hide()
     $('#form').modal('show')
-})
-
-$('#importar_Excel').click(function () {
-    $(".xlsfl").each(function () {
-        $(this).fileinput('refresh',{
-            allowedFileExtensions: ['xlsx', 'txt'],
-            maxFileSize: 2000,
-            maxFilesNum: 1,
-            showUpload: false,
-            layoutTemplates: {
-                main1: '{preview}\n' +
-                    '<div class="kv-upload-progress hide"></div>\n' +
-                    '<div class="input-group {class}">\n' +
-                    '   {caption}\n' +
-                    '   <div class="input-group-btn">\n' +
-                    '       {remove}\n' +
-                    '       {cancel}\n' +
-                    '       {browse}\n' +
-                    '   </div>\n' +
-                    '</div>',
-                main2: '{preview}\n<div class="kv-upload-progress hide"></div>\n{remove}\n{cancel}\n{browse}\n',
-                preview: '<div class="file-preview {class}">\n' +
-                    '    {close}\n' +
-                    '    <div class="{dropClass}">\n' +
-                    '    <div class="file-preview-thumbnails">\n' +
-                    '    </div>\n' +
-                    '    <div class="clearfix"></div>' +
-                    '    <div class="file-preview-status text-center text-success"></div>\n' +
-                    '    <div class="kv-fileinput-error"></div>\n' +
-                    '    </div>\n' +
-                    '</div>',
-                icon: '<span class="glyphicon glyphicon-file kv-caption-icon"></span>',
-                caption: '<div tabindex="-1" class="form-control file-caption {class}">\n' +
-                    '   <div class="file-caption-name"></div>\n' +
-                    '</div>',
-                btnDefault: '<button type="{type}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</button>',
-                btnLink: '<a href="{href}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</a>',
-                btnBrowse: '<div tabindex="500" class="{css}"{status}>{icon}{label}</div>',
-                progress: '<div class="progress">\n' +
-                    '    <div class="progress-bar progress-bar-success progress-bar-striped text-center" role="progressbar" aria-valuenow="{percent}" aria-valuemin="0" aria-valuemax="100" style="width:{percent}%;">\n' +
-                    '        {percent}%\n' +
-                    '     </div>\n' +
-                    '</div>',
-                footer: '<div class="file-thumbnail-footer">\n' +
-                    '    <div class="file-caption-name" style="width:{width}">{caption}</div>\n' +
-                    '    {progress} {actions}\n' +
-                    '</div>',
-                actions: '<div class="file-actions">\n' +
-                    '    <div class="file-footer-buttons">\n' +
-                    '        {delete} {other}' +
-                    '    </div>\n' +
-                    '    {drag}\n' +
-                    '    <div class="file-upload-indicator" title="{indicatorTitle}">{indicator}</div>\n' +
-                    '    <div class="clearfix"></div>\n' +
-                    '</div>',
-                actionDelete: '<button type="button" class="kv-file-remove {removeClass}" title="{removeTitle}"{dataUrl}{dataKey}>{removeIcon}</button>\n',
-                actionDrag: '<span class="file-drag-handle {dragClass}" title="{dragTitle}">{dragIcon}</span>'
-            }
-        })
-    });
-    verif_inputs('')
-
-    $('#id_div').hide()
-    $('#insert-importar').show()
-    $('#form-importar').modal('show')
 })
 
 $('#insert').click(function () {
@@ -605,6 +563,8 @@ $('#insert').click(function () {
             'fkresidente': $('#fkresidente').val(),
             'fknropase': $('#fknropase').val(),
             'b_fknropase': $('#b_fknropase').val(),
+             'fkcondominio': $('#fkcondominio').val(),
+             'codigo': $('#codigo').val(),
             
             'vehiculos' : get_vehiculos()
         })
@@ -627,57 +587,6 @@ $('#insert').click(function () {
 })
 
 
-$('#insert-importar').on('click',function (e) {
-     e.preventDefault();
-
-    var data = new FormData($('#importar-form')[0]);
-
-    ruta = "provper_importar";
-    data.append('_xsrf', getCookie("_xsrf"))
-    render = null
-    callback = function () {
-        setTimeout
-        (function () {
-            window.location = main_route
-        }, 2000);
-    }
-    $.ajax({
-        url: ruta,
-        type: "post",
-        data: data,
-        contentType: false,
-        processData: false,
-        cache: false,
-        async: false
-    }).done(function (response) {
-        $('.page-loader-wrapper').hide();
-        $('#form').modal('hide');
-        response = JSON.parse(response)
-
-        if (response.success) {
-            swal({
-                title: "Operacion Correcta...",
-                text: response.message,
-                type: "success",
-                showCancelButton: false,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Confirmar"
-            }).then(function () {
-                $('#form-importar').modal('hide')
-                setTimeout(function () {
-                    window.location = main_route
-                }, 500);
-            });
-        } else {
-            swal("Operacion Fallida", response.message, "error").then(function () {
-                query_render('/provper');
-            });
-        }
-    })
-    $('#form').modal('hide')
-})
-
-
 function editar(elemento){
     obj = JSON.stringify({
         'id': parseInt(JSON.parse($(elemento).attr('data-json')))
@@ -688,6 +597,7 @@ function editar(elemento){
     }, function (response) {
         var self = response;
             $('#id').val(self.id)
+            $('#codigo').val(self.codigo)
             $('#nombre').val(self.nombre)
             $('#apellidop').val(self.apellidop)
             $('#apellidom').val(self.apellidom)
@@ -703,6 +613,9 @@ function editar(elemento){
         
             $('#fknropase').val(self.fknropase)
             $('#fknropase').selectpicker('refresh')
+
+            $('#fkcondominio').val(self.fkcondominio)
+            $('#fkcondominio').selectpicker('refresh')
             
 
             $('#vehiculo_div').empty()
@@ -745,6 +658,7 @@ $('#update').click(function () {
     if (notvalid===false) {
         objeto = JSON.stringify({
             'id': parseInt($('#id').val()),
+             'codigo': $('#codigo').val(),
             'nombre': $('#nombre').val(),
             'apellidop': $('#apellidop').val(),
             'apellidom': $('#apellidom').val(),
@@ -755,6 +669,7 @@ $('#update').click(function () {
             'descripcion': $('#descripcion').val(),
             'fkresidente': $('#fkresidente').val(),
             'fknropase': $('#fknropase').val(),
+            'fkcondominio': $('#fkcondominio').val(),
             'vehiculos' : get_vehiculos()
         })
         ajax_call('provper_update', {

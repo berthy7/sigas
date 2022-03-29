@@ -8,7 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Residente(Serializable, Base):
-    way = {'vehiculos': {},'domicilios': {},'acceso': {},'usuario': {},'nropase': {}}
+    way = {'condominio': {},'vehiculos': {},'domicilios': {},'acceso': {},'usuario': {},'nropase': {}}
 
     __tablename__ = 'residente'
 
@@ -30,13 +30,15 @@ class Residente(Serializable, Base):
     huella = Column(Text, nullable=True)
     rostro = Column(Text, nullable=True)
     estado = Column(Boolean, default=False)
-
+    enabled = Column(Boolean, default=False)
+    fkcondominio = Column(Integer, ForeignKey('condominio.id'), nullable=True)
 
     domicilios = relationship('ResidenteDomicilio', cascade="save-update, merge, delete, delete-orphan")
     vehiculos = relationship('Vehiculo')
     acceso = relationship('ResidenteAcceso', cascade="save-update, merge, delete, delete-orphan")
     usuario = relationship('Usuario')
     nropase = relationship('Nropase')
+    condominio = relationship('Condominio')
 
     @hybrid_property
     def fullname(self):

@@ -2,6 +2,9 @@ main_route = '/residente'
 
 $(document).ready(function () {
 
+
+
+
 });
 
 
@@ -50,6 +53,15 @@ $(document).ajaxStart(function () { });
 $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
+
+
+
+$('#residente_change').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
 
 $('#fkmarca').selectpicker({
     size: 10,
@@ -197,21 +209,21 @@ function cargar_tabla(data){
 
         dom: "Bfrtip" ,
         buttons: [
-            // {  extend : 'excelHtml5',
-            //    exportOptions : { columns : [0, 1, 2, 3, 4, 5 ,6 ,7]},
-            //     sheetName: 'Reporte Areas Sociales',
-            //    title: 'reas Sociales'  },
-            // {  extend : 'pdfHtml5',
-            //     orientation: 'landscape',
-            //    customize: function(doc) {
-            //         doc.styles.tableBodyEven.alignment = 'center';
-            //         doc.styles.tableBodyOdd.alignment = 'center';
-            //    },
-            //    exportOptions : {
-            //         columns : [0, 1, 2, 3, 4, 5 ,6 ,7]
-            //     },
-            //    title: 'reas Sociales'
-            // }
+            {  extend : 'excelHtml5',
+               exportOptions : { columns : [0, 1, 2, 3, 4]},
+                sheetName: 'Reporte Residentes',
+               title: 'Residentes'  },
+            {  extend : 'pdfHtml5',
+                orientation: 'landscape',
+               customize: function(doc) {
+                    doc.styles.tableBodyEven.alignment = 'center';
+                    doc.styles.tableBodyOdd.alignment = 'center';
+               },
+               exportOptions : {
+                    columns : [0, 1, 2, 3, 4]
+                },
+               title: 'Residentes'
+            }
         ],
         initComplete: function () {
 
@@ -936,6 +948,21 @@ $('#new').click(function () {
     $('#b_fknropase').val('')
     $('#b_fknropase').selectpicker('refresh')
 
+    $('#fkcondominio').val($('#idcondominio').val())
+    $('#fkcondominio').selectpicker('refresh')
+
+    if ($('#sigas').val()  == "True"){
+        console.log("rol sigas")
+        $('#fkcondominio').prop('disabled', false);
+
+
+    }else{
+         console.log("rol condominio")
+        $('#fkcondominio').prop('disabled', true);
+
+    }
+
+
     $('#vivienda_div').empty()
     $('#vehiculo_div').empty()
 
@@ -1019,6 +1046,7 @@ $('#importar_Excel').click(function () {
 
     $('#id_div').hide()
     $('#insert-importar').show()
+    $('#insert-importar_nuevo').show()
     $('#form-importar').modal('show')
 })
 
@@ -1038,6 +1066,7 @@ $('#insert').on('click',function (e) {
             'correo': $('#correo').val(),
             'expendido': $('#expendido').val(),
             'fechanacimiento': $('#fechanacimiento').val(),
+            'fkcondominio': $('#fkcondominio').val(),
             'telefono': $('#telefono').val(),
             'fktipo': $('#fktipo').val(),
             'fknropase': $('#fknropase_peatonal').val(),
@@ -1086,6 +1115,7 @@ $('#insert').on('click',function (e) {
                             }
 
                             data.push( [
+                                response['response'][i]['id'],
                                 response['response'][i]['codigo'],
                                 response['response'][i]['ci'],
                                 response['response'][i]['fullname'],
@@ -1179,6 +1209,56 @@ $('#insert-importar').on('click',function (e) {
     $('#form').modal('hide')
 })
 
+$('#insert-importar_nuevo').on('click',function (e) {
+     e.preventDefault();
+
+    var data = new FormData($('#importar-form')[0]);
+
+    ruta = "residente_importar_nuevo";
+    data.append('_xsrf', getCookie("_xsrf"))
+    render = null
+    callback = function () {
+        setTimeout
+        (function () {
+            window.location = main_route
+        }, 2000);
+    }
+    $.ajax({
+        url: ruta,
+        type: "post",
+        data: data,
+        contentType: false,
+        processData: false,
+        cache: false,
+        async: false
+    }).done(function (response) {
+        $('.page-loader-wrapper').hide();
+        $('#form').modal('hide');
+        response = JSON.parse(response)
+
+        if (response.success) {
+            swal({
+                title: "Operacion Correcta...",
+                text: response.message,
+                type: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Confirmar"
+            }).then(function () {
+                $('#form-importar').modal('hide')
+                setTimeout(function () {
+                    window.location = main_route
+                }, 500);
+            });
+        } else {
+            swal("Operacion Fallida", response.message, "error").then(function () {
+                query_render('/residente');
+            });
+        }
+    })
+    $('#form').modal('hide')
+})
+
 
 function editar(elemento){
     accion = "editar"
@@ -1206,6 +1286,8 @@ function editar(elemento){
             $('#telefono').val(self.telefono)
             $('#fktipo').val(self.fktipo)
             $('#fktipo').selectpicker('refresh')
+                    $('#fkcondominio').val(self.fkcondominio)
+            $('#fkcondominio').selectpicker('refresh')
             $('#fknropase_peatonal').val(self.fknropase)
             $('#fechai').val(self.fechai)
             $('#fechaf').val(self.fechaf)
@@ -1250,15 +1332,15 @@ function editar(elemento){
 
                 append_input_vehiculos(self.vehiculos[vehi]['id'])
                 $('#id' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['id'])
-                $('#placa' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['placa'])
+                $('#placa' + self.vehiculos[vehi]['id']).html(self.vehiculos[vehi]['placa'])
                 $('#fktipo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fktipo'])
-                $('#tipo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombretipo'])
+                $('#tipo' + self.vehiculos[vehi]['id']).html(self.vehiculos[vehi]['nombretipo'])
                 $('#fkcolor' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fkcolor'])
-                $('#color' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombrecolor'])
+                $('#color' + self.vehiculos[vehi]['id']).html(self.vehiculos[vehi]['nombrecolor'])
                 $('#fkmarca' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fkmarca'])
-                $('#marca' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombremarca'])
+                $('#marca' + self.vehiculos[vehi]['id']).html(self.vehiculos[vehi]['nombremarca'])
                 $('#fkmodelo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fkmodelo'])
-                $('#modelo' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nombremodelo'])
+                $('#modelo' + self.vehiculos[vehi]['id']).html(self.vehiculos[vehi]['nombremodelo'])
                 $('#fknropase' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['fknropase'])
                 $('#nropase' + self.vehiculos[vehi]['id']).val(self.vehiculos[vehi]['nropase'])
 
@@ -1286,6 +1368,8 @@ function editar(elemento){
     })
     }
 
+
+
 $('#update').on('click',function (e) {
      e.preventDefault();
       notvalid = validationInputSelectsWithReturn("form");
@@ -1302,6 +1386,7 @@ $('#update').on('click',function (e) {
              'correo': $('#correo').val(),
              'expendido': $('#expendido').val(),
              'fechanacimiento': $('#fechanacimiento').val(),
+             'fkcondominio': $('#fkcondominio').val(),
              'telefono': $('#telefono').val(),
              'fktipo': $('#fktipo').val(),
              'fknropase': $('#fknropase_peatonal').val(),
@@ -1341,6 +1426,7 @@ $('#update').on('click',function (e) {
                 }
 
                 data.push( [
+                    response['response'][i]['id'],
                     response['response'][i]['codigo'],
                     response['response'][i]['ci'],
                     response['response'][i]['fullname'],
@@ -1403,29 +1489,65 @@ reload_form()
         })
     })
 
-function eliminar(elemento){
-    cb_delete = elemento
-    b = $(elemento).prop('checked')
-    if (!b) {
-        cb_title = "¿Deshabilitar Residente?"
 
-    } else {
-        cb_title = "¿Habilitar Residente?"
-    }
+function eliminar(e){
+
+    $('#codigoResidente').val(parseInt(JSON.parse($(e).attr('data-json'))))
+    $('#nombreResidente').val($(e).attr('data-fullname'))
+    $('#modal-delete').modal('show')
+}
+
+// function eliminar(elemento){
+//     cb_delete = elemento
+//     b = $(elemento).prop('checked')
+//     if (!b) {
+//         cb_title = "¿Deshabilitar Residente?"
+//
+//     } else {
+//         cb_title = "¿Habilitar Residente?"
+//     }
+//     swal({
+//         title: cb_title,
+//         type: "warning",
+//         showCancelButton: true,
+//         confirmButtonColor: "#393939",
+//         cancelButtonColor: "#F44336",
+//         confirmButtonText: "Aceptar",
+//         cancelButtonText: "Cancelar"
+//     }).then(function () {
+//         $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
+//         objeto = JSON.stringify({
+//             id: parseInt($(cb_delete).attr('data-id')),
+//             enabled: $(cb_delete).is(':checked')
+//         })
+//         ajax_call('residente_delete', {
+//             object: objeto,
+//             _xsrf: getCookie("_xsrf")
+//         }, null, function () {
+//             setTimeout(function () {
+//                 window.location = main_route
+//             }, 2000);
+//         })
+//         $('#form').modal('hide')
+//     })
+// }
+
+$('#insertBajaResidente').click(function () {
+    
+    objeto = JSON.stringify({
+        'codigo': $('#codigoResidente').val(),
+        'fkresidente_change': $('#residente_change').val()
+    })
+    
     swal({
-        title: cb_title,
+        title: "¿Desea dar de baja al residente?",
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#393939",
+        confirmButtonColor: "#006227",
         cancelButtonColor: "#F44336",
         confirmButtonText: "Aceptar",
         cancelButtonText: "Cancelar"
     }).then(function () {
-        $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
-        objeto = JSON.stringify({
-            id: parseInt($(cb_delete).attr('data-id')),
-            enabled: $(cb_delete).is(':checked')
-        })
         ajax_call('residente_delete', {
             object: objeto,
             _xsrf: getCookie("_xsrf")
@@ -1433,10 +1555,12 @@ function eliminar(elemento){
             setTimeout(function () {
                 window.location = main_route
             }, 2000);
+            $('#modal-delete').modal('hide')
         })
-        $('#form').modal('hide')
     })
-}
+    
+
+})
 
 validationKeyup("form")
 validationSelectChange("form")

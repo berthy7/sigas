@@ -1,6 +1,7 @@
 from .managers import *
 from server.common.controllers import CrudController
 from ..domicilio.managers import *
+from ..condominio.managers import *
 from ..vehiculo.managers import *
 from ..marca.managers import *
 from ..modelo.managers import *
@@ -22,12 +23,24 @@ class ResidenteController(CrudController):
         '/residente_update': {'PUT': 'edit', 'POST': 'update'},
         '/residente_delete': {'POST': 'delete'},
         '/residente_importar': {'POST': 'importar'},
+        '/residente_importar_nuevo': {'POST': 'importar_nuevo'},
         '/vehiculo_obtener': {'POST': 'obtener_vehiculo'},
         '/residente_reporte_xls': {'POST': 'imprimirxls'},
         '/residente_obtener_domicilios': {'POST': 'obtener_domicilios'},
-        '/residente_validar_codigo': {'POST': 'validar_codigo'},
+        '/residente_validar_codigo': {'POST': 'validar_codigo'}
 
     }
+
+    def edit(self):
+        self.set_session()
+        ins_manager = self.manager(self.db)
+        diccionary = json.loads(self.get_argument("object"))
+        indicted_object = ins_manager.obtain(diccionary['id'])
+        if len(ins_manager.errors) == 0:
+            self.respond(indicted_object.get_dict(), message='Operacion exitosa!')
+        else:
+            self.respond([item.__dict__ for item in ins_manager.errors], False, 'Ocurrió un error al insertar')
+        self.db.close()
 
     def importar(self):
         self.set_session()
@@ -45,11 +58,28 @@ class ResidenteController(CrudController):
             self.respond(message='Formato de Archivo no aceptado¡¡', success=False)
         self.db.close()
 
+    def importar_nuevo(self):
+        self.set_session()
+        fileinfo = self.request.files['archivo'][0]
+        fname = fileinfo['filename']
+        extn = os.path.splitext(fname)[1]
+        cname = str(uuid.uuid4()) + extn
+        fh = open("server/common/resources/uploads/" + cname, 'wb')
+        fh.write(fileinfo['body'])
+        fh.close()
+        if extn in ['.xlsx', '.xls']:
+            mee = self.manager(self.db).importar_excel_nuevo(cname, self.get_user_id(), self.request.remote_ip)
+            self.respond(message=mee['message'], success=mee['success'])
+        else:
+            self.respond(message='Formato de Archivo no aceptado¡¡', success=False)
+        self.db.close()
+
     def get_extra_data(self):
         aux = super().get_extra_data()
         us = self.get_user()
         objeto = []
 
+        aux['sigas'] = us.sigas
         aux['objeto'] = objeto
         aux['viviendas'] = DomicilioManager(self.db).listar_domicilios(us)
         aux['residentes'] = ResidenteManager(self.db).listar_residentes(us)
@@ -59,6 +89,10 @@ class ResidenteController(CrudController):
         aux['marcas'] = MarcaManager(self.db).listar_todo()
         aux['modelos'] = ModeloManager(self.db).listar_todo()
         aux['nropases_residente'] = NropaseManager(self.db).listar_numero_pases_residente(us)
+
+        aux['sigas'] = us.sigas
+        aux['idcondominio'] = us.fkcondominio
+        aux['condominios'] = CondominioManager(self.db).listar_todo()
 
         return aux
 
@@ -148,10 +182,9 @@ class ResidenteController(CrudController):
     def delete(self):
         self.set_session()
         diccionary = json.loads(self.get_argument("object"))
-
-        id = diccionary['id']
-        state = diccionary['enabled']
-        respuesta = ResidenteManager(self.db).delete(id, self.get_user_id(), self.request.remote_ip,state)
+        diccionary['user'] = self.get_user_id()
+        diccionary['ip'] = self.request.remote_ip
+        respuesta = ResidenteManager(self.db).delete(diccionary)
 
         self.respond(success=True, message=respuesta)
         self.db.close()
@@ -183,3 +216,7 @@ class ResidenteController(CrudController):
         else:
             self.respond(success=False, message='/resources/images/rechazado.png')
             self.db.close()
+
+
+
+

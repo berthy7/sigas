@@ -10,7 +10,7 @@ from ..areasocial.managers import *
 from ..nropase.managers import *
 from ..movimiento.managers import *
 from ..condominio.managers import *
-from onesignal_sdk.client import Client
+# from onesignal_sdk.client import Client
 from threading import Thread
 
 
@@ -19,7 +19,7 @@ import os.path
 import uuid
 import json
 global urlServidor
-urlServidor = 'http://pruebass-web.herokuapp.com/api/v1/'
+urlServidor = 'http://sigas-web.herokuapp.com/api/v1/'
 
 class Movimiento_pController(CrudController):
 
@@ -61,6 +61,15 @@ class Movimiento_pController(CrudController):
         aux['movimientos_peatonal'] = Movimiento_pManager(self.db).listar_movimiento_dia(us)
 
         return aux
+
+    def delete(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        id = diccionary['id']
+        user = self.get_user_id()
+        ip = self.request.remote_ip
+        Movimiento_pManager(self.db).delete(id, user, ip)
+        self.respond(success=False, message='Baja Realizada Correctamente.')
 
     def insert(self):
         self.set_session()
@@ -184,12 +193,11 @@ class Movimiento_pController(CrudController):
         t = Thread(target=self.hilo_sincronizar_salida, args=(diccionary,resp,))
         t.start()
 
+        lista_dict =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
 
+        print("respuesta filtro")
 
-        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] =  Movimiento_pManager(self.db).filtrar(fechainicio, fechafin,self.get_user_id())
-
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
+        self.respond(response=lista_dict, success=True,
                      message='actualizado correctamente.')
 
     def hilo_sincronizar_salida(self, diccionary,respMov):
@@ -239,7 +247,7 @@ class Movimiento_pController(CrudController):
 
             try:
 
-                url = urlServidor+"sincronizar_movimiento_salida"
+                url = urlServidor+"sincronizar_movimiento_salida_nube"
 
                 headers = {'Content-Type': 'application/json'}
 
@@ -265,14 +273,31 @@ class Movimiento_pController(CrudController):
         data = json.loads(self.get_argument("object"))
 
         ins_manager = self.manager(self.db)
-        fechainicio = datetime.strptime(data['fechainicio'], '%d/%m/%Y')
-        fechafin = datetime.strptime(data['fechafin'], '%d/%m/%Y')
         user = self.get_user_id()
-        arraT = Movimiento_pManager(self.db).get_page(1, 10, None, None, True)
-        arraT['datos'] = ins_manager.filtrar(fechainicio, fechafin,user)
 
-        self.respond(response=[objeto.get_dict() for objeto in arraT['datos']], success=True,
-                     message='actualizado correctamente.')
+        if data['fresidente'] != '':
+            lista_ = ins_manager.filtrar_residente(datetime.strptime(data['fechainicio'], '%d/%m/%Y'),
+                                                   datetime.strptime(data['fechafin'], '%d/%m/%Y'),
+                                                   data['fresidente'])
+            self.respond(response=lista_, success=True,
+                         message='actualizado correctamente.')
+
+        else:
+
+            if data['fdomicilio'] != '':
+                lista_ = ins_manager.filtrar_domicilio(datetime.strptime(data['fechainicio'], '%d/%m/%Y'),
+                                                       datetime.strptime(data['fechafin'], '%d/%m/%Y'),
+                                                       data['fdomicilio'])
+                self.respond(response=lista_, success=True,
+                             message='actualizado correctamente.')
+            else:
+
+                if data['fdomicilio'] == '' or data['fresidente'] == '':
+                    lista_ = ins_manager.filtrar(datetime.strptime(data['fechainicio'], '%d/%m/%Y'),
+                                                 datetime.strptime(data['fechafin'], '%d/%m/%Y'), user)
+
+                    self.respond(response=lista_, success=True,
+                                 message='actualizado correctamente.')
 
 
     def recargar(self):

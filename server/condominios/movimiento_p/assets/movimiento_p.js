@@ -243,75 +243,39 @@ function actualizar_tabla_x_fechas(fechainicio,fechafin,ult_registro_parametro) 
         response = JSON.parse(response)
 
         var data = [];
-        var id;
-        var fechai;
-        var fechaf;
-        var tipodocumento;
-        var ci;
-        var nombre;
-
-        var destino;
-        var nropase;
         var salida;
+        var fechainicio;
 
         for (var i = 0; i < Object.keys(response.response).length; i++) {
             id = response['response'][i].id
 
-            if(response['response'][i].fechai){
-                fechai= response['response'][i].fechai
-            }else{
-                fechai =response['response'][i].fechar
-                // fechai = '-----'
-            }
-
-            if(response['response'][i].fechaf){
-                fechaf = response['response'][i].fechaf
-                salida= '✓'
-            }else{
-                fechaf = '-----'
-                salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida white-own' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
-
-            }
-
-            if(response['response'][i].fktipodocumento){
-                    tipodocumento= response['response'][i].tipodocumento.nombre
+                if(response['response'][i].descripcion_fechaf != '-----'){
+                    salida= "<i class='Medium material-icons icon-cog'>check_circle</i>"
                 }else{
-                    tipodocumento = '-----'
+                    salida ="<button id='exit' onClick='salida(this)' data-json="+response['response'][i].id+" type='button' class='btn bg-indigo white-own waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
                 }
 
-            if(response['response'][i].fkinvitado != "None"){
-                ci = response['response'][i].invitado.ci,
-                nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
-
-            }else{
-                ci ='Residente'
-                nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
-            }
-
-            if(response['response'][i].fkdomicilio != "None"){
-                destino = response['response'][i].domicilio.ubicacion
-            }else if(response['response'][i].fkareasocial != "None"){
-                destino = response['response'][i].areasocial.nombre
-            }else{
-                destino = '-----'
-            }
-
-            if(response['response'][i].fknropase != "None"){
-                nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
-            }else{
-                nropase = '-----'
-            }
+                if($('#idperfil').val() == 1){
+                    salida += "<button id='delete' onClick='eliminar(this)' data-json='"+response['response'][i].id+"' type='button' class='btn bg-indigo waves-effect waves-light white-own' title='Eliminar'><i class='material-icons'>delete</i></button> "
+                }
+                console.log("cargar Tabla: "+response['response'][i].fechai)
+                 if(response['response'][i].descripcion_fechai  == '-----'){
+                    fechainicio = response['response'][i].fechar.strftime('%d/%m/%Y %H:%M:%S')
+                }else{
+                    fechainicio = response['response'][i].descripcion_fechai
+                }
 
             data.push( [
-                id,
-                fechai,
-                fechaf,
-                tipodocumento,
-                ci,
-                nombre,
-                destino,
+                response['response'][i].id,
+                fechainicio,
+                response['response'][i].descripcion_fechaf,
+                response['response'][i].descripcion_documento,
+                response['response'][i].descripcion_ci_invitado,
+                response['response'][i].descripcion_nombre_invitado,
+                response['response'][i].descripcion_destino,
                 response['response'][i].autorizacion.nombre,
-                nropase,
+                response['response'][i].descripcion_residente,
+                response['response'][i].descripcion_nropase,
                 response['response'][i].tipopase.nombre,
                 salida
             ]);
@@ -327,6 +291,22 @@ $('#fkinvitado').selectpicker({
     liveSearchPlaceholder: 'Buscar Personas',
     title: 'Seleccione Personas'
 })
+
+$('#fdomicilio').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+
+$('#fresidente').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
 
 $('#fkresidente').selectpicker({
     size: 10,
@@ -410,6 +390,16 @@ $('#nropase').selectpicker({
     liveSearch: true,
     liveSearchPlaceholder: 'Buscar',
     title: 'Seleccione'
+})
+
+$('#fresidente').change(function() {
+    $('#fdomicilio').val('')
+    $('#fdomicilio').selectpicker('refresh')
+})
+
+$('#fdomicilio').change(function() {
+    $('#fresidente').val('')
+    $('#fresidente').selectpicker('refresh')
 })
 
 $('#switch_visita').change(function() {
@@ -520,76 +510,38 @@ function cargar_tabla(data){
 
 function actualizar_tabla(response){
     var data = [];
-    var id;
     var fechai;
-    var fechaf;
-    var tipodocumento;
-    var ci;
-    var nombre;
-
-    var destino;
-    var nropase;
     var salida;
 
     for (var i = 0; i < Object.keys(response.response).length; i++) {
-        id = response['response'][i].id
-
-        if(response['response'][i].fechai){
-            fechai= response['response'][i].fechai
+        if(response['response'][i].fechai == '-----'){
+            fechai= response['response'][i].fechar
         }else{
-            fechai =response['response'][i].fechar
-            // fechai = '-----'
+            fechai =response['response'][i].fechai
         }
 
         if(response['response'][i].fechaf){
-            fechaf = response['response'][i].fechaf
-            salida= '✓'
+            salida= "<i class='Medium material-icons icon-cog'>check_circle</i>"
         }else{
-            fechaf = '-----'
             salida ="<button id='exit' onClick='salida(this)' data-json="+id+" type='button' class='btn bg-indigo waves-effect waves-light salida' title='Actualizar Salida'><i class='material-icons'>exit_to_app</i></button>"
-
-        }
-        
-        if(response['response'][i].fktipodocumento){
-                tipodocumento= response['response'][i].tipodocumento.nombre
-            }else{
-                tipodocumento = '-----'
-            }
-
-        if(response['response'][i].fkinvitado != "None"){
-            ci = response['response'][i].invitado.ci,
-            nombre = response['response'][i].invitado.nombre +" "+response['response'][i].invitado.apellidop+" "+response['response'][i].invitado.apellidom
-
-        }else{
-            ci ='Residente'
-            nombre = response['response'][i].residente.nombre +" "+response['response'][i].residente.apellidop+" "+response['response'][i].residente.apellidom
-        }
-        
-        if(response['response'][i].fkdomicilio != "None"){
-            destino = response['response'][i].domicilio.ubicacion
-        }else if(response['response'][i].fkareasocial != "None"){
-            destino = response['response'][i].areasocial.nombre
-        }else{
-            destino = '-----'
         }
 
-        if(response['response'][i].fknropase != "None"){
-            nropase = response['response'][i].nropase.numero + " " + response['response'][i].nropase.tipo
-        }else{
-            nropase = '-----'
+       if($('#idperfil').val() == 1){
+            salida += "<button id='delete' onClick='eliminar(this)' data-json='" + id + "' type='button' class='btn bg-indigo waves-effect waves-light white-own' title='Eliminar'><i class='material-icons'>delete</i></button> "
         }
 
         data.push( [
-            id,
+            response['response'][i].id,
             fechai,
-            fechaf,
-            tipodocumento,
-            ci,
-            nombre,
-            destino,
-            response['response'][i].autorizacion.nombre,
-            nropase,
-            response['response'][i].tipopase.nombre,
+            response['response'][i].fechaf,
+            response['response'][i].documento,
+            response['response'][i].ci_invitado,
+            response['response'][i].nombre_invitado,
+            response['response'][i].destino,
+            response['response'][i].autorizacion,
+            response['response'][i].residente,
+            response['response'][i].nropase,
+            response['response'][i].tipopase,
             salida
         ]);
     }
@@ -685,7 +637,7 @@ $('#fkinvitado').change(function () {
 
 $('#fkdomicilio').change(function () {
     
-    cargar_residente($('#fkdomicilio').val())
+    // cargar_residente($('#fkdomicilio').val())
 
     $('#fkareasocial').val('')
     $('#fkareasocial').selectpicker('refresh')
@@ -741,6 +693,33 @@ $('#fkareasocial').change(function () {
 
         $('#fkdomicilio').val('')
         $('#fkdomicilio').selectpicker('refresh')
+
+});
+
+
+$('#fkresidente').change(function () {
+
+    obj = JSON.stringify({
+        'id': parseInt($('#fkresidente').val())
+    })
+    ajax_call_get('residente_update', {
+        _xsrf: getCookie("_xsrf"),
+        object: obj
+    }, function (response) {
+
+        var self = response;
+
+            for (invi in self.domicilios) {
+                $('#fkdomicilio').val(self.domicilios[invi]['fkdomicilio'])
+                $('#fkdomicilio').selectpicker('refresh')
+
+            }
+        
+            $('#fkautorizacion').val(1)
+            $('#fkautorizacion').selectpicker('refresh')
+
+
+    })
 
 });
 
@@ -870,6 +849,39 @@ $('#new').click(function () {
     $('#form').modal('show')
 })
 
+function eliminar(elemento){
+    cb_delete = elemento
+    b = $(elemento).prop('checked')
+    if (!b) {
+        cb_title = "¿Deshabilitar Movimiento?"
+
+    } else {
+        cb_title = "¿Habilitar Movimiento?"
+    }
+    swal({
+        title: cb_title,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#393939",
+        cancelButtonColor: "#F44336",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar"
+    }).then(function () {
+        objeto = JSON.stringify({
+            id: parseInt(JSON.parse($(elemento).attr('data-json')))
+        })
+        ajax_call('movimiento_p_delete', {
+            object: objeto,
+            _xsrf: getCookie("_xsrf")
+        }, null, function () {
+            setTimeout(function () {
+                window.location = main_route
+            }, 2000);
+        })
+        $('#form').modal('hide')
+    })
+}
+
 $('#insert').click(function () {
 
     if ($('#fkdomicilio').val() == "" && $('#fkareasocial').val() == ""){
@@ -880,7 +892,63 @@ $('#insert').click(function () {
             'warning'
         )
     }else{
-        if($('#switch_paselibre').prop('checked')){
+        if ($('#fkresidente').val() == ""){
+
+            swal(
+                'Error de datos.',
+                 'Seleccione Residente',
+                'warning'
+            )
+        }else{
+            if($('#switch_paselibre').prop('checked')){
+                        notvalid = validationInputSelectsWithReturn("form");
+                        if (notvalid===false) {
+                            objeto = JSON.stringify({
+                                'fkinvitacion': $('#fkinvitacion').val(),
+                                'codigoautorizacion': $('#codigoautorizacion').val(),
+                                'fktipodocumento': $('#fktipodocumento').val(),
+                                'fkinvitado': $('#fkinvitado').val(),
+                                'nombre': $('#nombre').val(),
+                                'apellidop': $('#apellidop').val(),
+                                'apellidom': $('#apellidom').val(),
+                                'ci': $('#ci').val(),
+                                'expendido': $('#expendido').val(),
+                                'fkdomicilio': $('#fkdomicilio').val(),
+                                'fkareasocial': $('#fkareasocial').val(),
+                                'fktipopase': $('#fktipopase').val(),
+                                'fkautorizacion': $('#fkautorizacion').val(),
+                                'fkresidente': $('#fkresidente').val(),
+                                'fknropase': $('#nropase').val(),
+                                'observacion': $('#observacion').val(),
+                                'visita': sw_visita,
+
+                            })
+                            ajax_call('movimiento_p_insert', {
+                                object: objeto,
+                                _xsrf: getCookie("_xsrf")
+                            }, null, function () {
+                                setTimeout(function () {
+                                    window.location = main_route
+                                }, 1000);
+                            })
+                            $('#form').modal('hide')
+                        } else {
+                            swal(
+                                'Error de datos.',
+                                 notvalid,
+                                'error'
+                            )
+                        }
+                }else{
+
+                if($('#fkmarca').val() == 0 && $('#nombre_marca').val() == ""){
+
+                    swal(
+                        'Error de datos.',
+                         'Ingrese Marca del vehiculo',
+                        'warning'
+                    )
+                }else{
                     notvalid = validationInputSelectsWithReturn("form");
                     if (notvalid===false) {
                         objeto = JSON.stringify({
@@ -919,55 +987,8 @@ $('#insert').click(function () {
                             'error'
                         )
                     }
-            }else{
 
-            if($('#fkmarca').val() == 0 && $('#nombre_marca').val() == ""){
-
-                swal(
-                    'Error de datos.',
-                     'Ingrese Marca del vehiculo',
-                    'warning'
-                )
-            }else{
-                notvalid = validationInputSelectsWithReturn("form");
-                if (notvalid===false) {
-                    objeto = JSON.stringify({
-                        'fkinvitacion': $('#fkinvitacion').val(),
-                        'codigoautorizacion': $('#codigoautorizacion').val(),
-                        'fktipodocumento': $('#fktipodocumento').val(),
-                        'fkinvitado': $('#fkinvitado').val(),
-                        'nombre': $('#nombre').val(),
-                        'apellidop': $('#apellidop').val(),
-                        'apellidom': $('#apellidom').val(),
-                        'ci': $('#ci').val(),
-                        'expendido': $('#expendido').val(),
-                        'fkdomicilio': $('#fkdomicilio').val(),
-                        'fkareasocial': $('#fkareasocial').val(),
-                        'fktipopase': $('#fktipopase').val(),
-                        'fkautorizacion': $('#fkautorizacion').val(),
-                        'fkresidente': $('#fkresidente').val(),
-                        'fknropase': $('#nropase').val(),
-                        'observacion': $('#observacion').val(),
-                        'visita': sw_visita,
-
-                    })
-                    ajax_call('movimiento_p_insert', {
-                        object: objeto,
-                        _xsrf: getCookie("_xsrf")
-                    }, null, function () {
-                        setTimeout(function () {
-                            window.location = main_route
-                        }, 1000);
-                    })
-                    $('#form').modal('hide')
-                } else {
-                    swal(
-                        'Error de datos.',
-                         notvalid,
-                        'error'
-                    )
                 }
-
             }
         }
     }
@@ -1162,6 +1183,8 @@ $('#filtrar').click(function () {
     obj = JSON.stringify({
         'fechainicio': $('#fechai').val(),
         'fechafin': $('#fechaf').val(),
+        'fresidente': $('#fresidente').val(),
+        'fdomicilio': $('#fdomicilio').val(),
         '_xsrf': getCookie("_xsrf")
     })
     ruta = "movimiento_p_filtrar";
@@ -1169,11 +1192,17 @@ $('#filtrar').click(function () {
         method: "POST",
         url: ruta,
         data: {_xsrf: getCookie("_xsrf"), object: obj},
-        async: true
+        async: true,
+        beforeSend: function () {
+           $("#rproc-loader").fadeIn(800);
+           $("#new").hide();
+        },
+        success: function () {
+           $("#rproc-loader").fadeOut(800);
+           $("#new").show();
+        }
     }).done(function (response) {
-
         response = JSON.parse(response)
-        console.log(response)
         actualizar_tabla(response)
     })
 });

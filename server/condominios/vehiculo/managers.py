@@ -151,6 +151,10 @@ class VehiculoManager(SuperManager):
 
 
     def insert(self, diccionary):
+        if diccionary['fkmodelo'] == "":
+            diccionary['fkmodelo'] = None
+
+
         objeto = VehiculoManager(self.db).entity(**diccionary)
         fecha = BitacoraManager(self.db).fecha_actual()
     
@@ -158,17 +162,37 @@ class VehiculoManager(SuperManager):
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Vehiculo.", fecha=fecha, tabla="vehiculo",
                      identificador=a.id)
         super().insert(b)
+
+        if a.fknropase:
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
         return a
     
     
     def update(self, diccionary):
+
+        if diccionary['fknropase'] != None:
+            if diccionary['fknropase'] == "0":
+                diccionary['fknropase'] = None
+
+            if diccionary['idnropase'] == "":
+                diccionary['idnropase'] = None
+
+            NropaseManager(self.db).situacion(diccionary['idnropase'], "Libre")
+            NropaseManager(self.db).situacion(diccionary['fknropase'], "Ocupado")
+
         objeto = VehiculoManager(self.db).entity(**diccionary)
         fecha = BitacoraManager(self.db).fecha_actual()
+
+
     
         a = super().update(objeto)
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Modifico Vehiculo.", fecha=fecha, tabla="vehiculo",
                      identificador=a.id)
         super().insert(b)
+        if a.fknropase:
+            # actualizar siuacion
+            NropaseManager(self.db).situacion(a.fknropase, "Ocupado")
         return a
     
     

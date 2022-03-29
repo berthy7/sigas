@@ -162,6 +162,7 @@ class EventoManager(SuperManager):
         return a
 
     def insertar_invitacion_rapida(self, diccionary):
+        print("insertar_invitacion_rapida")
 
         lista = list()
         diccionary['fechai'] = diccionary['fecha']

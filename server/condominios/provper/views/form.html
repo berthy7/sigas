@@ -18,6 +18,17 @@
                     </div>
                     <div class="row clearfix">
                         <div class="col-sm-3">
+                            <label>Codigo</label>
+                                <div class="form-line">
+                                    <input id="codigo" name="codigo" type="text" class="form-control txta-own"  required>
+                                </div>
+                        </div>
+
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
                             <label>Nombre</label>
                                 <div class="form-line">
                                     <input id="nombre" name="Nombre" type="text" class="form-control txta-own" required >
@@ -98,6 +109,21 @@
                                  </div>
                         </div>
 
+                    </div>
+                    </br>
+                    </br>
+                    <div class="row clearfix">
+                        <div class="col-sm-3">
+                            <label>Condominio</label>
+                             <input type="hidden" id="sigas" value="{{sigas}}">
+                            <input type="hidden" id="idcondominio" value="{{idcondominio}}">
+                             <select id="fkcondominio" class="form-control" required>
+                                 <option value="">Seleccione</option>
+                                {% for con in condominios %}
+                                    <option value="{{con.id}}">{{con.nombre}}</option>
+                                {% end %}
+                             </select>
+                        </div>
                     </div>
                     </br>
                     </br>

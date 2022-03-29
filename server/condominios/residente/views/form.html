@@ -1,5 +1,5 @@
 <div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document" style="width:100vw; max-width: 1450px" >
+    <div class="modal-dialog" role="document" style="width:60vw; max-width: 1000px" >
         <div class="modal-content">
             <form id="form_submit" class="new" enctype="multipart/form-data" novalidate>
                 <div class="modal-header">
@@ -120,7 +120,7 @@
                                     <div class="col-sm-3">
                                         <label>Fecha de Nacimiento</label>
                                             <div class="form-line">
-                                                <input id="fechanacimiento" name="Fecha de Nacimiento" type="text" class="form-control date txta-own" required>
+                                                <input id="fechanacimiento" name="Fecha de Nacimiento" type="text" class="form-control date txta-own">
                                             </div>
                                     </div>
                                     <div class="col-sm-3">
@@ -189,6 +189,21 @@
                         </div>
                         <div class="tab-pane fade body" id="body-vivienda" role="tabpanel" aria-labelledby="tab-vivienda">
                             <div id="vivienda_form_body" class="box-body">
+                                <div class="row clearfix">
+                                    <div class="col-sm-6">
+                                        <label>Condominio</label>
+                                        <input type="hidden" id="sigas" value="{{sigas}}">
+                                        <input type="hidden" id="idcondominio" value="{{idcondominio}}">
+                                         <select id="fkcondominio" class="form-control" required>
+                                              <option value="0">Todos</option>
+                                            {% for con in condominios %}
+                                                <option value="{{con.id}}">{{con.nombre}}</option>
+                                            {% end %}
+                                         </select>
+                                    </div>
+                                </div>
+                                </br>
+                                </br>
                                 <div class="row clearfix">
                                     <div id="div_agregar_vivienda" class="col-sm-2">
                                         <button id="agregar_vivienda" type="button" class="btn bg-indigo waves-effect white-own waves-light"
@@ -344,20 +359,20 @@
                                     <div class="col-sm-1">
                                         <label class="form-label">Placa</label>
                                     </div>
-                                    <div class="col-sm-1">
+                                    <div class="col-sm-2">
                                         <label class="form-label">Tipo</label>
                                     </div>
                                     <div class="col-sm-1">
                                         <label class="form-label">Color</label>
                                     </div>
-                                    <div class="col-sm-1">
+                                    <div class="col-sm-2">
                                         <label class="form-label">Marca</label>
                                     </div>
-                                    <div class="col-sm-1">
+                                    <div class="col-sm-2">
                                         <label class="form-label">Modelo</label>
                                     </div>
                                     <div class="col-sm-1">
-                                        <label class="form-label">Nro Tarjeta.</label>
+                                        <label class="form-label">Tag</label>
                                     </div>
 
                                 </div>
@@ -471,8 +486,73 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button id="insert-importar" type="submit" class="btn bg-indigo white-own">Importar</button>
+                    <button id="insert-importar_nuevo" type="submit" class="btn bg-indigo white-own">Importar Nuevo</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-delete">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="title-form" class="modal-title">Baja de Residente</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row clearfix">
+                    <div class="col-sm-6">
+                        <div class="form-group form-float">
+                            <label for="nombrePersonalRetiro" class="form-label">Codigo</label>
+                            <div class="form-line">
+                                <input id="codigoResidente" type="text" class="form-control " readonly>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-float">
+                            <label for="nombrePersonalRetiro" class="form-label">Nombre</label>
+                            <div class="form-line">
+                                <input id="nombreResidente" type="text" class="form-control " readonly>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-sm-6">
+                        <div class="form-group form-float">
+                            <label  class="form-label">Transferir Domicilios a Otro Residente</label>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label  class="form-label">Residentes</label>
+                            <select id="residente_change"  class="form-control show-tick item-form">
+                                {% for e in residentes %}
+                                    <option value="{{ e.codigo }}">{{ e.codigo }} | {{ e.fullname }}</option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                                <button type="button" class="btn bg-orange waves-effect" data-dismiss="modal">
+                    <i class="material-icons">close</i> Cerrar
+                </button>
+                <button id="insertBajaResidente" type="button" class="btn bg-page-own waves-effect">Guardar<i class="material-icons">save</i></button>
+
+
+            </div>
         </div>
     </div>
 </div>

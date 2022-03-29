@@ -10,6 +10,34 @@ $(document).ajaxStop(function () {
     $.Toast.hideToast();
 });
 
+$('#fknropase').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+$('#fkresidente').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+$('#fkcolor').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
+$('#fktipo').selectpicker({
+    size: 10,
+    liveSearch: true,
+    liveSearchPlaceholder: 'Buscar',
+    title: 'Seleccione'
+})
+
 $('#fkmarca').selectpicker({
     size: 10,
     liveSearch: true,
@@ -57,6 +85,12 @@ $('#fkmodelo').selectpicker({
 
     });
 
+$('#fknropase').change(function() {
+
+      $('#tarjeta').val($( "#fknropase option:selected" ).text())
+
+})
+
 function cargar_tabla(data){
 
     if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
@@ -102,13 +136,20 @@ function cargar_tabla(data){
 
 $('#new').click(function () {
     $('#placa').val('')
-    $('#color').val('')
-    $('#tipo').val('')
-    $('#tipo').selectpicker('refresh')
+    $('#fkcolor').val('')
+    $('#fkcolor').selectpicker('refresh')
+    $('#fktipo').val('')
+    $('#fktipo').selectpicker('refresh')
     $('#fkmarca').val('')
     $('#fkmarca').selectpicker('refresh')
     $('#fkmodelo').val('')
     $('#fkmodelo').selectpicker('refresh')
+        $('#fkresidente').val('')
+    $('#fkresidente').selectpicker('refresh')
+        $('#fknropase').val('')
+    $('#fknropase').selectpicker('refresh')
+            $('#idnropase').val('')
+        $('#tarjeta').val('')
 
     verif_inputs('')
     validationInputSelects("form")
@@ -125,10 +166,12 @@ $('#insert').click(function () {
     if (notvalid===false) {
         objeto = JSON.stringify({
             'placa': $('#placa').val(),
-            'color': $('#color').val(),
-            'tipo': $('#tipo').val(),
+            'fkcolor': $('#fkcolor').val(),
+            'fktipo': $('#fktipo').val(),
             'fkmarca': $('#fkmarca').val(),
-            'fkmodelo': $('#fkmodelo').val()
+            'fkmodelo': $('#fkmodelo').val(),
+            'fkresidente': $('#fkresidente').val(),
+            'fknropase': $('#fknropase').val()
         })
         ajax_call('vehiculo_insert', {
             object: objeto,
@@ -160,13 +203,28 @@ $('#insert').click(function () {
         var self = response;
         $('#id').val(self.id)
         $('#placa').val(self.placa)
-        $('#color').val(self.color)
-        $('#tipo').val(self.tipo)
-        $('#tipo').selectpicker('refresh')
+        $('#fkcolor').val(self.fkcolor)
+        $('#fkcolor').selectpicker('refresh')
+        $('#fktipo').val(self.fktipo)
+        $('#fktipo').selectpicker('refresh')
         $('#fkmarca').val(self.fkmarca)
         $('#fkmarca').selectpicker('refresh')
         $('#fkmodelo').val(self.fkmodelo)
         $('#fkmodelo').selectpicker('refresh')
+        $('#fkresidente').val(self.fkresidente)
+        $('#fkresidente').selectpicker('refresh')
+        $('#fknropase').val(self.fknropase)
+        $('#fknropase').selectpicker('refresh')
+        if(self.fknropase != "None"){
+            $('#idnropase').val(self.fknropase)
+            $('#tarjeta').val(self.nropase.tarjeta)
+        }else{
+            $('#idnropase').val('')
+            $('#tarjeta').val('')
+        }
+
+        
+
 
         validationInputSelects("form")
         verif_inputs('')
@@ -184,10 +242,14 @@ $('#update').click(function () {
         objeto = JSON.stringify({
             'id': parseInt($('#id').val()),
             'placa': $('#placa').val(),
-            'color': $('#color').val(),
-            'tipo': $('#tipo').val(),
+            'fkcolor': $('#fkcolor').val(),
+            'fktipo': $('#fktipo').val(),
             'fkmarca': $('#fkmarca').val(),
-            'fkmodelo': $('#fkmodelo').val()
+            'fkmodelo': $('#fkmodelo').val(),
+            'fkresidente': $('#fkresidente').val(),
+            'fknropase': $('#fknropase').val(),
+            'idnropase': $('#idnropase').val(),
+            'tarjeta': $('#tarjeta').val()
         })
         ajax_call('vehiculo_update', {
             object: objeto,

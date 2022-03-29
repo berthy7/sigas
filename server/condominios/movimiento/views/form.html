@@ -154,10 +154,22 @@
                         </br>
                         <div class="row clearfix">
                             <div class="col-sm-6">
+                               <label>Residente que autoriza</label>
+                                 <select id="fkresidente" class="form-control" required>
+                                    {% for resi in residentes %}
+                                        <option value="{{resi.id}}">{{resi.fullname}}</option>
+                                    {% end %}
+                                 </select>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
                                <label>Domicilios  |  Nro. Interno</label>
                                  <select id="fkdomicilio" class="form-control">
                                     {% for domi in domicilios %}
-                                        <option value="{{domi.id}}">{{domi.nombre}}  |  {{domi.interno}}</option>
+                                        <option value="{{domi.id}}">{{domi.ubicacion}} {{domi.numero}} |  {{domi.interno}}</option>
                                     {% end %}
                                  </select>
                                 </br>
@@ -174,18 +186,7 @@
                                 </br>
                             </div>
                         </div>
-                        <div class="row clearfix">
-                            <div class="col-sm-6">
-                               <label>Tipo de Pase</label>
-                                 <select id="fktipopase" class="form-control" required>
-                                    {% for tipopase in tipopases %}
-                                        <option value="{{tipopase.id}}">{{tipopase.nombre}}</option>
-                                    {% end %}
-                                 </select>
-                                </br>
-                                </br>
-                            </div>
-                        </div>
+
                         <div class="row clearfix">
                             <div class="col-sm-6">
                                <label>Tipo de Autorizacion</label>
@@ -207,11 +208,12 @@
                             </div>
                         </div>
                         <div class="row clearfix">
+
                             <div class="col-sm-6">
-                               <label>Residente que autoriza</label>
-                                 <select id="fkresidente" class="form-control">
-                                    {% for resi in residentes %}
-                                        <option value="{{resi.id}}">{{resi.fullname}}</option>
+                               <label>Tipo de Pase</label>
+                                 <select id="fktipopase" class="form-control" required>
+                                    {% for tipopase in tipopases %}
+                                        <option value="{{tipopase.id}}">{{tipopase.nombre}}</option>
                                     {% end %}
                                  </select>
                                 </br>

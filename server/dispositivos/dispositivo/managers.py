@@ -76,6 +76,36 @@ class DispositivoManager(SuperManager):
 
         return resp
 
+    def listar_huellas(self, x):
+
+        # codigos = self.db.query(Huellas).filter(self.entity.codigo.between(2999, 3032)).all()
+
+        codigos = [2999,3000,3001,3002,3003,3004,3005,3006,3007,3008,3009,3010,3011,3012,3013,3014,3015,3016,3017,3018,3019,3020,3021,3022,3023
+                   ,3024,3025,3026,3027,3028,3029,3030,3031]
+
+        resp_usuario = []
+
+        resp_config = []
+
+        for cod in codigos:
+            print("codigo: " + str(cod))
+            resp_huella = []
+            user = dict(userid=cod,codigo=cod,huellas=[])
+
+            huellas = self.db.query(Huellas).filter(Huellas.codigo == cod).all()
+            for hue in huellas:
+
+                # user['userid'] = hue.userid
+
+                resp_huella.append(
+                    dict(userid=hue.codigo, codigo=hue.codigo, fingerid=hue.fingerid, valid=hue.valid, fpversion=hue.fpversion, template=hue.template4))
+
+            user['huellas'] = resp_huella
+            resp_usuario.append(user)
+
+        print("usuarios devueltos: " + str(len(resp_usuario)))
+        return resp_usuario
+
     def listar_locales_cant_marcaciones(self, x):
 
         dispositivos = self.db.query(Dispositivo).filter(Dispositivo.estado == True).all()
@@ -116,7 +146,10 @@ class DispositivoManager(SuperManager):
 
         imagen = "/resources/images/dispositivo.PNG"
 
-        for x in  self.db.query(Cerraduras).filter(Cerraduras.estado == True).all():
+        lisCerraduras = self.db.query(Cerraduras).join(Dispositivo)\
+                .filter(Dispositivo.estado == True).all()
+
+        for x in  lisCerraduras:
 
             if x.dispositivo.situacion:
                 imagen = "/resources/images/dispositivo.PNG"
@@ -514,6 +547,28 @@ class DispositivoeventosManager(SuperManager):
 
     def obtener_x_codigo(self, codigo):
         return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
+
+
+class HuellasManager(SuperManager):
+
+    def __init__(self, db):
+        super().__init__(Huellas, db)
+
+    def insertHuellas(self, list_huellas_dic):
+        resp = []
+        for dicc in list_huellas_dic:
+
+            objeto = HuellasManager(self.db).entity(**dicc)
+            if objeto.id == 0:
+                objeto.id = None
+
+            resp.append(dict(id=objeto.templateid))
+            self.db.add(objeto)
+            # print(str(estado['fkdispositivo']) + " " + str(estado['conexion']) )
+        self.db.commit()
+
+        return resp
+
 
 
 

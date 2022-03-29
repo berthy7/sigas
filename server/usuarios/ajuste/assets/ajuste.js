@@ -43,6 +43,22 @@ function cargar_reserva_minima(){
 
 }
 
+$('#EjecutarconsultaSql').click(function () {
+
+    objeto = JSON.stringify({
+        'consultaSql': $('#consultaSql').val()
+    })
+    ajax_call('ajuste_ejecutar_consulta', {
+        object: objeto,
+        _xsrf: getCookie("_xsrf")
+    }, null, function () {
+        setTimeout(function () {
+            window.location = main_route
+        }, 2000);
+    })
+
+})
+
 $('#actualizarVersionmovil').click(function () {
 
     objeto = JSON.stringify({
@@ -85,6 +101,21 @@ $('#actualizarcuotasMora').click(function () {
         'cuotasMora': $('#cuotasMora').val()
     })
     ajax_call('ajuste_update', {
+        object: objeto,
+        _xsrf: getCookie("_xsrf")
+    }, null, function () {
+        setTimeout(function () {
+            window.location = main_route
+        }, 2000);
+    })
+
+})
+
+$('#residentecondominio').click(function () {
+
+    objeto = JSON.stringify({
+    })
+    ajax_call('ajuste_residente_movimiento', {
         object: objeto,
         _xsrf: getCookie("_xsrf")
     }, null, function () {

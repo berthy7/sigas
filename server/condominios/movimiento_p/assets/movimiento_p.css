@@ -17,3 +17,8 @@
 .tooltip {
     position: fixed;
 }
+
+.icon-cog {
+  color: #25D366;
+    font-size: 36px;
+}

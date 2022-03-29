@@ -18,26 +18,26 @@ class DomicilioManager(SuperManager):
         super().__init__(Domicilio, db)
 
     def obtener_x_codigo(self, codigo):
-        return self.db.query(self.entity).filter(self.entity.codigo == codigo).first()
+        return self.db.query(self.entity).join(Condominio).filter(Condominio.estado == True).filter(self.entity.codigo == codigo).first()
 
 
     def obtener_x_nombre(self, nombre):
-        return self.db.query(self.entity).filter(self.entity.nombre == nombre).first()
+        return self.db.query(self.entity).join(Condominio).filter(Condominio.estado == True).filter(self.entity.nombre == nombre).first()
 
     def obtener_x_id(self,id):
-        return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.id == id).first()
+        return self.db.query(self.entity).join(Condominio).filter(Condominio.estado == True).filter(self.entity.estado == True).filter(self.entity.id == id).first()
 
     def obtener_fkcondominio(self,iddomicilio):
-        x=  self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.id == iddomicilio).first()
+        x=  self.db.query(self.entity).join(Condominio).filter(Condominio.estado == True).filter(self.entity.estado == True).filter(self.entity.id == iddomicilio).first()
         return x.fkcondominio
 
     def listar_domicilios(self,usuario):
 
         if usuario.sigas:
-            return self.db.query(self.entity).filter(self.entity.estado == True).order_by(self.entity.id.asc()).all()
+            return self.db.query(self.entity).join(Condominio).filter(Condominio.estado == True).filter(self.entity.estado == True).order_by(self.entity.id.asc()).all()
 
         if usuario.rol.nombre != "RESIDENTE":
-            return self.db.query(self.entity).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.estado == True).order_by(self.entity.id.asc()).all()
+            return self.db.query(self.entity).join(Condominio).filter(Condominio.estado == True).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.estado == True).order_by(self.entity.id.asc()).all()
 
         else:
             return None
@@ -54,17 +54,17 @@ class DomicilioManager(SuperManager):
     def listar_casas(self,usuario):
 
         if usuario.fkcondominio:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.tipo == "Casa").order_by(self.entity.id.asc()).all()
+            return self.db.query(self.entity).filter(Condominio.estado == True).filter(self.entity.estado == True).filter(self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.tipo == "Casa").order_by(self.entity.id.asc()).all()
         elif usuario.fkresidente:
             return self.db.query(self.entity).join(ResidenteDomicilio).join(Residente).filter(Residente.id == usuario.fkresidente).filter(self.entity.estado == True).order_by(self.entity.id.asc()).all()
 
         else:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(self.entity.tipo == "Casa").order_by(self.entity.id.asc()).all()
+            return self.db.query(self.entity).filter(Condominio.estado == True).filter(self.entity.estado == True).filter(self.entity.tipo == "Casa").order_by(self.entity.id.asc()).all()
 
     def listar_departamentos(self,usuario):
 
         if usuario.fkcondominio:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+            return self.db.query(self.entity).filter(Condominio.estado == True).filter(self.entity.estado == True).filter(
                 self.entity.fkcondominio == usuario.fkcondominio).filter(self.entity.tipo == "Departamento").all()
         elif usuario.fkresidente:
             x = self.db.query(Domicilio).join(ResidenteDomicilio).filter(ResidenteDomicilio.vivienda == True).filter(ResidenteDomicilio.fkresidente == usuario.fkresidente).first()
@@ -72,7 +72,7 @@ class DomicilioManager(SuperManager):
             return self.db.query(Domicilio).filter(Domicilio.tipo == "Departamento").filter(Domicilio.fkcondominio== x.condominio.id).all()
 
         else:
-            return self.db.query(self.entity).filter(self.entity.estado == True).filter(
+            return self.db.query(self.entity).filter(Condominio.estado == True).filter(self.entity.estado == True).filter(
                 self.entity.tipo == "Departamento").all()
 
     def listar_x_residente(self, usuario,fkdomicilio):
@@ -108,6 +108,9 @@ class DomicilioManager(SuperManager):
         fecha = BitacoraManager(self.db).fecha_actual()
 
         a = super().insert(objeto)
+
+        a.codigocondominio = a.condominio.codigo
+        super().update(a)
         b = Bitacora(fkusuario=objeto.user, ip=objeto.ip, accion="Registro Domicilio.", fecha=fecha,tabla="domicilio", identificador=a.id)
         super().insert(b)
         return a
@@ -161,6 +164,9 @@ class DomicilioManager(SuperManager):
                         query = self.db.query(self.entity).filter(
                             self.entity.codigo == str(cod_domicilio)).all()
 
+                        if interno is None :
+                            interno = "-"
+
                         cod_condominio = cod_condominio.replace(" ", "")
 
                         query_condominio = self.db.query(Condominio).filter(Condominio.codigo == str(cod_condominio)).first()
@@ -169,13 +175,14 @@ class DomicilioManager(SuperManager):
                             idcondominio = query_condominio.id
                             if not query:
                                 cod_domicilio = cod_domicilio.replace(" ", "")
-                                ubicacion = ubicacion.replace(" ", "")
+                                # ubicacion = ubicacion.replace(" ", "")
                                 domi = Domicilio(codigo=str(cod_domicilio),
                                                  numero=str(numero),
                                                  ubicacion=str(ubicacion),
                                                  interno=str(interno),
                                                  tipo=str(tipo),
-                                                 fkcondominio=int(idcondominio))
+                                                 fkcondominio=int(idcondominio),
+                                                 codigocondominio=str(cod_condominio))
 
                                 self.db.merge(domi)
                                 self.db.flush()

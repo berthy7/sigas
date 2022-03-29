@@ -10,6 +10,8 @@
         {% if 'condominio_delete' in privileges %}
             <button id="delete" data-json="{{ c.id }}" type="button" class="btn bg-red waves-effect white-own waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>
         {% end %}
+         <a target="_blank" href="http://{{ c.ip_publica }}:{{ c.puerto }}/"><button data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect white-own waves-light " title="Editar">
+             <i class="material-icons">public</i></button></a>
     </td>
 </tr>
 {% end %}

@@ -14,6 +14,7 @@ from server.dispositivos.registros.managers import *
 from server.condominios.movimiento_p.managers import *
 from server.dispositivos.dispositivo.managers import *
 from server.condominios.vehiculo.managers import *
+from server.condominios.provper.managers import ProvperManager
 
 
 from server.usuarios.login.managers import *
@@ -23,7 +24,8 @@ from server.common.controllers import CrudController, SuperController, ApiContro
 import os.path
 import json
 import ast
-
+global urlServidor
+urlServidor = 'http://sigas-web.herokuapp.com/api/v1/'
 
 class ApiCondominioController(ApiController):
     manager = ResidenteManager
@@ -81,27 +83,35 @@ class ApiCondominioController(ApiController):
         '/api/v1/eliminar_notificacion': {'POST': 'eliminar_notificacion'},
 
         '/api/v1/listar_dispositivos': {'POST': 'listar_dispositivos'},
+        '/api/v1/listar_huellas': {'POST': 'listar_huellas'},
         '/api/v1/listar_dispositivos_locales': {'POST': 'listar_dispositivos_locales'},
         '/api/v1/marcaciones_dispositivo': {'POST': 'marcaciones_dispositivo'},
         '/api/v1/listar_nuevas_configuraciones': {'POST': 'listar_nuevas_configuraciones'},
         '/api/v1/configuraciones_procesadas': {'POST': 'configuraciones_procesadas'},
+        '/api/v1/huellas_access': {'POST': 'huellas_access'},
 
         '/api/v1/sincronizar_condominio': {'POST': 'sincronizar_condominio'},
         '/api/v1/sincronizar_login': {'POST': 'sincronizar_login'},
         '/api/v1/sincronizar_usuario': {'POST': 'sincronizar_usuario'},
         '/api/v1/sincronizar_usuario_estado': {'POST': 'sincronizar_usuario_estado'},
+        '/api/v1/sincronizar_residente_deshabilitar': {'POST': 'sincronizar_residente_deshabilitar'},
         '/api/v1/sincronizar_residente': {'POST': 'sincronizar_residente'},
         '/api/v1/sincronizar_invitado': {'POST': 'sincronizar_invitado'},
         '/api/v1/sincronizar_evento': {'POST': 'sincronizar_evento'},
         '/api/v1/sincronizar_invitacion': {'POST': 'sincronizar_invitacion'},
         '/api/v1/sincronizar_movimiento': {'POST': 'sincronizar_movimiento'},
+        '/api/v1/sincronizar_provper': {'POST': 'sincronizar_provper'},
         '/api/v1/sincronizar_movimiento_salida': {'POST': 'sincronizar_movimiento_salida'},
         '/api/v1/sincronizar_invitacion_rapida': {'POST': 'sincronizar_invitacion_rapida'},
         '/api/v1/sincronizar_cancelar_evento': {'POST': 'sincronizar_cancelar_evento'},
         '/api/v1/sincronizar_cancelar_invitacion': {'POST': 'sincronizar_cancelar_invitacion'},
         '/api/v1/sincronizar_cancelar_invitacion_rapida': {'POST': 'sincronizar_cancelar_invitacion_rapida'},
         '/api/v1/sincronizar_actualizar_evento': {'POST': 'sincronizar_actualizar_evento'},
-        '/api/v1/sincronizar_movimiento_p': {'POST': 'sincronizar_movimiento_p'}
+        '/api/v1/sincronizar_movimiento_p': {'POST': 'sincronizar_movimiento_p'},
+        '/api/v1/sincronizar_movimiento_estado': {'POST': 'sincronizar_movimiento_estado'},
+        '/api/v1/sincronizar_movimiento_salida_nube': {'POST': 'sincronizar_movimiento_salida_nube'}
+
+
     }
 
     # Notificaciones
@@ -343,8 +353,9 @@ class ApiCondominioController(ApiController):
                         if principal.estado:
                             print("principal")
 
-
-                            self.funcion_sincronizar(users, dict(user=users.id,token=usuario['token']), "sincronizar_login")
+                            # t = Thread(target=self.hilo_sincronizar_update_descripcion, args=(a,))
+                            # t.start()
+                            # self.funcion_sincronizar(users, dict(user=users.id,token=usuario['token']), "sincronizar_login")
 
 
                         self.respond(success=True, response=usuario, message='Usuario Logueado correctamente.')
@@ -1091,6 +1102,8 @@ class ApiCondominioController(ApiController):
 
                     invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
                     data['ci'] = invi.ci
+                    data['nombre'] = invi.nombre
+                    data['apellidop'] = invi.apellidop
 
                     self.funcion_sincronizar(u,data,"sincronizar_invitacion")
 
@@ -1134,11 +1147,19 @@ class ApiCondominioController(ApiController):
                     self.db.commit()
 
                     invi = InvitadoManager(self.db).obtener_x_id(data['fkinvitado'])
+                    data['nombre'] = invi.nombre
+                    data['apellidop'] = invi.apellidop
                     data['ci'] = invi.ci
+
+                    print("ci" + data['ci'])
+                    print("nombre" + data['nombre'])
+                    print("apellidop" + data['apellidop'])
 
                     data['codigoautorizacion'] = resp.invitaciones[0].codigoautorizacion
 
                     self.funcion_sincronizar(u, data, "sincronizar_invitacion_rapida")
+
+                    print("paso_funcion sincronizar")
 
 
 
@@ -1168,6 +1189,7 @@ class ApiCondominioController(ApiController):
                 usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
                 data['user'] = usuario.id
                 print("ingreso Vehicular movil ci: " + str(data['ci']))
+                data['fechar'] = ""
 
                 mov = MovimientoManager(self.db).insert(data)
 
@@ -1175,7 +1197,9 @@ class ApiCondominioController(ApiController):
                 if principal.estado:
                     mov.codigo = mov.id
                     data['codigo'] = mov.id
-                    data['fechar'] = mov.fechar.strftime('%d/%m/%Y %H:%M:%S')
+                    data['fechar'] = datetime.now(pytz.timezone('America/La_Paz')).strftime('%d/%m/%Y %H:%M:%S')
+
+                    print("fechar sincro: " + data['fechar'])
 
                     accesos_invitacion = InvitacionManager(self.db).obtener_accesos_evento(data['fkinvitacion'])
 
@@ -1208,12 +1232,15 @@ class ApiCondominioController(ApiController):
                     data['fkinvitado'] = ""
                     data['fkconductor'] = ""
 
-                    self.funcion_sincronizar_x_condominio(condominio,data,"sincronizar_movimiento")
+                    response = self.funcion_sincronizar_x_condominio(condominio,data,"sincronizar_movimiento")
+                    print("movimiento sincronzizado :" +str(response['response']) + " mensaje: "+str(response['message']))
 
                 objeto = mov.get_dict()
                 objeto['residente'] = None
                 objeto['domicilio'] = None
                 objeto['areasocial'] = None
+                objeto = mov.get_dict()
+                print("objeto get_dict: " + str(objeto))
                 self.respond(response=objeto, success=True, message='Insertado correctamente.')
             else:
                 self.respond(success=Respuestausuario['success'], response=Respuestausuario['response'],
@@ -1264,7 +1291,8 @@ class ApiCondominioController(ApiController):
 
                     data['fkinvitado'] = ""
 
-                    self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_p")
+                    response = self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_p")
+                    print("movimiento sincronzizado :" +str(response['response']) + " mensaje: "+str(response['message']))
 
 
                 objeto = mov.get_dict()
@@ -1541,11 +1569,43 @@ class ApiCondominioController(ApiController):
                      else:
                          condominio = None
 
-                     data['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+                     data['fechaf'] = datetime.now(pytz.timezone('America/La_Paz')).strftime('%d/%m/%Y %H:%M:%S')
+
+                     print(str(data))
 
 
-                     self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_salida")
+                     response = self.funcion_sincronizar_x_condominio(condominio, data, "sincronizar_movimiento_salida")
+                     print("movimiento sincronzizado :" + str(response['response']) + " mensaje: " + str(response['message']))
 
+                else:
+                    data['user'] = self.get_user_id()
+                    data['ip'] = self.request.remote_ip
+                    data['idmovimiento'] = resp.codigo
+                    # destino = MovimientoManager(self.db).obtener_destino(diccionary['id'])
+                    #
+                    # if destino:
+                    #     condominio = CondominioManager(self.db).obtener_x_id(destino.fkcondominio)
+                    #
+                    # else:
+                    #     condominio = None
+
+                    data['fechaf'] = resp.fechaf.strftime('%d/%m/%Y %H:%M:%S')
+
+                    try:
+
+                        url = urlServidor + "sincronizar_movimiento_salida_nube"
+
+                        headers = {'Content-Type': 'application/json'}
+
+                        cadena = json.dumps(data)
+                        body = cadena
+                        print("body: " + str(body))
+                        resp = requests.post(url, data=body, headers=headers, verify=False)
+                        response = json.loads(resp.text)
+
+                        print(response)
+                    except Exception as e:
+                        print("sincronizar_movimiento_salida_nube: " + str(e))
 
                 self.respond(response=None, success=True, message='Salida Actualizada Correctamente.')
             else:
@@ -1629,23 +1689,60 @@ class ApiCondominioController(ApiController):
         RegistrosManager(self.db).insertRegistros(x)
         self.respond(success=True, message='Insertado correctamente.')
 
-    def listar_dispositivos(self):
+    def huellas_access(self):
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
             # x = ast.literal_eval(data)
             x = json.loads(data)
+            # print("ws marcaciones dispositivo " + str(x['iddispositivo']))
 
-            resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(x)
-            DispositivoManager(self.db).verificar_estado(x)
+            resp = HuellasManager(self.db).insertHuellas(x)
+            # self.respond(success=True, message='Insertado correctamente.')
+
+            self.respond(response=resp, success=True, message="huellas regisstradas correctamente.")
+
+        except Exception as e:
+            print(e)
+            self.respond(response=0, success=False, message=str(e))
+            self.db.close()
+
+    def listar_huellas(self):
+        print("consulto listar_huellas")
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            # x = ast.literal_eval(data)
+            # x = json.loads(data)
+
+            resp = DispositivoManager(self.db).listar_huellas(data)
+            # DispositivoManager(self.db).verificar_estado(data)
 
             self.db.close()
 
-            self.respond(response=resp,success=True, message="dispositivos recuperados correctamente.")
+            self.respond(response=resp, success=True, message="dispositivos recuperados correctamente.")
         except Exception as e:
             print(e)
             self.respond(response=0, success=False, message=str(e))
         self.db.close()
+
+    def listar_dispositivos(self):
+            try:
+                self.set_session()
+                data = json.loads(self.request.body.decode('utf-8'))
+                # x = ast.literal_eval(data)
+                # x = json.loads(data)
+
+                resp = DispositivoManager(self.db).listar_todo_cant_marcaciones(data)
+                # DispositivoManager(self.db).verificar_estado(data)
+
+                self.db.close()
+
+                self.respond(response=resp,success=True, message="dispositivos recuperados correctamente.")
+            except Exception as e:
+                print(e)
+                self.respond(response=0, success=False, message=str(e))
+            self.db.close()
 
     def listar_dispositivos_locales(self):
         try:
@@ -1670,7 +1767,7 @@ class ApiCondominioController(ApiController):
         self.set_session()
         data = json.loads(self.request.body.decode('utf-8'))
         x = ast.literal_eval(data)
-        print("ws configuraciones procesadas ")
+        # print("ws configuraciones procesadas ")
 
         ConfiguraciondispositivoManager(self.db).actualizar_codigos(x)
         self.respond(success=True, message='Actualizado correctamente.')
@@ -1692,7 +1789,8 @@ class ApiCondominioController(ApiController):
                     resp = requests.post(url, data=body, headers=headers, verify=False)
                     response = json.loads(resp.text)
 
-                    # print(response)
+                    print(response)
+                    return response
 
 
         except Exception as e:
@@ -1711,8 +1809,7 @@ class ApiCondominioController(ApiController):
                 body = cadena
                 resp = requests.post(url, data=body, headers=headers, verify=False)
                 response = json.loads(resp.text)
-
-                # print(response)
+                return response
 
 
         except Exception as e:
@@ -1775,6 +1872,42 @@ class ApiCondominioController(ApiController):
             user = UsuarioManager(self.db).state(u.id, diccionary['estado'], diccionary['user'], diccionary['ip'])
             # user = user.get_dict()
             self.respond(response=None, success=True, message='Actualizacion de estado correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_residente_deshabilitar(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+            data['ip'] = self.request.remote_ip
+
+            ResidenteManager(self.db).delete(data)
+            # user = user.get_dict()
+            self.respond(response=None, success=True, message='baja realizada correctamente.')
+
+        except Exception as e:
+            print(e)
+            self.respond(response=str(e), success=False, message=str(e))
+        self.db.close()
+
+    def sincronizar_movimiento_estado(self):
+        try:
+            self.set_session()
+            diccionary = json.loads(self.request.body.decode('utf-8'))
+
+            mov = MovimientoManager(self.db).obtener_x_codigo(diccionary['id'])
+            if mov:
+                MovimientoManager(self.db).delete(mov.id, diccionary['user'], diccionary['ip'])
+                # user = user.get_dict()
+                self.respond(response=None, success=True, message='Actualizacion de estado correctamente.')
+            else:
+                self.respond(response=None, success=False, message='movimiento no encontrado id: ' + str(diccionary['id']))
 
         except Exception as e:
             print(e)
@@ -1864,6 +1997,29 @@ class ApiCondominioController(ApiController):
             self.respond(response=str(e), success=False, message=str(e))
         self.db.close()
 
+    def sincronizar_provper(self):
+        try:
+            self.set_session()
+            data = json.loads(self.request.body.decode('utf-8'))
+            print("sincronizar_provper")
+
+            u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+            data['user'] = u.id
+
+            if data['fkresidente'] != "":
+                resi = ResidenteManager(self.db).obtener_x_codigo(data['fkresidente'])
+                if resi:
+                    data['fkresidente'] = resi.id
+                else:
+                    data['fkresidente'] = None
+
+            objeto_Provper = ProvperManager(self.db).insert(data)
+            self.respond(response=objeto_Provper.id, success=True, message='Insertado correctamente.')
+        except Exception as e:
+            print(e)
+            self.respond(response=None, success=False, message=str(e))
+        self.db.close()
+
     def sincronizar_movimiento(self):
         try:
             self.set_session()
@@ -1876,7 +2032,7 @@ class ApiCondominioController(ApiController):
             data['fkvehiculo'] =  ""
             data['fkinvitado'] = ""
 
-            if data['nombre_modelo'] != "":
+            if data['nombre_marca'] != "":
                 print("nombre_marca: "+str(data['nombre_marca']))
 
                 marca = MarcaManager(self.db).obtener_o_crear(data['nombre_marca'])
@@ -1950,7 +2106,7 @@ class ApiCondominioController(ApiController):
             self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
-            self.respond(response=str(e), success=False, message=str(e))
+            self.respond(response=None, success=False, message=str(e))
         self.db.close()
 
     def sincronizar_movimiento_p(self):
@@ -2016,39 +2172,58 @@ class ApiCondominioController(ApiController):
             self.respond(response=objeto_mov.id, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
-            self.respond(response=str(e), success=False, message=str(e))
+            self.respond(response=None, success=False, message=str(e))
         self.db.close()
 
-    def sincronizar_movimiento_salida(self):
+    def sincronizar_movimiento_salida_nube(self):
         try:
             self.set_session()
+            print("sincronizar_movimiento_salida_nube")
             data = json.loads(self.request.body.decode('utf-8'))
+            print("sincronizar_movimiento_salida_nube  :"+ str(data))
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
 
-            # print(str(data))
-            # print(str(usuario))
-
-            mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
+            mov = MovimientoManager(self.db).obtener_x_id(data['idmovimiento'])
 
             if mov:
 
-                print("mov: " +str(mov.id))
-                print("usuario: " +str(usuario.id))
-
-                MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
-                self.respond(response=None, success=True, message='Salida movimiento.')
+                MovimientoManager(self.db).salida_sincronizada_nube(mov.id, data['fechaf'], usuario.id, data['ip'])
+                self.respond(response=str(mov.id), success=True, message='Salida movimiento Sincronizada.')
             else:
-                self.respond(response=None, success=True, message=' No Sincronizo Salida movimiento.')
+                self.respond(response=None, success=False, message=' No Sincronizo Salida movimiento.')
 
         except Exception as e:
             print(e)
-            self.respond(response=str(e), success=False, message=str(e))
+            self.respond(response=None, success=False, message=str(e))
         self.db.close()
 
+    def sincronizar_movimiento_salida(self):
+            try:
+                self.set_session()
+                data = json.loads(self.request.body.decode('utf-8'))
+                usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
+
+                mov = MovimientoManager(self.db).obtener_x_codigo(data['idmovimiento'])
+
+                if mov:
+
+                    MovimientoManager(self.db).salida_sincronizada(mov.id, data['fechaf'], usuario.id, data['ip'])
+                    self.respond(response=str(mov.id), success=True, message='Salida movimiento Sincronizada.')
+                else:
+                    self.respond(response=None, success=False, message=' No Sincronizo Salida movimiento.')
+
+            except Exception as e:
+                print(e)
+                self.respond(response=None, success=False, message=str(e))
+            self.db.close()
+
     def sincronizar_invitacion(self):
+        print("sincronizar invitacion")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
+
+            print("data: " + str(data))
 
             usuario = UsuarioManager(self.db).obtener_x_codigo(data['user'])
             data['user'] = usuario.id
@@ -2056,7 +2231,8 @@ class ApiCondominioController(ApiController):
             event = EventoManager(self.db).obtener_x_codigo(data['fkevento'])
             data['fkevento'] = event.id
 
-            invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
+            # invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
+            invi = InvitadoManager(self.db).obtener_x_datos(data['ci'], data['nombre'], data['apellidop'])
             data['fkinvitado'] = invi.id
 
             resp = InvitacionManager(self.db).insert(data)
@@ -2069,25 +2245,49 @@ class ApiCondominioController(ApiController):
         self.db.close()
 
     def sincronizar_invitacion_rapida(self):
+        print("sincronizar invitacion rapida")
         try:
             self.set_session()
             data = json.loads(self.request.body.decode('utf-8'))
 
             u = UsuarioManager(self.db).obtener_x_codigo(data['user'])
-            data['user'] = u.id
+            if u:
+                data['user'] = u.id
+            else:
+                data['user'] = None
+
+            print(str(data['user']))
 
             data['fkresidente'] = u.fkresidente
 
+            print("fkresidente:" + str(data['fkresidente'] ))
+
             domi = ResidenteManager(self.db).obtener_domicilios(u.fkresidente)
-            data['fkdomicilio'] = domi.id
+
+            if domi:
+                data['fkdomicilio'] = domi.id
+            else:
+
+                data['fkdomicilio'] = None
+
+            print("fkdomicilio:" + str(data['fkdomicilio']))
 
 
-            invi = InvitadoManager(self.db).obtener_x_ci(data['ci'])
-            data['fkinvitado'] = invi.id
+            invi = InvitadoManager(self.db).obtener_x_datos(data['ci'],data['nombre'],data['apellidop'])
+
+            if invi:
+                data['fkinvitado'] = invi.id
+            else:
+
+                data['fkinvitado'] = None
+
+            print("fkinvitado:" + str(data['fkinvitado']))
 
 
-            EventoManager(self.db).insertar_invitacion_rapida(data)
-            self.respond(response=None, success=True, message='Insertado correctamente.')
+
+
+            a = EventoManager(self.db).insertar_invitacion_rapida(data)
+            self.respond(response=a.id, success=True, message='Insertado correctamente.')
         except Exception as e:
             print(e)
             self.respond(response=str(e), success=False, message=str(e))

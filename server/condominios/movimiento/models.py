@@ -40,6 +40,7 @@ class Movimiento(Serializable, Base):
 
     estado = Column(Boolean, default=True)
 
+    descripcion_condominio = Column(String(50), nullable=True, default='-----')
     descripcion_fechai = Column(String(50), nullable=True,default='-----')
     descripcion_fechaf = Column(String(50), nullable=True, default='-----')
     descripcion_documento = Column(String(20), nullable=True, default=' ')
@@ -53,6 +54,7 @@ class Movimiento(Serializable, Base):
     descripcion_color = Column(String(20), nullable=True, default=' ')
     descripcion_destino = Column(String(50), nullable=True, default=' ')
     descripcion_nropase = Column(String(50), nullable=True, default=' ')
+    descripcion_residente = Column(String(50), nullable=True, default=' ')
 
     invitacion = relationship('Invitacion')
     invitado = relationship('Invitado', foreign_keys=[fkinvitado])

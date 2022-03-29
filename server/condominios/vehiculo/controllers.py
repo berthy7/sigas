@@ -33,7 +33,11 @@ class VehiculoController(CrudController):
 
         aux['objeto'] = objeto
         aux['marcas'] = MarcaManager(self.db).listar_todo()
+        aux['tipos'] = TipovehiculoManager(self.db).listar_todo()
         aux['modelos'] = ModeloManager(self.db).listar_todo()
+        aux['colores'] = ColorManager(self.db).listar_todo()
+        aux['residentes'] = ResidenteManager(self.db).listar_residentes(us)
+        aux['nropases_tag'] = NropaseManager(self.db).listar_numero_pases_tag(us)
 
         return aux
 

@@ -14,6 +14,9 @@ class AjusteController(CrudController):
         '/ajuste_insert': {'POST': 'insert'},
         '/ajuste_update_movil': {'PUT': 'edit', 'POST': 'update_movil'},
         '/ajuste_onesignal': { 'POST': 'ajuste_onesignal'},
+        '/ajuste_residente_condominio': {'POST': 'residente_condominio'},
+        '/ajuste_residente_movimiento': {'POST': 'residente_movimiento'},
+        '/ajuste_ejecutar_consulta': {'POST': 'ejecutar_consuta'},
         '/ajuste_delete': {'POST': 'delete'}
     }
 
@@ -22,6 +25,15 @@ class AjusteController(CrudController):
         aux['ajuste'] = AjusteManager(self.db).obtener()
 
         return aux
+
+
+    def ejecutar_consuta(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        diccionary['user'] = self.get_user_id()
+        diccionary['ip'] = self.request.remote_ip
+        AjusteManager(self.db).ejecutar_consuta(diccionary)
+        self.respond(success=True, message='Insertado correctamente.')
 
 
     def insert(self):
@@ -58,6 +70,23 @@ class AjusteController(CrudController):
         diccionary['ip'] = self.request.remote_ip
         AjusteManager(self.db).update_onesignal(diccionary)
         self.respond(success=True, message='Modificado correctamente.')
+
+    def residente_condominio(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        diccionary['user'] = self.get_user_id()
+        diccionary['ip'] = self.request.remote_ip
+        AjusteManager(self.db).sincronizar_condominio()
+        self.respond(success=True, message='Insertado correctamente.')
+
+
+    def residente_movimiento(self):
+        self.set_session()
+        diccionary = json.loads(self.get_argument("object"))
+        diccionary['user'] = self.get_user_id()
+        diccionary['ip'] = self.request.remote_ip
+        AjusteManager(self.db).sincronizar_movimiento()
+        self.respond(success=True, message='Insertado correctamente.')
 
 
 

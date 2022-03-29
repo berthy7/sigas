@@ -30,11 +30,13 @@
                         <tr>
                             <th class="order_by_th" data-name="names">Id</th>
                             <th class="order_by_th" data-name="names">Codigo</th>
+                            <th class="order_by_th" data-name="names">Condominio</th>
                             <th class="order_by_th" data-name="names">Ci</th>
                             <th class="order_by_th" data-name="names">Nombre</th>
                             <th class="order_by_th" data-name="names">Telefono</th>
                             <th class="actions_header">Estado</th>
                             <th class="actions_header">Editar</th>
+                            <th class="actions_header"></th>
                         </tr>
                     </thead>
 
@@ -67,11 +69,13 @@
                 data.push( [
                     '{{ c.id }}',
                     '{{ c.codigo }}',
+                        '{{ c.condominio.nombre }}',
                     '{{ c.ci }}',
                     '{{ c.fullname }}',
                     '{{ c.telefono}}',
-                    '<input id="{{ c.id }}" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo delete" {% if c.estado %} {{"checked"}} {% end %} disabled/><label for="{{c.id}}"></label>' + ' ' + '{% if c.estado %} Habilitado {% else %} Deshabilitado {% end %}',
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+                    '<input id="{{ c.id }}" data-id="{{ c.id }}" type="checkbox" class="chk-col-indigo state" {% if c.estado %} {{"checked"}} {% end %} disabled/><label for="{{c.id}}"></label>' + ' ' + '{% if c.estado %} Habilitado {% else %} Deshabilitado {% end %}',
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>',
+                    '<button id="delete" onClick="eliminar(this)" data-fullname="{{ c.fullname }}" data-json="{{ c.codigo }}" type="button" class="btn bg-indigo white-own waves-effect waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>'
 
                 ]);
             {% set cont = cont + 1 %}
@@ -93,19 +97,15 @@
                 </div>\
             </div>\
             <div class="col-sm-1 ">\
-                <div class="form-line">\
-                    <input id="placa'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo placa  txta-own">\
-                </div>\
+                <h5 class="label_normal" id="placa'+id_in+'"></h5>\
             </div>\
             <div class="col-sm-1 hidden">\
                 <div  class="form-line">\
                     <input id="fktipo'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fktipo  txta-own">\
                 </div>\
             </div>\
-            <div class="col-sm-1">\
-                <div  class="form-line">\
-                    <input id="tipo'+id_in+'" data-id="'+id_in+'" class="form-control tipo  txta-own">\
-                </div>\
+            <div class="col-sm-2">\
+                <h5 class="label_normal" id="tipo'+id_in+'"></h5>\
             </div>\
             <div class="col-sm-1 hidden">\
                 <div  class="form-line">\
@@ -113,39 +113,31 @@
                 </div>\
             </div>\
             <div class="col-sm-1">\
-                <div  class="form-line">\
-                    <input id="color'+id_in+'" data-id="'+id_in+'" class="form-control color  txta-own">\
-                </div>\
+                <h5 class="label_normal" id="color'+id_in+'"></h5>\
             </div>\
             <div class="col-sm-1 hidden">\
                 <div  class="form-line">\
                     <input id="fkmarca'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fkmarca  txta-own">\
                 </div>\
             </div>\
-            <div class="col-sm-1">\
-                <div  class="form-line">\
-                    <input id="marca'+id_in+'" data-id="'+id_in+'" class="form-control  marca  txta-own">\
-                </div>\
+            <div class="col-sm-2">\
+                <h5 class="label_normal" id="marca'+id_in+'"></h5>\
             </div>\
             <div class="col-sm-1 hidden">\
                 <div  class="form-line">\
                     <input id="fkmodelo'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fkmodelo  txta-own">\
                 </div>\
             </div>\
-            <div class="col-sm-1">\
-                <div  class="form-line">\
-                    <input id="modelo'+id_in+'" data-id="'+id_in+'" class="form-control  modelo  txta-own">\
-                </div>\
+            <div class="col-sm-2">\
+                <h5 class="label_normal" id="modelo'+id_in+'"></h5>\
             </div>\
-            <div class="col-sm-1">\
+            <div class="col-sm-2 hidden">\
                 <div  class="form-line">\
                     <input id="fknropase'+id_in+'" data-id="'+id_in+'" class="form-control vehiculo fknropase  txta-own">\
                 </div>\
             </div>\
             <div class="col-sm-1">\
-                <div  class="form-line">\
-                    <input id="nropase'+id_in+'" data-id="'+id_in+'" class="form-control  nropase  txta-own">\
-                </div>\
+                <h5 class="label_normal" id="nropase'+id_in+'"></h5>\
             </div>\
             <div class="col-sm-1">\
                 <button type="button" data-id="'+id_in+'" class="btn  waves-effect editar_vehiculo" title="Editar">\

@@ -17,7 +17,6 @@ from ..ajuste.models import Ajuste
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from xhtml2pdf import pisa
 
 import string
 from random import *
@@ -37,14 +36,14 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
-from onesignal_sdk.client import Client
-from onesignal_sdk.error import OneSignalHTTPError
+# from onesignal_sdk.client import Client
+# from onesignal_sdk.error import OneSignalHTTPError
 
-# import firebase_admin
-# from firebase_admin import credentials, messaging
-
-# cred = credentials.Certificate("./serviceAccountKey.json")
-# firebase_admin.initialize_app(cred)
+import firebase_admin
+from firebase_admin import credentials, messaging
+#
+cred = credentials.Certificate("./serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
 
 
 class UsuarioManager(SuperManager):
@@ -285,9 +284,9 @@ class UsuarioManager(SuperManager):
     def usuarios_condominio(self,user):
         if user.fkcondominio:
 
-            return self.db.query(Usuario).filter(Usuario.fkcondominio == user.fkcondominio).all()
+            return self.db.query(Usuario).filter(Usuario.enabled).filter(Usuario.fkcondominio == user.fkcondominio).all()
         else:
-            return self.db.query(Usuario).filter(Usuario.sigas == False).all()
+            return self.db.query(Usuario).filter(Usuario.enabled).filter(Usuario.sigas == False).all()
 
     def name_role(self, rol):
         role = self.db.query(Rol).filter_by(id=rol).first()
@@ -830,7 +829,7 @@ class NotificacionManager(SuperManager):
         super().insert(b)
         return a
 
-    def registrar_notificacion_onesignal(self, a,objeto):
+    def registrar_notificacion_(self, a,objeto):
         usuario = UsuarioManager(self.db).obtener_x_fkresidente(a.invitacion.evento.fkresidente)
         fecha = BitacoraManager(self.db).fecha_actual()
         Nombrevisita = ""
@@ -844,31 +843,37 @@ class NotificacionManager(SuperManager):
                  titulo="Notificacion de llegada", fecha=fecha, user=objeto.user, ip=objeto.ip))
 
         print("entrando a funcion enviar")
-        # NotificacionManager(self.db).enviar_notificacion_firebase(notificacion)
+        NotificacionManager(self.db).enviar_notificacion_firebase(notificacion,Nombrevisita)
 
-    # def enviar_notificacion_firebase(self, notificacion):
-    #     ajuste = self.db.query(Ajuste).first()
-    #
-    #     tokens = [
-    #         ajuste.rest_api_key]
-    #     dataObject = {
-    #         "usuario": "juan perez",
-    #         "fecha": "29-04-2021"
-    #     }
-    #     self.sendPush(notificacion.titulo, notificacion.mensaje,
-    #                  tokens, dataObject=dataObject)
+    def enviar_notificacion_firebase(self, notificacion,Nombrevisita):
 
+        tokens = [
+            notificacion.receptor.token_notificacion]
+        dataObject = {
+            "usuario": Nombrevisita,
+            "fecha": notificacion.fecha.strftime('%d/%m/%Y')
+        }
+        self.sendPush(notificacion.titulo, notificacion.mensaje,
+                     tokens,dataObject=dataObject)
 
 
-    def sendPush(title, msg, registration_token, dataObject=None):
+
+    def sendPush(self,title, msg, registration_token, dataObject):
         # See documentation on defining a message payload.
+        print("metodo SendPush")
         message = messaging.MulticastMessage(
+            tokens=registration_token,
+            data=dataObject,
             notification=messaging.Notification(
                 title=title,
                 body=msg
             ),
-            data=dataObject,
-            tokens=registration_token,
+            # android=dataObject['android']
+            android=messaging.AndroidConfig(
+                notification=messaging.AndroidNotification(
+                    click_action="FCM_PLUGIN_ACTIVITY"
+                )
+            )
         )
 
         # Send a message to the device corresponding to the provided
@@ -879,51 +884,51 @@ class NotificacionManager(SuperManager):
 
         # pip intall firebase-admin
 
-    def enviar_notificacion_onesignal(self, notificacion):
-        ajuste = self.db.query(Ajuste).first()
-        print("Enviando Notificacion a un solo cliente")
-
-        try:
-            # Parametros
-            APP_ID = ajuste.app_id
-            REST_API_KEY = ajuste.rest_api_key
-            CHANNEL_ID = ajuste.channel_id  # DE LA CATEGORIA PRIORITARY
-            cli = notificacion.receptor.token_notificacion
-            if cli and cli != 'undefined' and cli != '0':
-                print('Token..:')
-                print(cli)
-
-                client = Client(app_id=APP_ID, rest_api_key=REST_API_KEY)
-                img = ''
-                notification_body = {
-                    'contents': {'en': notificacion.mensaje, 'es': notificacion.mensaje},
-                    # 'subtitle': {'en': n.subtitle, 'es': n.subtitle}, // Si se quiere agregar un subtitulo
-                    'headings': {'en': notificacion.titulo, 'es': notificacion.titulo},
-                    # 'included_segments': ['Active Users', 'Inactive Users'], // cuando se especifica el include_player_ids, los segmentos ya no se envian
-                    'include_player_ids': [cli],
-                    'big_picture': img,  # Foto cuando la notificacion se expande
-                    'small_icon': 'icon',  # Icono de la notificacion
-                    # 'android_accent_color': '0065ab',# Color de fondo del small_icon
-                    # 'huawei_accent_color': '0065ab',# Color de fondo del small_icon
-                    'huawei_small_icon': 'icon',
-                    'large_icon': img,  # Foto con la notificacion sin expandirse
-                    'huawei_large_icon': img,  # Foto con la notificacion sin expandirse
-                    'android_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
-                    'huawei_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
-                    'android_background_layout': '{"headings_color": "FFFF0000", "contents_color": "FF00FF00"}'
-                }
-                print('Cuerpo de la Notificacion..')
-                print('..')
-                print('..')
-                print(notification_body)
-                print('..')
-                print('..')
-                response = client.send_notification(notification_body)
-                # print('Notificacion enviada: ')
-                # print(response)
-                # self.deshabilitar_notificacion(n)
-        except OneSignalHTTPError as e:
-            print("Error al enviar la notificacion: " + str(notificacion.id) + ' ' + str(notificacion.titulo))
-            print(e)
-            print(e.message)
+    # def enviar_notificacion_onesignal(self, notificacion):
+    #     ajuste = self.db.query(Ajuste).first()
+    #     print("Enviando Notificacion a un solo cliente")
+    #
+    #     try:
+    #         # Parametros
+    #         APP_ID = ajuste.app_id
+    #         REST_API_KEY = ajuste.rest_api_key
+    #         CHANNEL_ID = ajuste.channel_id  # DE LA CATEGORIA PRIORITARY
+    #         cli = notificacion.receptor.token_notificacion
+    #         if cli and cli != 'undefined' and cli != '0':
+    #             print('Token..:')
+    #             print(cli)
+    #
+    #             client = Client(app_id=APP_ID, rest_api_key=REST_API_KEY)
+    #             img = ''
+    #             notification_body = {
+    #                 'contents': {'en': notificacion.mensaje, 'es': notificacion.mensaje},
+    #                 # 'subtitle': {'en': n.subtitle, 'es': n.subtitle}, // Si se quiere agregar un subtitulo
+    #                 'headings': {'en': notificacion.titulo, 'es': notificacion.titulo},
+    #                 # 'included_segments': ['Active Users', 'Inactive Users'], // cuando se especifica el include_player_ids, los segmentos ya no se envian
+    #                 'include_player_ids': [cli],
+    #                 'big_picture': img,  # Foto cuando la notificacion se expande
+    #                 'small_icon': 'icon',  # Icono de la notificacion
+    #                 # 'android_accent_color': '0065ab',# Color de fondo del small_icon
+    #                 # 'huawei_accent_color': '0065ab',# Color de fondo del small_icon
+    #                 'huawei_small_icon': 'icon',
+    #                 'large_icon': img,  # Foto con la notificacion sin expandirse
+    #                 'huawei_large_icon': img,  # Foto con la notificacion sin expandirse
+    #                 'android_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
+    #                 'huawei_channel_id': CHANNEL_ID,  # Categoria de la notificacion definida en OneSignal
+    #                 'android_background_layout': '{"headings_color": "FFFF0000", "contents_color": "FF00FF00"}'
+    #             }
+    #             print('Cuerpo de la Notificacion..')
+    #             print('..')
+    #             print('..')
+    #             print(notification_body)
+    #             print('..')
+    #             print('..')
+    #             response = client.send_notification(notification_body)
+    #             # print('Notificacion enviada: ')
+    #             # print(response)
+    #             # self.deshabilitar_notificacion(n)
+    #     except OneSignalHTTPError as e:
+    #         print("Error al enviar la notificacion: " + str(notificacion.id) + ' ' + str(notificacion.titulo))
+    #         print(e)
+    #         print(e.message)
 

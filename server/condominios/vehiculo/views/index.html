@@ -38,6 +38,7 @@
                             <th class="order_by_th" data-name="names">Marca</th>
                             <th class="order_by_th" data-name="names">Modelo</th>
                             <th class="order_by_th" data-name="names">Nro de Tarjeta</th>
+                            <th class="order_by_th" data-name="names">Propietario</th>
                             <th class="actions_header">Editar</th>
                         </tr>
                     </thead>
@@ -76,8 +77,13 @@
                     {% else %}
                         '-----',
                     {% end %}
+                    {% if c.fkresidente %}
+                        '{{ c.residente.fullname }}',
+                    {% else %}
+                        '-----',
+                    {% end %}
 
-                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
+                    '<button id="edit" onClick="editar(this)" data-json="{{ c.id }}" type="button" class="btn bg-indigo white-own waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>'
 
                 ]);
             {% set cont = cont + 1 %}
